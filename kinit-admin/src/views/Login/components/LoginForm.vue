@@ -4,13 +4,14 @@ import { Form } from '@/components/Form'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElButton, ElCheckbox, ElLink } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
-import { loginApi, getTestRoleApi, getAdminRoleApi } from '@/api/login'
+import { getTestRoleApi, getAdminRoleApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStore } from '@/store/modules/app'
+import { useAuthStoreWithOut } from '@/store/modules/auth'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
-import { UserType } from '@/api/login/types'
+import { UserType, UserLoginType } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
 
 const { required } = useValidator()
@@ -21,6 +22,8 @@ const appStore = useAppStore()
 
 const permissionStore = usePermissionStore()
 
+const authStore = useAuthStoreWithOut()
+
 const { currentRoute, addRoute, push } = useRouter()
 
 const { wsCache } = useCache()
@@ -28,7 +31,7 @@ const { wsCache } = useCache()
 const { t } = useI18n()
 
 const rules = {
-  username: [required()],
+  telephone: [required()],
   password: [required()]
 }
 
@@ -40,15 +43,15 @@ const schema = reactive<FormSchema[]>([
     }
   },
   {
-    field: 'username',
-    label: t('login.username'),
-    value: 'admin',
+    field: 'telephone',
+    label: t('login.telephone'),
+    value: '15093430559',
     component: 'Input',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: t('login.usernamePlaceholder')
+      placeholder: t('login.telephonePlaceholder')
     }
   },
   {
@@ -123,10 +126,10 @@ const signIn = async () => {
     if (isValid) {
       loading.value = true
       const { getFormData } = methods
-      const formData = await getFormData<UserType>()
+      const formData = await getFormData<UserLoginType>()
 
       try {
-        const res = await loginApi(formData)
+        const res = await authStore.login(formData)
 
         if (res) {
           wsCache.set(appStore.getUserInfo, res.data)
@@ -154,18 +157,18 @@ const getRole = async () => {
   const { getFormData } = methods
   const formData = await getFormData<UserType>()
   const params = {
-    roleName: formData.username
+    roleName: formData.telephone
   }
   // admin - 模拟后端过滤菜单
   // test - 模拟前端过滤菜单
   const res =
-    formData.username === 'admin' ? await getAdminRoleApi(params) : await getTestRoleApi(params)
+    formData.telephone === 'admin' ? await getAdminRoleApi(params) : await getTestRoleApi(params)
   if (res) {
     const { wsCache } = useCache()
     const routers = res.data || []
     wsCache.set('roleRouters', routers)
 
-    formData.username === 'admin'
+    formData.telephone === 'admin'
       ? await permissionStore.generateRoutes('admin', routers).catch(() => {})
       : await permissionStore.generateRoutes('test', routers).catch(() => {})
 

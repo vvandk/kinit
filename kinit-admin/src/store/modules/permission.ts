@@ -20,6 +20,7 @@ export const usePermissionStore = defineStore({
     menuTabRouters: []
   }),
   persist: {
+    // 开启持久化存储
     enabled: true
   },
   getters: {

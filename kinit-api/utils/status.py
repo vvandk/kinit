@@ -7,5 +7,5 @@
 # @desc           : 简要说明
 
 
-HTTP_SUCCESS = 0
-HTTP_ERROR = 1
+HTTP_SUCCESS = 200
+HTTP_ERROR = 400

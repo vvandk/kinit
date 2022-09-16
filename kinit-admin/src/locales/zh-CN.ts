@@ -87,6 +87,7 @@ export default {
     welcome: '欢迎使用本系统',
     message: '开箱即用的中后台管理系统',
     username: '用户名',
+    telephone: '手机号',
     password: '密码',
     register: '注册',
     checkPassword: '确认密码',
@@ -96,6 +97,7 @@ export default {
     hasUser: '已有账号？去登录',
     forgetPassword: '忘记密码',
     usernamePlaceholder: '请输入用户名',
+    telephonePlaceholder: '请输入手机号',
     passwordPlaceholder: '请输入密码',
     code: '验证码',
     codePlaceholder: '请输入验证码'

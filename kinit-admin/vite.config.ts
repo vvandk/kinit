@@ -115,11 +115,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       }
     },
     server: {
-      port: 4000,
+      port: 5000,
       proxy: {
         // 选项写法
         '/api': {
-          target: 'http://127.0.0.1:8000',
+          target: 'http://127.0.0.1:9000',
           changeOrigin: true,
           rewrite: path => path.replace(/^\/api/, '')
         }
@@ -127,7 +127,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       hmr: {
         overlay: false
       },
-      host: '0.0.0.0'
+      host: '127.0.0.1'
     },
     optimizeDeps: {
       include: [

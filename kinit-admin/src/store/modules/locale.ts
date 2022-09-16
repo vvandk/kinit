@@ -10,6 +10,7 @@ export const useLocaleStore = defineStore({
   id: 'locales',
   state: (): LocaleState => localeModules,
   persist: {
+    // 开启持久化存储
     enabled: true
   },
   getters: {

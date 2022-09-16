@@ -52,7 +52,7 @@ export const appModules: AppState = {
   sizeMap: ['default', 'large', 'small'],
   mobile: false, // 是否是移动端
   title: import.meta.env.VITE_APP_TITLE, // 标题
-  pageLoading: false, // 路由跳转loading
+  pageLoading: true, // 路由跳转loading
 
   breadcrumb: true, // 面包屑
   breadcrumbIcon: true, // 面包屑图标
@@ -68,7 +68,7 @@ export const appModules: AppState = {
   fixedHeader: true, // 固定toolheader
   footer: true, // 显示页脚
   greyMode: false, // 是否开始灰色模式，用于特殊悼念日
-  dynamicRouter: wsCache.get('dynamicRouter') || false, // 是否动态路由
+  dynamicRouter: wsCache.get('dynamicRouter') || true, // 是否动态路由
 
   layout: wsCache.get('layout') || 'classic', // layout布局
   isDark: wsCache.get('isDark') || false, // 是否是暗黑模式

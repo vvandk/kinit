@@ -13,6 +13,7 @@ export const useDictStore = defineStore({
     dictObj: {}
   }),
   persist: {
+    // 开启持久化存储
     enabled: true
   },
   getters: {

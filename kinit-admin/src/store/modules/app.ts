@@ -12,6 +12,7 @@ export const useAppStore = defineStore({
   id: 'app',
   state: (): AppState => appModules,
   persist: {
+    // 开启持久化存储
     enabled: true
   },
   getters: {

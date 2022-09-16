@@ -43,7 +43,7 @@ service.interceptors.request.use(
   },
   (error: AxiosError) => {
     // Do something with request error
-    console.log(error) // for debug
+    console.log('请求报错', error) // for debug
     Promise.reject(error)
   }
 )
@@ -61,8 +61,16 @@ service.interceptors.response.use(
     }
   },
   (error: AxiosError) => {
-    console.log('err' + error) // for debug
-    ElMessage.error(error.message)
+    console.log('err' + error)
+    let { message } = error
+    if (message == 'Network Error') {
+      message = '后端接口连接异常'
+    } else if (message.includes('timeout')) {
+      message = '系统接口请求超时'
+    } else if (message.includes('Request failed with status code')) {
+      message = '系统接口' + message.substr(message.length - 3) + '异常'
+    }
+    ElMessage.error(message)
     return Promise.reject(error)
   }
 )

@@ -87,6 +87,7 @@ export default {
     welcome: 'Welcome to the system',
     message: 'Backstage management system',
     username: 'Username',
+    telephone: 'Telephone',
     password: 'Password',
     register: 'Register',
     checkPassword: 'Confirm password',
@@ -96,6 +97,7 @@ export default {
     hasUser: 'Existing account? Go to login',
     forgetPassword: 'Forget password',
     usernamePlaceholder: 'Please input username',
+    telephonePlaceholder: 'Please input telephone',
     passwordPlaceholder: 'Please input password',
     code: 'Verification code',
     codePlaceholder: 'Please input verification code'

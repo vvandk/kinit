@@ -54,30 +54,30 @@ export default [
     }
   },
   // 登录接口
-  {
-    url: '/user/login',
-    method: 'post',
-    timeout,
-    response: ({ body }) => {
-      const data = body
-      let hasUser = false
-      for (const user of List) {
-        if (user.username === data.username && user.password === data.password) {
-          hasUser = true
-          return {
-            code: result_code,
-            data: user
-          }
-        }
-      }
-      if (!hasUser) {
-        return {
-          code: '500',
-          message: '账号或密码错误'
-        }
-      }
-    }
-  },
+  // {
+  //   url: '/user/login',
+  //   method: 'post',
+  //   timeout,
+  //   response: ({ body }) => {
+  //     const data = body
+  //     let hasUser = false
+  //     for (const user of List) {
+  //       if (user.username === data.username && user.password === data.password) {
+  //         hasUser = true
+  //         return {
+  //           code: result_code,
+  //           data: user
+  //         }
+  //       }
+  //     }
+  //     if (!hasUser) {
+  //       return {
+  //         code: '500',
+  //         message: '手机号或密码错误'
+  //       }
+  //     }
+  //   }
+  // },
   // 退出接口
   {
     url: '/user/loginOut',

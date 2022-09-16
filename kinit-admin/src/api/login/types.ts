@@ -1,10 +1,10 @@
 export type UserLoginType = {
-  username: string
+  telephone: string
   password: string
 }
 
 export type UserType = {
-  username: string
+  telephone: string
   password: string
   role: string
   roleId: string

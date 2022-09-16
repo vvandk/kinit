@@ -53,8 +53,7 @@ async def login_for_access_token(request: Request, data: dict = Depends(authenti
             "telephone": user.telephone,
             "name": user.name,
             "nickname": user.nickname,
-            "avatar": user.avatar,
-            "roles": [{"name": i.name, "value": i.role_key} for i in user.roles]
+            "avatar": user.avatar
         }
     }
     await VadminLoginRecord.create_login_record(telephone=user.telephone, status=data.get("status"), request=request,
@@ -73,22 +72,6 @@ async def get_user_info(auth: AdminAuth = Depends(full_admin)):
             "roles": [{"name": i.name, "value": i.role_key} for i in auth.admin.roles]
         }
     return SuccessResponse(result)
-
-
-@app.get("/getPermCode/", summary="获取当前登录用户所有权限")
-async def get_perm_code(auth: AdminAuth = Depends(full_admin)):
-    roles = []
-    for i in auth.admin.roles:
-        if i.is_admin:
-            return SuccessResponse(["*:*:*"])
-        roles.append(i.id)
-    permissions = set()
-    for data_id in roles:
-        role_obj = await RoleDal(auth.db).get_data(data_id, options=[VadminRole.menus])
-        for menu in role_obj.menus:
-            if menu.perms and menu.status:
-                permissions.add(menu.perms)
-    return SuccessResponse(list(permissions))
 
 
 @app.get("/getMenuList/", summary="获取当前用户菜单树")
