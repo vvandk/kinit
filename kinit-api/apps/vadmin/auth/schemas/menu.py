@@ -40,6 +40,12 @@ class MenuSimpleOut(Menu):
 class Meta(BaseModel):
     title: str
     icon: Optional[str] = None
+    hidden: bool = False
+    noCache: Optional[bool] = True
+    breadcrumb: Optional[bool] = True
+    affix: Optional[bool] = False
+    noTagsView: Optional[bool] = False
+    canTo: Optional[bool] = False
 
 
 # 路由展示
@@ -48,10 +54,7 @@ class RouterOut(BaseModel):
     component: str
     path: str
     redirect: Optional[str] = None
-    perms: Optional[str] = None
     meta: Optional[Meta] = None
-    disabled: bool = False
-    hidden: bool = Field(False, alias='hideMenu')
     children: List['RouterOut'] = []
 
     class Config:

@@ -25,8 +25,7 @@ from utils.response import SuccessResponse, ErrorResponse
 from application import settings
 from .auth_util import authenticate_user, create_access_token
 from apps.vadmin.record.models import VadminLoginRecord
-from apps.vadmin.auth.crud import RoleDal, MenuDal
-from apps.vadmin.auth.models import VadminRole
+from apps.vadmin.auth.crud import MenuDal
 from .current import AdminAuth, full_admin
 
 app = APIRouter()
@@ -53,24 +52,12 @@ async def login_for_access_token(request: Request, data: dict = Depends(authenti
             "telephone": user.telephone,
             "name": user.name,
             "nickname": user.nickname,
-            "avatar": user.avatar
+            "avatar": user.avatar,
+            "roles": [{"name": i.name, "value": i.role_key} for i in user.roles]
         }
     }
     await VadminLoginRecord.create_login_record(telephone=user.telephone, status=data.get("status"), request=request,
                                                 response=json.dumps(result), db=data.get("db"))
-    return SuccessResponse(result)
-
-
-@app.get("/getUserInfo/", summary="获取当前登录用户基本信息")
-async def get_user_info(auth: AdminAuth = Depends(full_admin)):
-    result = {
-            "id": auth.admin.id,
-            "telephone": auth.admin.telephone,
-            "name": auth.admin.name,
-            "nickname": auth.admin.nickname,
-            "avatar": auth.admin.avatar,
-            "roles": [{"name": i.name, "value": i.role_key} for i in auth.admin.roles]
-        }
     return SuccessResponse(result)
 
 

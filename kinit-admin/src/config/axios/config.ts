@@ -14,22 +14,22 @@ const config: {
    */
   base_url: {
     // 开发环境接口前缀
-    base: '',
+    base: '/api',
 
     // 打包开发环境接口前缀
-    dev: '',
+    dev: '/api',
 
     // 打包生产环境接口前缀
-    pro: '',
+    pro: '/api',
 
     // 打包测试环境接口前缀
-    test: ''
+    test: '/api'
   },
 
   /**
    * 接口成功返回状态码
    */
-  result_code: '200',
+  result_code: 200,
 
   /**
    * 接口请求超时时间

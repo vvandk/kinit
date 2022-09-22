@@ -71,18 +71,13 @@ class MenuDal(DalBase):
     async def get_routers(self, user: models.VadminUser):
         """
         获取路由表
-        export interface Menu {
-          name: string;   //  菜单名
-          icon?: string;  // 菜单图标,如果没有，则会尝试使用route.meta.icon
-          path: string;  // 菜单路径
-          disabled?: boolean;  // 是否禁用
-          children?: Menu[];  // 子菜单
-          tag: {  // 菜单标签设置
-            dot: boolean;       // 为true则显示小圆点
-            content: string';  // 内容
-            type: 'error' | 'primary' | 'warn' | 'success';  // 类型
-          };
-          hideMenu?: boolean;  // 是否隐藏菜单
+        declare interface AppCustomRouteRecordRaw extends Omit<RouteRecordRaw, 'meta'> {
+            name: string
+            meta: RouteMeta
+            component: string
+            path: string
+            redirect: string
+            children?: AppCustomRouteRecordRaw[]
         }
         """
         if any([i.is_admin for i in user.roles]):
@@ -94,6 +89,7 @@ class MenuDal(DalBase):
             for role in user.roles:
                 role_obj = await RoleDal(self.db).get_data(role.id, options=[models.VadminRole.menus])
                 for menu in role_obj.menus:
+                    # 该路由没有被禁用，并且菜单不是按钮
                     if not menu.disabled and menu.menu_type != "2":
                         menus.add(menu)
         roots = filter(lambda i: not i.parent_id, menus)
@@ -116,7 +112,7 @@ class MenuDal(DalBase):
         for root in nodes:
             router = schemas.RouterOut.from_orm(root)
             router.name = router.path.split("/")[-1].capitalize()
-            router.meta = schemas.Meta(title=root.title, icon=root.icon)
+            router.meta = schemas.Meta(title=root.title, icon=root.icon, hidden=root.hidden)
             if root.menu_type == "0":
                 sons = filter(lambda i: i.parent_id == root.id, menus)
                 router.children = self.generate_router_tree(menus, sons)

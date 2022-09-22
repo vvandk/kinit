@@ -6,15 +6,13 @@ import { loginApi } from '@/api/login'
 export interface AuthState {
   token: string
   is_reset_password: boolean
-  user_id: number
 }
 
 export const useAuthStore = defineStore({
   id: 'auth',
   state: (): AuthState => ({
     token: '',
-    is_reset_password: false,
-    user_id: 0
+    is_reset_password: false
   }),
   persist: {
     // 开启持久化存储
@@ -24,9 +22,6 @@ export const useAuthStore = defineStore({
     getToken(): string {
       return this.token
     },
-    getUserId(): number {
-      return this.user_id
-    },
     getIsResetPassword(): boolean {
       return this.is_reset_password
     }
@@ -35,13 +30,9 @@ export const useAuthStore = defineStore({
     async login(formData: UserLoginType) {
       const res = await loginApi(formData)
       if (res) {
-        console.log('登录成功', res)
-      } else {
-        console.log('登录失败', res)
+        this.token = `${res.data.token_type} ${res.data.access_token}`
+        this.is_reset_password = res.data.is_reset_password
       }
-      // this.token = token
-      // this.is_reset_password = is_reset_password
-      // this.user_id = user_id
       return res
     }
   }

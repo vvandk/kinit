@@ -1,12 +1,8 @@
 import request from '@/config/axios'
 import type { UserLoginType, UserType } from './types'
 
-interface RoleParams {
-  roleName: string
-}
-
 export const loginApi = (data: UserLoginType): Promise<IResponse> => {
-  return request.post({ url: '/api/auth/login', data })
+  return request.post({ url: '/auth/login/', data })
 }
 
 export const loginOutApi = (): Promise<IResponse> => {
@@ -20,12 +16,6 @@ export const getUserListApi = ({ params }: AxiosConfig) => {
   }>({ url: '/user/list', params })
 }
 
-export const getAdminRoleApi = (
-  params: RoleParams
-): Promise<IResponse<AppCustomRouteRecordRaw[]>> => {
-  return request.get({ url: '/role/list', params })
-}
-
-export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>> => {
-  return request.get({ url: '/role/list', params })
+export const getRoleMenusApi = (): Promise<IResponse<AppCustomRouteRecordRaw[]>> => {
+  return request.get({ url: '/auth/getMenuList/' })
 }

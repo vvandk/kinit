@@ -5,8 +5,8 @@ export type UserLoginType = {
 
 export type UserType = {
   telephone: string
-  password: string
-  role: string
-  roleId: string
-  permissions: string | string[]
+  nickname: string
+  id: number
+  avatar: string
+  name: string
 }

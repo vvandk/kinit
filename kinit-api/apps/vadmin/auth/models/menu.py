@@ -23,7 +23,6 @@ class VadminMenu(BaseModel):
     #     button = "2"
 
     title = Column(String(50), index=True, nullable=False, comment="名称")
-    title_zh = Column(String(50), comment="中文名称")  # 选择框时使用
     icon = Column(String(50), comment="菜单图标")
     redirect = Column(String(100), comment="重定向地址")
     component = Column(String(50), comment="前端组件地址")
@@ -34,5 +33,10 @@ class VadminMenu(BaseModel):
     menu_type = Column(String(8), comment="菜单类型")
     parent_id = Column(ForeignKey("vadmin_auth_menu.id", ondelete='CASCADE'), comment="父菜单")
     perms = Column(String(50), comment="权限标识", unique=False, nullable=True, index=True)
+    noCache = Column(Boolean, comment="如果设置为true，则不会被 <keep-alive> 缓存(默认 false)", default=False)
+    breadcrumb = Column(Boolean, comment="如果设置为false，则不会在breadcrumb面包屑中显示(默认 true)", default=True)
+    affix = Column(Boolean, comment="如果设置为true，则会一直固定在tag项中(默认 false)", default=False)
+    noTagsView = Column(Boolean, comment="如果设置为true，则不会出现在tag中(默认 false)", default=False)
+    canTo = Column(Boolean, comment="设置为true即使hidden为true，也依然可以进行路由跳转(默认 false)", default=False)
 
     roles = relationship("VadminRole", back_populates='menus', secondary=vadmin_role_menus)

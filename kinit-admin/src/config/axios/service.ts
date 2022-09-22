@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
+import { useAuthStoreWithOut } from '@/store/modules/auth'
 
 import qs from 'qs'
 
@@ -10,18 +11,24 @@ const { result_code, base_url } = config
 
 export const PATH_URL = base_url[import.meta.env.VITE_API_BASEPATH]
 
+const authStore = useAuthStoreWithOut()
+
 // 创建axios实例
 const service: AxiosInstance = axios.create({
   baseURL: PATH_URL, // api 的 base_url
-  timeout: config.request_timeout // 请求超时时间
+  timeout: config.request_timeout, // 请求超时时间
+  headers: {} // 请求头信息
 })
 
 // request拦截器
 service.interceptors.request.use(
   (config: AxiosRequestConfig) => {
+    if (authStore.token !== '') {
+      config.headers['Authorization'] = authStore.token // 让每个请求携带自定义token 请根据实际情况自行修改
+    }
     if (
       config.method === 'post' &&
-      (config.headers as any)['Content-Type'] === 'application/x-www-form-urlencoded'
+      config.headers['Content-Type'] === 'application/x-www-form-urlencoded'
     ) {
       config.data = qs.stringify(config.data)
     }
