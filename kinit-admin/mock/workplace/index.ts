@@ -8,7 +8,7 @@ const timeout = 1000
 export default [
   // 获取统计
   {
-    url: '/workplace/total',
+    url: '/api/workplace/total',
     method: 'get',
     timeout,
     response: () => {
@@ -24,7 +24,7 @@ export default [
   },
   // 获取项目
   {
-    url: '/workplace/project',
+    url: '/api/workplace/project',
     method: 'get',
     timeout,
     response: () => {
@@ -79,7 +79,7 @@ export default [
   },
   // 获取动态
   {
-    url: '/workplace/dynamic',
+    url: '/api/workplace/dynamic',
     method: 'get',
     timeout,
     response: () => {
@@ -116,7 +116,7 @@ export default [
   },
   // 获取团队信息
   {
-    url: '/workplace/team',
+    url: '/api/workplace/team',
     method: 'get',
     timeout,
     response: () => {
@@ -153,7 +153,7 @@ export default [
   },
   // 获取指数
   {
-    url: '/workplace/radar',
+    url: '/api/workplace/radar',
     method: 'get',
     timeout,
     response: () => {

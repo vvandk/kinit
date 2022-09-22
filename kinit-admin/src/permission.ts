@@ -8,6 +8,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useDictStoreWithOut } from '@/store/modules/dict'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { getDictApi } from '@/api/common'
+import { getRoleMenusApi } from '@/api/login'
 
 const permissionStore = usePermissionStoreWithOut()
 
@@ -43,27 +44,20 @@ router.beforeEach(async (to, from, next) => {
           dictStore.setIsSetDict(true)
         }
       }
-
       // 开发者可根据实际情况进行修改
-      const roleRouters = wsCache.get('roleRouters') || []
-      const userInfo = wsCache.get(appStore.getUserInfo)
-
-      // 是否使用动态路由
-      if (appStore.getDynamicRouter) {
-        userInfo.role === 'admin'
-          ? await permissionStore.generateRoutes('admin', roleRouters as AppCustomRouteRecordRaw[])
-          : await permissionStore.generateRoutes('test', roleRouters as string[])
-      } else {
-        await permissionStore.generateRoutes('none')
-      }
-
+      const res = await getRoleMenusApi()
+      const { wsCache } = useCache()
+      const routers = res.data || []
+      wsCache.set('roleRouters', routers)
+      await permissionStore.generateRoutes(routers).catch(() => {})
       permissionStore.getAddRouters.forEach((route) => {
-        router.addRoute(route as unknown as RouteRecordRaw) // 动态添加可访问路由表
+        router.addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
       })
       const redirectPath = from.query.redirect || to.path
       const redirect = decodeURIComponent(redirectPath as string)
       const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect }
       permissionStore.setIsAddRouters(true)
+      console.log('nextData', nextData)
       next(nextData)
     }
   } else {

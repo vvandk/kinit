@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
-import { useAuthStoreWithOut } from '@/store/modules/auth'
+import { useCache } from '@/hooks/web/useCache'
+import { useAppStore } from '@/store/modules/app'
 
 import qs from 'qs'
 
@@ -9,9 +10,10 @@ import { ElMessage } from 'element-plus'
 
 const { result_code, base_url } = config
 
-export const PATH_URL = base_url[import.meta.env.VITE_API_BASEPATH]
+const appStore = useAppStore()
+const { wsCache } = useCache()
 
-const authStore = useAuthStoreWithOut()
+export const PATH_URL = base_url[import.meta.env.VITE_API_BASEPATH]
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
@@ -23,12 +25,14 @@ const service: AxiosInstance = axios.create({
 // request拦截器
 service.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-    if (authStore.token !== '') {
-      config.headers['Authorization'] = authStore.token // 让每个请求携带自定义token 请根据实际情况自行修改
+    const token = wsCache.get(appStore.getToken)
+    console.log('token', token)
+    if (token !== '') {
+      ;(config.headers as any)['Authorization'] = token // 让每个请求携带自定义token 请根据实际情况自行修改
     }
     if (
       config.method === 'post' &&
-      config.headers['Content-Type'] === 'application/x-www-form-urlencoded'
+      (config.headers as any)['Content-Type'] === 'application/x-www-form-urlencoded'
     ) {
       config.data = qs.stringify(config.data)
     }

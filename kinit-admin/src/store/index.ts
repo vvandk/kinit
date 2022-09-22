@@ -1,6 +1,6 @@
 import type { App } from 'vue'
 import { createPinia } from 'pinia'
-import piniaPluginPersist from 'pinia-plugin-persist'
+import piniaPluginPersist from 'pinia-plugin-persist' // 持久化存储
 
 const store = createPinia()
 

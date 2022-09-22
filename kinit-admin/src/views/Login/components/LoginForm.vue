@@ -5,28 +5,21 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { ElButton, ElCheckbox, ElLink } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { getRoleMenusApi } from '@/api/login'
-import { useCache } from '@/hooks/web/useCache'
-import { useAppStore } from '@/store/modules/app'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
 import { UserLoginType } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
+import { useCache } from '@/hooks/web/useCache'
 
 const { required } = useValidator()
 
 const emit = defineEmits(['to-register'])
 
-const appStore = useAppStore()
-
 const permissionStore = usePermissionStore()
 
-const authStore = useAuthStoreWithOut()
-
 const { currentRoute, addRoute, push } = useRouter()
-
-const { wsCache } = useCache()
 
 const { t } = useI18n()
 
@@ -129,11 +122,9 @@ const signIn = async () => {
       const formData = await getFormData<UserLoginType>()
 
       try {
+        const authStore = useAuthStoreWithOut()
         const res = await authStore.login(formData)
-
         if (res) {
-          // 存储用户信息
-          wsCache.set(appStore.getUserInfo, res.data.user)
           // 是否使用动态路由
           getMenu()
         }
@@ -147,7 +138,6 @@ const signIn = async () => {
 // 获取用户菜单信息
 const getMenu = async () => {
   const res = await getRoleMenusApi()
-  console.log('菜单信息', res)
   if (res) {
     const { wsCache } = useCache()
     const routers = res.data || []

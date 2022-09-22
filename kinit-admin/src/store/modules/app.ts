@@ -70,6 +70,9 @@ export const useAppStore = defineStore({
     getUserInfo(): string {
       return this.userInfo
     },
+    getToken(): string {
+      return this.token
+    },
     getIsDark(): boolean {
       return this.isDark
     },

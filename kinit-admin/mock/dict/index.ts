@@ -25,7 +25,7 @@ const dictObj: Recordable = {
 export default [
   // 字典接口
   {
-    url: '/dict/list',
+    url: '/api/dict/list',
     method: 'get',
     timeout,
     response: () => {
@@ -37,7 +37,7 @@ export default [
   },
   // 获取某个字典
   {
-    url: '/dict/one',
+    url: '/api/dict/one',
     method: 'get',
     timeout,
     response: () => {
