@@ -8,10 +8,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 
 interface TableResponse<T = any> {
-  total: number
-  list: T[]
-  pageNumber: number
-  pageSize: number
+  count: number
+  data: T[]
 }
 
 interface UseTableConfig<T = any> {
@@ -19,17 +17,17 @@ interface UseTableConfig<T = any> {
   delListApi?: (option: any) => Promise<IResponse>
   // 返回数据格式配置
   response: {
-    list: string
-    total?: string
+    data: string
+    count?: string
   }
   props?: TableProps
 }
 
 interface TableObject<T = any> {
-  pageSize: number
-  currentPage: number
-  total: number
-  tableList: T[]
+  limit: number
+  page: number
+  count: number
+  tableData: T[]
   params: any
   loading: boolean
   currentRow: Nullable<T>
@@ -38,13 +36,13 @@ interface TableObject<T = any> {
 export const useTable = <T = any>(config?: UseTableConfig<T>) => {
   const tableObject = reactive<TableObject<T>>({
     // 页数
-    pageSize: 10,
+    limit: 10,
     // 当前页
-    currentPage: 1,
+    page: 1,
     // 总条数
-    total: 10,
+    count: 10,
     // 表格数据
-    tableList: [],
+    tableData: [],
     // AxiosConfig 配置
     params: {},
     // 加载中
@@ -56,26 +54,26 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
   const paramsObj = computed(() => {
     return {
       ...tableObject.params,
-      pageSize: tableObject.pageSize,
-      pageIndex: tableObject.currentPage
+      limit: tableObject.limit,
+      page: tableObject.page
     }
   })
 
   watch(
-    () => tableObject.currentPage,
+    () => tableObject.page,
     () => {
       methods.getList()
     }
   )
 
   watch(
-    () => tableObject.pageSize,
+    () => tableObject.limit,
     () => {
-      // 当前页不为1时，修改页数后会导致多次调用getList方法
-      if (tableObject.currentPage === 1) {
+      // 当前页不为1时，修改页数后会导致多次调用getdata方法
+      if (tableObject.page === 1) {
         methods.getList()
       } else {
-        tableObject.currentPage = 1
+        tableObject.page = 1
         methods.getList()
       }
     }
@@ -102,20 +100,14 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
   }
 
   const delData = async (ids: string[] | number[]) => {
-    const res = await (config?.delListApi && config?.delListApi(ids))
-    if (res) {
-      ElMessage.success(t('common.delSuccess'))
-
-      // 计算出临界点
-      const currentPage =
-        tableObject.total % tableObject.pageSize === ids.length || tableObject.pageSize === 1
-          ? tableObject.currentPage > 1
-            ? tableObject.currentPage - 1
-            : tableObject.currentPage
-          : tableObject.currentPage
-
-      tableObject.currentPage = currentPage
-      methods.getList()
+    if (config?.delListApi) {
+      const res = await config.delListApi(ids)
+      if (res) {
+        ElMessage.success(t('common.delSuccess'))
+        methods.getList()
+      }
+    } else {
+      ElMessage.error('删除失败，请配置删除接口！')
     }
   }
 
@@ -126,8 +118,8 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
         tableObject.loading = false
       })
       if (res) {
-        tableObject.tableList = get(res.data || {}, config?.response.list as string)
-        tableObject.total = get(res.data || {}, config?.response?.total as string) || 0
+        tableObject.tableData = get(res || {}, config?.response.data as string)
+        tableObject.count = get(res || {}, config?.response.count as string) || 0
       }
     },
     setProps: async (props: TableProps = {}) => {
@@ -144,16 +136,16 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
     },
     // 与Search组件结合
     setSearchParams: (data: Recordable) => {
-      tableObject.currentPage = 1
+      tableObject.page = 1
       tableObject.params = Object.assign(tableObject.params, {
-        pageSize: tableObject.pageSize,
-        pageIndex: tableObject.currentPage,
+        limit: tableObject.limit,
+        pageIndex: tableObject.page,
         ...data
       })
       methods.getList()
     },
     // 删除数据
-    delList: async (ids: string[] | number[], multiple: boolean, message = true) => {
+    deldata: async (ids: string[] | number[], multiple: boolean, message = true) => {
       const tableRef = await getTable()
       if (multiple) {
         if (!tableRef?.selections.length) {

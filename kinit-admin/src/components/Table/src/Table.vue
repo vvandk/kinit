@@ -10,8 +10,8 @@ import { set } from 'lodash-es'
 export default defineComponent({
   name: 'Table',
   props: {
-    pageSize: propTypes.number.def(10),
-    currentPage: propTypes.number.def(1),
+    limit: propTypes.number.def(10),
+    page: propTypes.number.def(1),
     // 是否多选
     selection: propTypes.bool.def(true),
     // 是否所有的超出隐藏，优先级低于schema中的showOverflowTooltip,
@@ -47,7 +47,7 @@ export default defineComponent({
       default: () => []
     }
   },
-  emits: ['update:pageSize', 'update:currentPage', 'register'],
+  emits: ['update:limit', 'update:page', 'register'],
   setup(props, { attrs, slots, emit, expose }) {
     const elTableRef = ref<ComponentRef<typeof ElTable>>()
 
@@ -57,9 +57,9 @@ export default defineComponent({
       emit('register', tableRef?.$parent, elTableRef)
     })
 
-    const pageSizeRef = ref(props.pageSize)
+    const limitRef = ref(props.limit)
 
-    const currentPageRef = ref(props.currentPage)
+    const pageRef = ref(props.page)
 
     // useTable传入的props
     const outsideProps = ref<TableProps>({})
@@ -110,7 +110,7 @@ export default defineComponent({
           background: false,
           pagerCount: 7,
           layout: 'sizes, prev, pager, next, jumper, ->, total',
-          pageSizes: [10, 20, 30, 40, 50, 100],
+          limits: [10, 20, 30, 40, 50, 100],
           disabled: false,
           hideOnSinglePage: false,
           total: 10
@@ -120,30 +120,30 @@ export default defineComponent({
     })
 
     watch(
-      () => unref(getProps).pageSize,
+      () => unref(getProps).limit,
       (val: number) => {
-        pageSizeRef.value = val
+        limitRef.value = val
       }
     )
 
     watch(
-      () => unref(getProps).currentPage,
+      () => unref(getProps).page,
       (val: number) => {
-        currentPageRef.value = val
+        pageRef.value = val
       }
     )
 
     watch(
-      () => pageSizeRef.value,
+      () => limitRef.value,
       (val: number) => {
-        emit('update:pageSize', val)
+        emit('update:limit', val)
       }
     )
 
     watch(
-      () => currentPageRef.value,
+      () => pageRef.value,
       (val: number) => {
-        emit('update:currentPage', val)
+        emit('update:page', val)
       }
     )
 
@@ -211,15 +211,8 @@ export default defineComponent({
     }
 
     const rnderTableColumn = (columnsChildren?: TableColumn[]) => {
-      const {
-        columns,
-        reserveIndex,
-        pageSize,
-        currentPage,
-        align,
-        headerAlign,
-        showOverflowTooltip
-      } = unref(getProps)
+      const { columns, reserveIndex, limit, page, align, headerAlign, showOverflowTooltip } =
+        unref(getProps)
       return [...[renderTableExpand()], ...[renderTableSelection()]].concat(
         (columnsChildren || columns).map((v) => {
           // 自定生成序号
@@ -227,11 +220,7 @@ export default defineComponent({
             return (
               <ElTableColumn
                 type="index"
-                index={
-                  v.index
-                    ? v.index
-                    : (index) => setIndex(reserveIndex, index, pageSize, currentPage)
-                }
+                index={v.index ? v.index : (index) => setIndex(reserveIndex, index, limit, page)}
                 align={v.align || align}
                 headerAlign={v.headerAlign || headerAlign}
                 label={v.label}
@@ -275,6 +264,7 @@ export default defineComponent({
           data={unref(getProps).data}
           onSelection-change={selectionChange}
           {...unref(getBindValue)}
+          header-row-style="color: #000;background-color: #000;"
         >
           {{
             default: () => rnderTableColumn(),
@@ -284,8 +274,8 @@ export default defineComponent({
         </ElTable>
         {unref(getProps).pagination ? (
           <ElPagination
-            v-model:pageSize={pageSizeRef.value}
-            v-model:currentPage={currentPageRef.value}
+            v-model:limit={limitRef.value}
+            v-model:page={pageRef.value}
             class="mt-10px"
             {...unref(pagination)}
           ></ElPagination>

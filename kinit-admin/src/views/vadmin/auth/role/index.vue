@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ContentWrap } from '@/components/ContentWrap'
 import { Table } from '@/components/Table'
-import { getMenuListApi } from '@/api/vadmin/auth/menu'
+import { getRoleListApi } from '@/api/vadmin/auth/role'
 import { TableData } from '@/api/table/types'
 import { reactive } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
@@ -12,28 +12,32 @@ const { t } = useI18n()
 
 const columns = reactive<TableColumn[]>([
   {
-    field: 'title',
-    label: '菜单名称'
+    field: 'id',
+    label: '角色编号'
   },
   {
-    field: 'icon',
-    label: '图标'
+    field: 'name',
+    label: '角色名称'
   },
   {
-    field: 'order',
-    label: '排序'
+    field: 'role_key',
+    label: '权限字符'
   },
   {
-    field: 'menu_type',
-    label: '菜单类型'
+    field: 'index',
+    label: '显示顺序'
   },
   {
-    field: 'perms',
-    label: '权限标识'
+    field: 'is_active',
+    label: '状态'
   },
   {
-    field: 'component',
-    label: '组件路径'
+    field: 'is_admin',
+    label: '最高权限'
+  },
+  {
+    field: 'create_datetime',
+    label: '创建时间'
   },
   {
     field: 'action',
@@ -49,9 +53,10 @@ const columns = reactive<TableColumn[]>([
 ])
 
 const { register, tableObject, methods } = useTable<TableData>({
-  getListApi: getMenuListApi,
+  getListApi: getRoleListApi,
   response: {
-    data: 'data'
+    data: 'data',
+    count: 'count'
   },
   props: {
     columns
@@ -66,10 +71,14 @@ getList()
 <template>
   <ContentWrap>
     <Table
+      v-model:limit="tableObject.limit"
+      v-model:page="tableObject.page"
       :data="tableObject.tableData"
       :loading="tableObject.loading"
       :selection="false"
-      row-key="id"
+      :pagination="{
+        total: tableObject.count
+      }"
       @register="register"
     >
       <template #action="{}">

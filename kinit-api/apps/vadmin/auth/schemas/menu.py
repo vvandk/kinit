@@ -16,7 +16,6 @@ from core.validator import ValiDatetime
 
 class Menu(BaseModel):
     title: str
-    title_zh: Optional[str] = None
     icon: Optional[str] = None
     component: str
     path: str

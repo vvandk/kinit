@@ -41,7 +41,7 @@ for (let i = 0; i < count; i++) {
 export default [
   // 列表接口
   {
-    url: '/example/list',
+    url: '/api/example/list',
     method: 'get',
     timeout,
     response: ({ query }) => {

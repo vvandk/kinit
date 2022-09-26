@@ -1,6 +1,6 @@
 export type TableProps = {
-  pageSize?: number
-  currentPage?: number
+  limit?: number
+  page?: number
   // 是否多选
   selection?: boolean
   // 是否所有的超出隐藏，优先级低于schema中的showOverflowTooltip,
