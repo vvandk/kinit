@@ -235,9 +235,6 @@ getList()
         <ElButton type="primary" text>
           {{ t('exampleDemo.edit') }}
         </ElButton>
-        <ElButton type="success" text>
-          {{ t('exampleDemo.detail') }}
-        </ElButton>
         <ElButton type="danger" text>
           {{ t('exampleDemo.del') }}
         </ElButton>
@@ -246,20 +243,13 @@ getList()
 
     <Dialog v-model="dialogVisible" :title="dialogTitle">
       <Write
-        v-if="actionType !== 'detail'"
         ref="writeRef"
         :form-schema="allSchemas.formSchema"
         :current-row="tableObject.currentRow"
       />
 
-      <Detail
-        v-if="actionType === 'detail'"
-        :detail-schema="allSchemas.detailSchema"
-        :current-row="tableObject.currentRow"
-      />
-
       <template #footer>
-        <ElButton v-if="actionType !== 'detail'" type="primary" :loading="loading" @click="save">
+        <ElButton type="primary" :loading="loading" @click="save">
           {{ t('exampleDemo.save') }}
         </ElButton>
         <ElButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</ElButton>
