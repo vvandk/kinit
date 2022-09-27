@@ -10,35 +10,17 @@ import { h, ref, unref, reactive } from 'vue'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { Dialog } from '@/components/Dialog'
 import Write from './components/Write.vue'
-import Detail from './components/Detail.vue'
 
 const { t } = useI18n()
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
-    field: 'index',
-    label: t('tableDemo.index'),
-    type: 'index',
-    form: {
-      show: false
-    },
-    detail: {
-      show: false
-    }
-  },
-  {
     field: 'title',
-    label: t('tableDemo.title'),
-    search: {
-      show: true
-    },
+    label: '菜单名称',
     form: {
       colProps: {
-        span: 24
+        span: 12
       }
-    },
-    detail: {
-      span: 24
     }
   },
   {
