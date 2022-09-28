@@ -23,6 +23,7 @@ declare global {
     | 'SelectV2'
     | 'InputPassword'
     | 'Editor'
+    | 'TreeSelect'
 
   declare type ColProps = {
     span?: number

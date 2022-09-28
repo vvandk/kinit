@@ -68,6 +68,16 @@ class MenuDal(DalBase):
         roots = filter(lambda i: not i.parent_id, menus)
         return self.generate_tree_list(menus, roots)
 
+    async def get_tree_options(self):
+        """
+        获取菜单树选择项
+        """
+        sql = select(self.model)
+        queryset = await self.db.execute(sql)
+        menus = queryset.scalars().all()
+        roots = filter(lambda i: not i.parent_id, menus)
+        return self.generate_tree_options(menus, roots)
+
     async def get_routers(self, user: models.VadminUser):
         """
         获取路由表
@@ -103,7 +113,7 @@ class MenuDal(DalBase):
 
     def generate_router_tree(self, menus: List[models.VadminMenu], nodes: filter) -> list:
         """
-        生成路由数
+        生成路由树
 
         menus: 总菜单列表
         nodes：节点菜单列表
@@ -121,7 +131,7 @@ class MenuDal(DalBase):
 
     def generate_tree_list(self, menus: List[models.VadminMenu], nodes: filter) -> list:
         """
-        生成菜单树
+        生成菜单树列表
 
         menus: 总菜单列表
         nodes：每层节点菜单列表
@@ -133,6 +143,22 @@ class MenuDal(DalBase):
                 sons = filter(lambda i: i.parent_id == root.id, menus)
                 router.children = self.generate_tree_list(menus, sons)
             data.append(router.dict())
+        return data
+
+    def generate_tree_options(self, menus: List[models.VadminMenu], nodes: filter) -> list:
+        """
+        生成菜单树选择项
+
+        menus: 总菜单列表
+        nodes：每层节点菜单列表
+        """
+        data = []
+        for root in nodes:
+            router = {"value": root.id, "label": root.title}
+            if root.menu_type == "0" or root.menu_type == "1":
+                sons = filter(lambda i: i.parent_id == root.id, menus)
+                router["children"] = self.generate_tree_options(menus, sons)
+            data.append(router)
         return data
 
 

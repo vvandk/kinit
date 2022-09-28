@@ -86,7 +86,13 @@ async def get_menus(auth: Auth = Depends(login_auth)):
     return SuccessResponse(datas)
 
 
-@app.get("/menus/treeselect/", summary="获取菜单列表树信息，角色权限使用")
+@app.get("/menus/tree/options/", summary="获取菜单树选择项")
+async def get_menus_options(auth: Auth = Depends(login_auth)):
+    datas = await crud.MenuDal(auth.db).get_tree_options()
+    return SuccessResponse(datas)
+
+
+@app.get("/menus/role/tree/options/", summary="获取菜单列表树信息，角色权限使用")
 async def get_menus_treeselect(auth: Auth = Depends(login_auth)):
     return SuccessResponse(await crud.MenuDal(auth.db).get_treeselect())
 
