@@ -65,17 +65,10 @@ const schema = reactive<FormSchema[]>([
     label: '菜单图标',
     component: 'Input',
     colProps: {
-      span: 20
+      span: 24
     },
     componentProps: {
       placeholder: '支持 Iconify 中的所有图标，请登录网站自行搜索：https://iconify.design/'
-    }
-  },
-  {
-    field: 'iconClick',
-    label: '',
-    colProps: {
-      span: 3
     }
   }
 ])

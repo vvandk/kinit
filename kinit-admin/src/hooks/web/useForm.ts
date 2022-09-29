@@ -23,7 +23,7 @@ export const useForm = (props?: FormProps) => {
     await nextTick()
     const form = unref(formRef)
     if (!form) {
-      console.error('The form is not registered. Please use the register method to register')
+      console.error('Form 没有注册。请使用注册方式进行注册')
     }
     return form
   }
