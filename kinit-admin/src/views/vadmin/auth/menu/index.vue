@@ -43,9 +43,6 @@ const columns = reactive<TableColumn[]>([
     label: t('tableDemo.action'),
     form: {
       show: false
-    },
-    detail: {
-      show: false
     }
   }
 ])
@@ -88,7 +85,19 @@ const delData = async (row: TableData | null, multiple: boolean) => {
 
 const loading = ref(false)
 
-const save = async () => {}
+const writeRef = ref<ComponentRef<typeof Write>>()
+
+const save = async () => {
+  const write = unref(writeRef)
+  await write?.elFormRef?.validate(async (isValid) => {
+    if (isValid) {
+      loading.value = true
+      const data = (await write?.getFormData()) as TableData
+      console.log('a', data)
+      loading.value = false
+    }
+  })
+}
 
 const { getList } = methods
 

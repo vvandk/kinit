@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { PropType, defineComponent, ref, computed, unref, watch, onMounted } from 'vue'
+import { PropType, defineComponent, ref, computed, unref, watch, onMounted, Ref, isRef } from 'vue'
 import { ElForm, ElFormItem, ElRow, ElCol, ElTooltip } from 'element-plus'
 import { componentMap } from './componentMap'
 import { propTypes } from '@/utils/propTypes'
@@ -207,6 +207,14 @@ export default defineComponent({
           )
         }
       }
+      if (item?.componentProps?.placeholder === undefined) {
+        if (item.componentProps === undefined) {
+          item.componentProps = {}
+        }
+        if (item?.component === 'Input') {
+          item.componentProps.placeholder = `请输入${item.label}`
+        }
+      }
       return (
         <ElFormItem {...(item.formItemProps || {})} prop={item.field} label={item.label || ''}>
           {{
@@ -217,7 +225,6 @@ export default defineComponent({
               >
 
               const { autoSetPlaceholder } = unref(getProps)
-
               return slots[item.field] ? (
                 getSlot(slots, item.field, formModel.value)
               ) : (

@@ -5,7 +5,7 @@ import { PropType, reactive, watch } from 'vue'
 import { TableData } from '@/api/table/types'
 import { useValidator } from '@/hooks/web/useValidator'
 import { getMenuTreeOptionsApi } from '@/api/vadmin/auth/menu'
-import { ElButton } from 'element-plus'
+import { ElButton, ElInput } from 'element-plus'
 
 const { required } = useValidator()
 
@@ -15,6 +15,10 @@ const props = defineProps({
     default: () => null
   }
 })
+
+const handleRadioChange = (item: string) => {
+  console.log(item)
+}
 
 const schema = reactive<FormSchema[]>([
   {
@@ -56,30 +60,115 @@ const schema = reactive<FormSchema[]>([
           label: '按钮',
           value: '2'
         }
-      ]
+      ],
+      onChange: handleRadioChange
     },
     value: '0'
   },
   {
     field: 'icon',
     label: '菜单图标',
+    colProps: {
+      span: 24
+    }
+  },
+  {
+    field: 'title',
+    label: '菜单名称',
+    component: 'Input',
+    colProps: {
+      span: 12
+    }
+  },
+  {
+    field: 'order',
+    label: '显示排序',
+    component: 'InputNumber',
+    colProps: {
+      span: 12
+    }
+  },
+  {
+    field: 'path',
+    label: '路由地址',
+    component: 'Input',
+    colProps: {
+      span: 12
+    }
+  },
+  {
+    field: 'component',
+    label: '组件路径',
+    component: 'Input',
+    colProps: {
+      span: 12
+    }
+  },
+  {
+    field: 'hidden',
+    label: '显示状态',
+    colProps: {
+      span: 12
+    },
+    component: 'Radio',
+    componentProps: {
+      style: {
+        width: '100%'
+      },
+      options: [
+        {
+          label: '显示',
+          value: true
+        },
+        {
+          label: '隐藏',
+          value: false
+        }
+      ]
+    },
+    value: true
+  },
+  {
+    field: 'disabled',
+    label: '菜单状态',
+    colProps: {
+      span: 12
+    },
+    component: 'Radio',
+    componentProps: {
+      style: {
+        width: '100%'
+      },
+      options: [
+        {
+          label: '正常',
+          value: false
+        },
+        {
+          label: '停用',
+          value: true
+        }
+      ]
+    },
+    value: false
+  },
+  {
+    field: 'perms',
+    label: '权限标识',
     component: 'Input',
     colProps: {
       span: 24
     },
-    componentProps: {
-      placeholder: '支持 Iconify 中的所有图标，请登录网站自行搜索：https://iconify.design/'
-    }
+    hidden: true
   }
 ])
 
 const rules = reactive({
   title: [required()],
-  author: [required()],
-  importance: [required()],
-  pageviews: [required()],
-  display_time: [required()],
-  content: [required()]
+  disabled: [required()],
+  hidden: [required()],
+  path: [required()],
+  order: [required()]
 })
 
 const { register, methods, elFormRef } = useForm({
@@ -115,6 +204,10 @@ const getMenuTreeOptions = async () => {
 
 getMenuTreeOptions()
 
+const toIconify = () => {
+  window.open('https://iconify.design/')
+}
+
 defineExpose({
   elFormRef,
   getFormData: methods.getFormData
@@ -123,14 +216,16 @@ defineExpose({
 
 <template>
   <Form :rules="rules" @register="register">
-    <template #iconClick-label>
-      <!-- <div>
-        <el-button type="primary">跳转</el-button>
-      </div> -->
-    </template>
-    <template #iconClick>
-      <div>
-        <ElButton type="primary">跳转</ElButton>
+    <template #icon="form">
+      <div style="display: flex; justify-content: space-between">
+        <ElInput
+          v-model="form['icon']"
+          placeholder="支持 Iconify 中的所有图标，请登录网站自行搜索：https://iconify.design/"
+          style="width: 500px"
+        />
+        <div style="margin-left: 10px">
+          <ElButton type="primary" @click="toIconify">跳转</ElButton>
+        </div>
       </div>
     </template>
   </Form>

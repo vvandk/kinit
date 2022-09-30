@@ -1,6 +1,6 @@
 import type { Form, FormExpose } from '@/components/Form'
 import type { ElForm } from 'element-plus'
-import { ref, unref, nextTick } from 'vue'
+import { ref, unref, nextTick, Ref } from 'vue'
 import type { FormProps } from '@/components/Form/src/types'
 
 export const useForm = (props?: FormProps) => {
@@ -46,7 +46,6 @@ export const useForm = (props?: FormProps) => {
       const form = await getForm()
       form?.setValues(data)
     },
-
     /**
      * @param schemaProps 需要设置的schemaProps
      */
