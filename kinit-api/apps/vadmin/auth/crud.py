@@ -7,6 +7,7 @@
 # @desc           : 增删改查
 from typing import List
 
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from core.crud import DalBase
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,6 +42,43 @@ class RoleDal(DalBase):
 
     def __init__(self, db: AsyncSession):
         super(RoleDal, self).__init__(db, models.VadminRole, schemas.RoleSimpleOut)
+
+    async def create_data(self, data: schemas.RoleIn, return_obj: bool = False, options: list = None, schema=None):
+        """创建数据"""
+        obj = self.model(**data.dict(exclude={'menu_ids'}))
+        for data_id in data.menu_ids:
+            obj.menus.append(await MenuDal(db=self.db).get_data(data_id=data_id))
+        self.db.add(obj)
+        await self.db.flush()
+        await self.db.refresh(obj)
+        if options:
+            obj = await self.get_data(obj.id, options=options)
+        if return_obj:
+            return obj
+        if schema:
+            return schema.from_orm(obj).dict()
+        return self.out_dict(await self.get_data(obj.id))
+
+    async def put_data(self, data_id: int, data: schemas.RoleIn, return_obj: bool = False, options: list = None,
+                       schema=None):
+        """更新单个数据"""
+        obj = await self.get_data(data_id, options=[self.model.menus])
+        obj_dict = jsonable_encoder(data)
+        for key, value in obj_dict.items():
+            if key == "menu_ids":
+                if obj.menus:
+                    obj.menus.clear()
+                for data_id in value:
+                    obj.menus.append(await MenuDal(db=self.db).get_data(data_id=data_id))
+                continue
+            setattr(obj, key, value)
+        await self.db.flush()
+        await self.db.refresh(obj)
+        if return_obj:
+            return obj
+        if schema:
+            return schema.from_orm(obj).dict()
+        return self.out_dict(obj)
 
     async def get_role_menu_tree(self, role_id: int):
         role = await self.get_data(role_id, options=[self.model.menus])
@@ -106,10 +144,12 @@ class MenuDal(DalBase):
         return self.generate_router_tree(menus, roots)
 
     async def get_treeselect(self):
-        """获取菜单树列表信息"""
-        sql = select(self.model)
+        """获取菜单树列表，角色添加菜单权限时使用"""
+        sql = select(self.model).where(self.model.disabled == False, self.model.menu_type != "2")
         queryset = await self.db.execute(sql)
-        return [schemas.TreeselectOut.from_orm(i).dict() for i in queryset.scalars().all()]
+        menus = queryset.scalars().all()
+        roots = filter(lambda i: not i.parent_id, menus)
+        return self.generate_tree_options(menus, roots)
 
     def generate_router_tree(self, menus: List[models.VadminMenu], nodes: filter) -> list:
         """

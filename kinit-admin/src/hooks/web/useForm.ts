@@ -1,6 +1,6 @@
 import type { Form, FormExpose } from '@/components/Form'
 import type { ElForm } from 'element-plus'
-import { ref, unref, nextTick, Ref } from 'vue'
+import { ref, unref, nextTick } from 'vue'
 import type { FormProps } from '@/components/Form/src/types'
 
 export const useForm = (props?: FormProps) => {
@@ -23,7 +23,7 @@ export const useForm = (props?: FormProps) => {
     await nextTick()
     const form = unref(formRef)
     if (!form) {
-      console.error('Form 没有注册。请使用注册方式进行注册')
+      console.error('Form 没有注册。请使用 register 方法进行注册')
     }
     return form
   }

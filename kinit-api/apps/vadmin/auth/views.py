@@ -8,7 +8,7 @@
 
 from typing import Optional
 from fastapi import APIRouter, Depends, Query
-from utils.response import SuccessResponse
+from utils.response import SuccessResponse, ErrorResponse
 from . import schemas, crud, models
 from core.dependencies import paging, id_list, Params
 from apps.vadmin.auth.utils.current import login_auth, Auth
@@ -67,6 +67,11 @@ async def delete_roles(ids: list = Depends(id_list), auth: Auth = Depends(login_
 @app.put("/roles/{data_id}/", summary="更新角色信息")
 async def put_role(data_id: int, data: schemas.RoleIn, auth: Auth = Depends(login_auth)):
     return SuccessResponse(await crud.RoleDal(auth.db).put_data(data_id, data))
+
+
+@app.get("/roles/options/", summary="获取角色选择项")
+async def get_role_options(auth: Auth = Depends(login_auth)):
+    return SuccessResponse(await crud.RoleDal(auth.db).get_select_datas())
 
 
 @app.get("/roles/{data_id}/", summary="获取角色信息")

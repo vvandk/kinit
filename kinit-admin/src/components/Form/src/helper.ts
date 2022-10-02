@@ -16,7 +16,7 @@ export const setTextPlaceholder = (schema: FormSchema): PlaceholderMoel => {
   const selectMap = ['Select', 'TimePicker', 'DatePicker', 'TimeSelect', 'TimeSelect']
   if (textMap.includes(schema?.component as string)) {
     return {
-      placeholder: t('common.inputText')
+      placeholder: `请输入${schema.label}`
     }
   }
   if (selectMap.includes(schema?.component as string)) {
@@ -34,7 +34,7 @@ export const setTextPlaceholder = (schema: FormSchema): PlaceholderMoel => {
       }
     } else {
       return {
-        placeholder: t('common.selectText')
+        placeholder: `请选择${schema.label}`
       }
     }
   }
@@ -121,7 +121,7 @@ export const initModel = (schema: FormSchema[], formModel: Recordable) => {
     } else if (v.component && v.component !== 'Divider') {
       const hasField = Reflect.has(model, v.field)
       // 如果先前已经有值存在，则不进行重新赋值，而是采用现有的值
-      model[v.field] = hasField ? model[v.field] : v.value !== void 0 ? v.value : ''
+      model[v.field] = hasField ? model[v.field] : v.value !== void 0 ? v.value : undefined
     }
   })
   return model

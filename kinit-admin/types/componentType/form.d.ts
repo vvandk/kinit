@@ -24,6 +24,7 @@ declare global {
     | 'InputPassword'
     | 'Editor'
     | 'TreeSelect'
+    | 'Tree'
 
   declare type ColProps = {
     span?: number
@@ -86,6 +87,8 @@ declare global {
     value?: FormValueType
     // 是否隐藏
     hidden?: boolean
+    // 是否显示
+    ifshow?: (values: Recordable) => boolean
     // 远程加载下拉项
     api?: <T = any>() => AxiosPromise<T>
   }

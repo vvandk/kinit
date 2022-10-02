@@ -63,17 +63,6 @@ class RouterOut(BaseModel):
 RouterOut.update_forward_refs()
 
 
-# 采单树列表，选用权限展示使用
-class TreeselectOut(BaseModel):
-    id: int
-    label: str = Field(alias='title')
-    order: Optional[int] = 1
-    parent_id: Optional[int] = None
-
-    class Config:
-        orm_mode = True
-
-
 class TreeListOut(MenuSimpleOut):
     children: List['TreeListOut'] = []
 

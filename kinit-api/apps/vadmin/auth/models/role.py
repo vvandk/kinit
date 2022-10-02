@@ -18,8 +18,8 @@ class VadminRole(BaseModel):
 
     name = Column(String(50), index=True, nullable=False, comment="名称")
     role_key = Column(String(50), index=True, nullable=False, comment="权限字符")
-    is_active = Column(Boolean, default=True, comment="是否可用")
-    index = Column(Integer, comment="排序")
+    disabled = Column(Boolean, default=False, comment="是否禁用")
+    order = Column(Integer, comment="排序")
     desc = Column(String(255), comment="描述")
     is_admin = Column(Boolean, comment="是否为超级角色", default=False)
 

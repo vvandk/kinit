@@ -17,8 +17,8 @@ from .menu import MenuSimpleOut
 
 class Role(BaseModel):
     name: str
-    is_active: bool = True
-    index: Optional[int] = None
+    disabled: bool = False
+    order: Optional[int] = None
     desc: Optional[str] = None
     role_key: str
     is_admin: bool = False
@@ -41,14 +41,13 @@ class RoleOut(RoleSimpleOut):
 
 
 class RoleIn(Role):
-    menus: Optional[List[int]] = []
+    menu_ids: Optional[List[int]] = []
 
 
 class RoleSelectOut(BaseModel):
     id: int
     name: str
-    is_active: bool
-    role_key: str
+    disabled: bool
 
     class Config:
         orm_mode = True

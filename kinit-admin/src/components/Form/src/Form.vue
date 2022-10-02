@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { PropType, defineComponent, ref, computed, unref, watch, onMounted, Ref, isRef } from 'vue'
+import { PropType, defineComponent, ref, computed, unref, watch, onMounted } from 'vue'
 import { ElForm, ElFormItem, ElRow, ElCol, ElTooltip } from 'element-plus'
 import { componentMap } from './componentMap'
 import { propTypes } from '@/utils/propTypes'
@@ -150,9 +150,23 @@ export default defineComponent({
     const renderFormItemWrap = () => {
       // hidden属性表示隐藏，不做渲染
       const { schema = [], isCol } = unref(getProps)
-
       return schema
-        .filter((v) => !v.hidden)
+        .filter((v) => {
+          if (v.hidden !== undefined) {
+            return !v.hidden
+          } else if (v.ifshow !== undefined) {
+            const show = v.ifshow(unref(formModel))
+            if (!show) {
+              if (v.value !== undefined) {
+                formModel.value[v.field] = v.value
+              } else {
+                formModel.value[v.field] = undefined
+              }
+            }
+            return show
+          }
+          return true
+        })
         .map((item) => {
           // 如果是 Divider 组件，需要自己占用一行
           const isDivider = item.component === 'Divider'
@@ -205,14 +219,6 @@ export default defineComponent({
               </ElTooltip>
             </>
           )
-        }
-      }
-      if (item?.componentProps?.placeholder === undefined) {
-        if (item.componentProps === undefined) {
-          item.componentProps = {}
-        }
-        if (item?.component === 'Input') {
-          item.componentProps.placeholder = `请输入${item.label}`
         }
       }
       return (
