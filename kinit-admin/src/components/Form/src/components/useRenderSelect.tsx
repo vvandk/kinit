@@ -30,7 +30,11 @@ export const useRenderSelect = (slots: Slots) => {
     const labelAlias = item?.componentProps?.optionsAlias?.labelField
     const valueAlias = item?.componentProps?.optionsAlias?.valueField
     return (
-      <ElOption label={option[labelAlias || 'label']} value={option[valueAlias || 'value']}>
+      <ElOption
+        label={option[labelAlias || 'label']}
+        value={option[valueAlias || 'value']}
+        disabled={option.disabled}
+      >
         {{
           default: () =>
             // option 插槽名规则，{field}-option

@@ -17,7 +17,7 @@ from core.validator import ValiDatetime
 class DictType(BaseModel):
     dict_name: str
     dict_type: str
-    status: Optional[bool] = True
+    disabled: Optional[bool] = False
     remark: Optional[str] = None
 
     class Config:
@@ -26,7 +26,7 @@ class DictType(BaseModel):
             "example": {
                 "dict_name": "用户性别",
                 "dict_type": "sys_user_sex",
-                "status": True,
+                "disabled": False,
                 "remark": "性别选择"
             }
         }
@@ -42,12 +42,12 @@ class DictTypeSimpleOut(DictType):
 
 
 class DictDetails(BaseModel):
-    dict_label: str
-    dict_value: str
-    status: Optional[bool] = True
+    label: str
+    value: str
+    disabled: Optional[bool] = False
     is_default: Optional[bool] = False
     remark: Optional[str] = None
-    sort: Optional[str] = None
+    order: Optional[str] = None
     dict_data: int
 
 

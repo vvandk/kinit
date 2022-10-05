@@ -3,8 +3,7 @@ import { Form } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
 import { PropType, reactive, watch } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
-import { schema } from './user.data'
-import { getRoleOptionsApi } from '@/api/vadmin/auth/role'
+import { schema } from './dict.data'
 
 const { required } = useValidator()
 
@@ -16,10 +15,9 @@ const props = defineProps({
 })
 
 const rules = reactive({
-  name: [required()],
-  is_active: [required()],
-  role_ids: [required()],
-  telephone: [required()]
+  dict_name: [required()],
+  dict_type: [required()],
+  disabled: [required()]
 })
 
 const { register, methods, elFormRef } = useForm({
@@ -38,22 +36,6 @@ watch(
     immediate: true
   }
 )
-
-const getRoleOptions = async () => {
-  const res = await getRoleOptionsApi()
-  if (res) {
-    const { setSchema } = methods
-    setSchema([
-      {
-        field: 'role_ids',
-        path: 'componentProps.options',
-        value: res.data
-      }
-    ])
-  }
-}
-
-getRoleOptions()
 
 defineExpose({
   elFormRef,

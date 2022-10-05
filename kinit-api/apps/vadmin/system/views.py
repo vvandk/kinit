@@ -18,7 +18,7 @@ app = APIRouter()
 ###########################################################
 #    字典类型管理
 ###########################################################
-@app.get("/dictTypes/", summary="获取字典类型列表")
+@app.get("/dict/types/", summary="获取字典类型列表")
 async def get_dict_types(params: Params = Depends(paging), auth: Auth = Depends(login_auth),
                          dict_name: Optional[str] = Query(None, title="字典名称", description="查询字典名称")):
     datas = await crud.DictTypeDal(auth.db).get_datas(params.page, params.limit, dict_name=dict_name)
@@ -26,33 +26,33 @@ async def get_dict_types(params: Params = Depends(paging), auth: Auth = Depends(
     return SuccessResponse(datas, count=count)
 
 
-@app.post("/dictTypes/", summary="创建字典类型")
+@app.post("/dict/types/", summary="创建字典类型")
 async def create_dict_types(data: schemas.DictType, auth: Auth = Depends(login_auth)):
     return SuccessResponse(await crud.DictTypeDal(auth.db).create_data(data=data))
 
 
-@app.delete("/dictTypes/", summary="批量删除字典类型")
+@app.delete("/dict/types/", summary="批量删除字典类型")
 async def delete_dict_types(ids: list = Depends(id_list), auth: Auth = Depends(login_auth)):
     await crud.DictTypeDal(auth.db).delete_datas(ids=ids)
     return SuccessResponse("删除成功")
 
 
-@app.put("/dictTypes/{data_id}/", summary="更新字典类型")
-async def put_dict_types(data_id: int, data: schemas.DictType, auth: Auth = Depends(login_auth)):
-    return SuccessResponse(await crud.DictTypeDal(auth.db).put_data(data_id, data))
-
-
-@app.get("/dictTypes/{data_id}/", summary="获取字典类型详细")
-async def get_dict_type(data_id: int, auth: Auth = Depends(login_auth)):
-    schema = schemas.DictTypeSimpleOut
-    return SuccessResponse(await crud.DictTypeDal(auth.db).get_data(data_id, None, schema))
-
-
-@app.post("/dictTypes/details/", summary="获取多个字典类型下的字典元素列表")
+@app.post("/dict/types/details/", summary="获取多个字典类型下的字典元素列表")
 async def post_dicts_details(auth: Auth = Depends(login_auth),
                              dict_types: List[str] = Body(None, title="字典元素列表", description="查询字典元素列表")):
     datas = await crud.DictTypeDal(auth.db).get_dicts_details(dict_types)
     return SuccessResponse(datas)
+
+
+@app.put("/dict/types/{data_id}/", summary="更新字典类型")
+async def put_dict_types(data_id: int, data: schemas.DictType, auth: Auth = Depends(login_auth)):
+    return SuccessResponse(await crud.DictTypeDal(auth.db).put_data(data_id, data))
+
+
+@app.get("/dict/types/{data_id}/", summary="获取字典类型详细")
+async def get_dict_type(data_id: int, auth: Auth = Depends(login_auth)):
+    schema = schemas.DictTypeSimpleOut
+    return SuccessResponse(await crud.DictTypeDal(auth.db).get_data(data_id, None, schema))
 
 
 ###########################################################

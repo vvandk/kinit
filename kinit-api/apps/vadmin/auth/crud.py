@@ -26,9 +26,12 @@ class UserDal(DalBase):
         """
         password = data.telephone[5:12] if settings.DEFAULT_PASSWORD == "0" else settings.DEFAULT_PASSWORD
         data.password = self.model.get_password_hash(password)
-        obj = await super(UserDal, self).create_data(data.dict(exclude={"role_ids"}), True, options, schema)
+        obj = self.model(**data.dict(exclude={'role_ids'}))
         for data_id in data.role_ids:
             obj.roles.append(await RoleDal(db=self.db).get_data(data_id=data_id))
+        self.db.add(obj)
+        await self.db.flush()
+        await self.db.refresh(obj)
         if options:
             obj = await self.get_data(obj.id, options=options)
         if return_obj:

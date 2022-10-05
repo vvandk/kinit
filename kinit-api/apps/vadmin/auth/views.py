@@ -42,6 +42,14 @@ async def put_user(data_id: int, data: schemas.User, auth: Auth = Depends(login_
     return SuccessResponse(await crud.UserDal(auth.db).put_data(data_id, data))
 
 
+@app.get("/users/{data_id}/", summary="获取用户信息")
+async def get_user(data_id: int, auth: Auth = Depends(login_auth)):
+    model = models.VadminUser
+    options = [model.roles]
+    schema = schemas.UserOut
+    return SuccessResponse(await crud.UserDal(auth.db).get_data(data_id, options, schema))
+
+
 ###########################################################
 #    角色管理
 ###########################################################

@@ -2,14 +2,14 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { Table } from '@/components/Table'
 import {
-  getUserListApi,
-  addUserListApi,
-  delUserListApi,
-  putUserListApi,
-  getUserApi
-} from '@/api/vadmin/auth/user'
+  getDictDetailsListApi,
+  addDictDetailsListApi,
+  delDictDetailsListApi,
+  putDictDetailsListApi,
+  getDictDetailsApi
+} from '@/api/vadmin/system/dict'
 import { useTable } from '@/hooks/web/useTable'
-import { columns } from './components/user.data'
+import { columns } from './components/detail.data'
 import { ref, unref } from 'vue'
 import Write from './components/Write.vue'
 import { Dialog } from '@/components/Dialog'
@@ -19,8 +19,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 
 const { register, tableObject, methods } = useTable({
-  getListApi: getUserListApi,
-  delListApi: delUserListApi,
+  getListApi: getDictDetailsListApi,
+  delListApi: delDictDetailsListApi,
   response: {
     data: 'data',
     count: 'count'
@@ -45,9 +45,8 @@ const AddAction = () => {
 
 // 编辑事件
 const updateAction = async (row: any) => {
-  const res = await getUserApi(row.id)
+  const res = await getDictDetailsApi(row.id)
   dialogTitle.value = '编辑'
-  res.data.role_ids = res.data.roles.map((item: any) => item.id)
   tableObject.currentRow = res.data
   dialogVisible.value = true
   actionType.value = 'edit'
@@ -77,9 +76,9 @@ const save = async () => {
       }
       const res = ref({})
       if (actionType.value === 'add') {
-        res.value = await addUserListApi(data)
+        res.value = await addDictDetailsListApi(data)
       } else if (actionType.value === 'edit') {
-        res.value = await putUserListApi(data)
+        res.value = await putDictDetailsListApi(data)
       }
       if (res.value) {
         dialogVisible.value = false
