@@ -1,4 +1,6 @@
-import { reactive } from 'vue'
+import { ElTag } from 'element-plus'
+import { h, reactive } from 'vue'
+import { getDictTypeOptionsApi } from '@/api/vadmin/system/dict'
 
 export const columns = reactive<TableColumn[]>([
   {
@@ -19,7 +21,16 @@ export const columns = reactive<TableColumn[]>([
   },
   {
     field: 'disabled',
-    label: '是否禁用'
+    label: '是否禁用',
+    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+      return h(
+        ElTag,
+        {
+          type: cellValue ? 'danger' : ''
+        },
+        () => (cellValue ? '禁用' : '启用')
+      )
+    }
   },
   {
     field: 'remark',
@@ -38,20 +49,57 @@ export const columns = reactive<TableColumn[]>([
 
 export const schema = reactive<FormSchema[]>([
   {
-    field: 'dict_name',
-    label: '字典名称',
+    field: 'label',
+    label: '字典标签',
     colProps: {
       span: 24
     },
     component: 'Input'
   },
   {
-    field: 'dict_type',
-    label: '字典类型',
+    field: 'value',
+    label: '字典键值',
     colProps: {
       span: 24
     },
     component: 'Input'
+  },
+  {
+    field: 'order',
+    label: '排序',
+    colProps: {
+      span: 24
+    },
+    component: 'InputNumber',
+    componentProps: {
+      style: {
+        width: '50%'
+      }
+    }
+  },
+  {
+    field: 'is_default',
+    label: '是否默认',
+    colProps: {
+      span: 24
+    },
+    component: 'Radio',
+    componentProps: {
+      style: {
+        width: '100%'
+      },
+      options: [
+        {
+          label: '是',
+          value: true
+        },
+        {
+          label: '否',
+          value: false
+        }
+      ]
+    },
+    value: false
   },
   {
     field: 'disabled',
@@ -84,5 +132,32 @@ export const schema = reactive<FormSchema[]>([
       span: 24
     },
     component: 'Input'
+  }
+])
+
+const res = await getDictTypeOptionsApi()
+const data = res.data
+
+export const searchSchema = reactive<FormSchema[]>([
+  {
+    field: 'label',
+    label: '字典标签',
+    component: 'Input',
+    componentProps: {
+      clearable: false
+    }
+  },
+  {
+    field: 'dict_type_id',
+    label: '字典类型',
+    component: 'Select',
+    componentProps: {
+      options: data,
+      optionsAlias: {
+        labelField: 'dict_name',
+        valueField: 'id'
+      },
+      clearable: false
+    }
   }
 ])

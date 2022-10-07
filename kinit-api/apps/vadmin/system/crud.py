@@ -10,6 +10,8 @@
 # sqlalchemy 关联查询：https://www.jianshu.com/p/dfad7c08c57a
 # sqlalchemy 关联查询详细：https://blog.csdn.net/u012324798/article/details/103940527
 from typing import List
+
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from . import models, schemas
 from core.crud import DalBase
@@ -34,6 +36,12 @@ class DictTypeDal(DalBase):
             else:
                 data[dict_type] = [schemas.DictDetailsSimpleOut.from_orm(i).dict() for i in dict_data.details]
         return data
+
+    async def get_select_datas(self):
+        """获取选择数据，全部数据"""
+        sql = select(self.model)
+        queryset = await self.db.execute(sql)
+        return [schemas.DictTypeSelectOut.from_orm(i).dict() for i in queryset.scalars().all()]
 
 
 class DictDetailsDal(DalBase):

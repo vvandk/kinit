@@ -20,22 +20,20 @@ class DictType(BaseModel):
     disabled: Optional[bool] = False
     remark: Optional[str] = None
 
-    class Config:
-        # 示例参数值，会默认显示在接口文档中，example为固定写法
-        schema_extra = {
-            "example": {
-                "dict_name": "用户性别",
-                "dict_type": "sys_user_sex",
-                "disabled": False,
-                "remark": "性别选择"
-            }
-        }
-
 
 class DictTypeSimpleOut(DictType):
     id: int
     create_datetime: ValiDatetime
     update_datetime: ValiDatetime
+
+    class Config:
+        orm_mode = True
+
+
+class DictTypeSelectOut(BaseModel):
+    id: int
+    dict_name: str
+    disabled: bool
 
     class Config:
         orm_mode = True
@@ -47,8 +45,8 @@ class DictDetails(BaseModel):
     disabled: Optional[bool] = False
     is_default: Optional[bool] = False
     remark: Optional[str] = None
-    order: Optional[str] = None
-    dict_data: int
+    order: Optional[int] = None
+    dict_type_id: int
 
 
 class DictDetailsSimpleOut(DictDetails):

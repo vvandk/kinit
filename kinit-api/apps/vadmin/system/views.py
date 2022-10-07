@@ -44,6 +44,12 @@ async def post_dicts_details(auth: Auth = Depends(login_auth),
     return SuccessResponse(datas)
 
 
+@app.get("/dict/types/options/", summary="获取字典类型选择项")
+async def get_dicts_options(auth: Auth = Depends(login_auth)):
+    datas = await crud.DictTypeDal(auth.db).get_select_datas()
+    return SuccessResponse(datas)
+
+
 @app.put("/dict/types/{data_id}/", summary="更新字典类型")
 async def put_dict_types(data_id: int, data: schemas.DictType, auth: Auth = Depends(login_auth)):
     return SuccessResponse(await crud.DictTypeDal(auth.db).put_data(data_id, data))
@@ -65,14 +71,13 @@ async def create_dict_details(data: schemas.DictDetails, auth: Auth = Depends(lo
 
 @app.get("/dict/details/", summary="获取单个字典类型下的字典元素列表，分页")
 async def get_dict_details(params: Params = Depends(paging), auth: Auth = Depends(login_auth),
-                           dict_type_id: Optional[str] = Query(..., title="查询字典类型", description="查询字典类型"),
-                           dict_label: Optional[str] = Query(None, title="查询字典标签", description="查询字典标签")):
-    type_obj = await crud.DictTypeDal(auth.db).get_data(dict_type_id=dict_type_id, return_none=True)
-    if not type_obj:
-        return ErrorResponse(msg="未找到字典类型！")
+                           dict_type_id: Optional[int] = Query(None, title="查询字典类型", description="查询字典类型"),
+                           label: Optional[str] = Query(None, title="查询字典标签", description="查询字典标签")):
+    if not dict_type_id:
+        return ErrorResponse(msg="未获取到字典类型！")
     datas = await crud.DictDetailsDal(auth.db).\
-        get_datas(params.page, params.limit, dict_label=dict_label, dict_type_id=type_obj.id)
-    count = await crud.DictDetailsDal(auth.db).get_count(dict_label=dict_label, dict_type_id=type_obj.id)
+        get_datas(params.page, params.limit, label=label, dict_type_id=dict_type_id)
+    count = await crud.DictDetailsDal(auth.db).get_count(label=label, dict_type_id=dict_type_id)
     return SuccessResponse(datas, count=count)
 
 

@@ -15,6 +15,9 @@ import Write from './components/Write.vue'
 import { Dialog } from '@/components/Dialog'
 import { ElButton, ElMessage } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useRouter } from 'vue-router'
+
+const { push } = useRouter()
 
 const { t } = useI18n()
 
@@ -60,6 +63,11 @@ const delData = async (row: any) => {
   await delListApi([row.id], false).finally(() => {
     loading.value = false
   })
+}
+
+// 跳转到字典详情页面
+const toDetail = (row: any) => {
+  push(`/system/dict/detail?dictType=${row.id}`)
 }
 
 const writeRef = ref<ComponentRef<typeof Write>>()
@@ -112,11 +120,17 @@ getList()
       @register="register"
     >
       <template #action="{ row }">
-        <ElButton type="primary" text size="small" @click="updateAction(row)">
+        <ElButton type="primary" link size="small" @click="updateAction(row)">
           {{ t('exampleDemo.edit') }}
         </ElButton>
-        <ElButton type="danger" text size="small" @click="delData(row)">
+        <ElButton type="danger" link size="small" @click="delData(row)">
           {{ t('exampleDemo.del') }}
+        </ElButton>
+      </template>
+
+      <template #dict_type="{ row }">
+        <ElButton type="primary" link @click="toDetail(row)">
+          {{ row.dict_type }}
         </ElButton>
       </template>
     </Table>

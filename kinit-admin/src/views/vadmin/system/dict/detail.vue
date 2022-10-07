@@ -9,14 +9,20 @@ import {
   getDictDetailsApi
 } from '@/api/vadmin/system/dict'
 import { useTable } from '@/hooks/web/useTable'
-import { columns } from './components/detail.data'
+import { columns, searchSchema } from './components/detail.data'
 import { ref, unref } from 'vue'
-import Write from './components/Write.vue'
+import Write from './components/DetailWrite.vue'
 import { Dialog } from '@/components/Dialog'
 import { ElButton, ElMessage } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useRouter } from 'vue-router'
+import { Search } from '@/components/Search'
+
+const { currentRoute } = useRouter()
 
 const { t } = useI18n()
+
+let dictType = currentRoute.value.query.dictType
 
 const { register, tableObject, methods } = useTable({
   getListApi: getDictDetailsListApi,
@@ -29,6 +35,7 @@ const { register, tableObject, methods } = useTable({
     columns
   }
 })
+tableObject.params = { dict_type_id: dictType }
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
@@ -74,6 +81,7 @@ const save = async () => {
         loading.value = false
         return ElMessage.error('未获取到数据')
       }
+      data.dict_type_id = dictType
       const res = ref({})
       if (actionType.value === 'add') {
         res.value = await addDictDetailsListApi(data)
@@ -89,13 +97,15 @@ const save = async () => {
   })
 }
 
-const { getList } = methods
+const { getList, setSearchParams } = methods
 
 getList()
 </script>
 
 <template>
   <ContentWrap>
+    <Search :schema="searchSchema" @search="setSearchParams" @reset="setSearchParams" />
+
     <div class="mb-10px">
       <ElButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</ElButton>
     </div>
@@ -121,7 +131,7 @@ getList()
       </template>
     </Table>
 
-    <Dialog v-model="dialogVisible" :title="dialogTitle" width="700px">
+    <Dialog v-model="dialogVisible" :title="dialogTitle" width="600px">
       <Write ref="writeRef" :current-row="tableObject.currentRow" />
 
       <template #footer>

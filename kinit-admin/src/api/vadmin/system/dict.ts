@@ -20,6 +20,10 @@ export const getDictTypeApi = (dataId: number): Promise<IResponse> => {
   return request.get({ url: `/vadmin/system/dict/types/${dataId}/` })
 }
 
+export const getDictTypeOptionsApi = (): Promise<IResponse> => {
+  return request.get({ url: `/vadmin/system/dict/types/options/` })
+}
+
 export const getDictDetailsListApi = (params: any): Promise<IResponse> => {
   return request.get({ url: '/vadmin/system/dict/details/', params })
 }

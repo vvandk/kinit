@@ -104,11 +104,11 @@ const setVisible = () => {
   >
     <template #action>
       <div v-if="layout === 'inline'">
-        <ElButton v-if="showSearch" type="primary" @click="search">
+        <ElButton v-if="showSearch" type="primary" size="small" @click="search">
           <Icon icon="ep:search" class="mr-5px" />
           {{ t('common.query') }}
         </ElButton>
-        <ElButton v-if="showReset" @click="reset">
+        <ElButton v-if="showReset" size="small" @click="reset">
           <Icon icon="ep:refresh-right" class="mr-5px" />
           {{ t('common.reset') }}
         </ElButton>

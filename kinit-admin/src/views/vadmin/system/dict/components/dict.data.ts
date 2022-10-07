@@ -1,4 +1,5 @@
-import { reactive } from 'vue'
+import { ElTag } from 'element-plus'
+import { h, reactive } from 'vue'
 
 export const columns = reactive<TableColumn[]>([
   {
@@ -15,7 +16,16 @@ export const columns = reactive<TableColumn[]>([
   },
   {
     field: 'disabled',
-    label: '是否禁用'
+    label: '是否禁用',
+    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+      return h(
+        ElTag,
+        {
+          type: cellValue ? 'danger' : ''
+        },
+        () => (cellValue ? '禁用' : '启用')
+      )
+    }
   },
   {
     field: 'remark',
