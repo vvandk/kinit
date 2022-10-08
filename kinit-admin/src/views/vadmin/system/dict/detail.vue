@@ -24,6 +24,16 @@ const { t } = useI18n()
 
 let dictType = currentRoute.value.query.dictType
 
+const searchSetSchemaList = [] as FormSetPropsType[]
+
+if (typeof dictType === 'string') {
+  searchSetSchemaList.push({
+    field: 'dict_type_id',
+    path: 'value',
+    value: parseInt(dictType)
+  })
+}
+
 const { register, tableObject, methods } = useTable({
   getListApi: getDictDetailsListApi,
   delListApi: delDictDetailsListApi,
@@ -104,7 +114,12 @@ getList()
 
 <template>
   <ContentWrap>
-    <Search :schema="searchSchema" @search="setSearchParams" @reset="setSearchParams" />
+    <Search
+      :schema="searchSchema"
+      :setSchemaList="searchSetSchemaList"
+      @search="setSearchParams"
+      @reset="setSearchParams"
+    />
 
     <div class="mb-10px">
       <ElButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</ElButton>

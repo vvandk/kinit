@@ -7,6 +7,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useForm } from '@/hooks/web/useForm'
 import { findIndex } from '@/utils'
 import { cloneDeep } from 'lodash-es'
+import { set } from 'lodash-es'
 
 const { t } = useI18n()
 
@@ -14,6 +15,10 @@ const props = defineProps({
   // 生成Form的布局结构数组
   schema: {
     type: Array as PropType<FormSchema[]>,
+    default: () => []
+  },
+  setSchemaList: {
+    type: Array as PropType<FormSetPropsType[]>,
     default: () => []
   },
   // 是否需要栅格布局
@@ -46,6 +51,13 @@ const newSchema = computed(() => {
     if (index > -1) {
       const length = schema.length
       schema.splice(index + 1, length)
+    }
+  }
+  for (const v of schema) {
+    for (const item of props.setSchemaList) {
+      if (v.field === item.field) {
+        set(v, item.path, item.value)
+      }
     }
   }
   if (props.layout === 'inline') {

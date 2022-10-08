@@ -10,13 +10,27 @@ import {
 import { TableData } from '@/api/table/types'
 import { useTable } from '@/hooks/web/useTable'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElButton } from 'element-plus'
+import { ElButton, ElSwitch } from 'element-plus'
 import { ref, unref } from 'vue'
 import { Dialog } from '@/components/Dialog'
 import Write from './components/Write.vue'
 import { columns } from './components/menu.data'
+import { useDictStore } from '@/store/modules/dict'
+import { selectDictLabel, DictDetail } from '@/utils/dict'
 
 const { t } = useI18n()
+
+let menuTypeOptions = ref<DictDetail[]>([])
+
+const getOptions = async () => {
+  const dictStore = useDictStore()
+  const result = await dictStore.getDictObj(['sys_vadmin_menu_type'])
+  menuTypeOptions.value = result.sys_vadmin_menu_type
+}
+
+getOptions()
+
+console.log(menuTypeOptions)
 
 const { register, tableObject, methods } = useTable<TableData>({
   getListApi: getMenuListApi,
@@ -118,6 +132,20 @@ getList()
         <ElButton type="danger" text size="small" @click="delData(row)">
           {{ t('exampleDemo.del') }}
         </ElButton>
+      </template>
+
+      <template #menu_type="{ row }">
+        <span>
+          {{ selectDictLabel(menuTypeOptions, row.menu_type) }}
+        </span>
+      </template>
+
+      <template #hidden="{ row }">
+        <ElSwitch :value="!row.hidden" disabled />
+      </template>
+
+      <template #disabled="{ row }">
+        <ElSwitch :value="!row.disabled" disabled />
       </template>
     </Table>
 

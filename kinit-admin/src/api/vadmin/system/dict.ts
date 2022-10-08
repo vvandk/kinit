@@ -24,6 +24,10 @@ export const getDictTypeOptionsApi = (): Promise<IResponse> => {
   return request.get({ url: `/vadmin/system/dict/types/options/` })
 }
 
+export const getDictTypeDetailsApi = (data: any): Promise<IResponse> => {
+  return request.post({ url: `/vadmin/system/dict/types/details/`, data })
+}
+
 export const getDictDetailsListApi = (params: any): Promise<IResponse> => {
   return request.get({ url: '/vadmin/system/dict/details/', params })
 }

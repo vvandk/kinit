@@ -9,13 +9,14 @@ import {
   getDictTypeApi
 } from '@/api/vadmin/system/dict'
 import { useTable } from '@/hooks/web/useTable'
-import { columns } from './components/dict.data'
+import { columns, searchSchema } from './components/dict.data'
 import { ref, unref } from 'vue'
 import Write from './components/Write.vue'
 import { Dialog } from '@/components/Dialog'
 import { ElButton, ElMessage } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
+import { Search } from '@/components/Search'
 
 const { push } = useRouter()
 
@@ -97,13 +98,15 @@ const save = async () => {
   })
 }
 
-const { getList } = methods
+const { getList, setSearchParams } = methods
 
 getList()
 </script>
 
 <template>
   <ContentWrap>
+    <Search :schema="searchSchema" @search="setSearchParams" @reset="setSearchParams" />
+
     <div class="mb-10px">
       <ElButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</ElButton>
     </div>

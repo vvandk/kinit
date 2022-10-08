@@ -92,3 +92,28 @@ export const schema = reactive<FormSchema[]>([
     component: 'Input'
   }
 ])
+
+export const searchSchema = reactive<FormSchema[]>([
+  {
+    field: 'dict_name',
+    label: '字典名称',
+    colProps: {
+      span: 24
+    },
+    component: 'Input',
+    componentProps: {
+      clearable: false
+    }
+  },
+  {
+    field: 'dict_type',
+    label: '字典类型',
+    colProps: {
+      span: 24
+    },
+    component: 'Input',
+    componentProps: {
+      clearable: false
+    }
+  }
+])

@@ -9,7 +9,7 @@ import {
   getRoleApi
 } from '@/api/vadmin/auth/role'
 import { useTable } from '@/hooks/web/useTable'
-import { ElButton, ElMessage } from 'element-plus'
+import { ElButton, ElMessage, ElSwitch } from 'element-plus'
 import { columns } from './components/role.data'
 import { ref, unref } from 'vue'
 import Write from './components/Write.vue'
@@ -122,6 +122,14 @@ getList()
         <ElButton type="danger" text size="small" @click="delData(row)">
           {{ t('exampleDemo.del') }}
         </ElButton>
+      </template>
+
+      <template #disabled="{ row }">
+        <ElSwitch :value="!row.disabled" disabled />
+      </template>
+
+      <template #is_admin="{ row }">
+        <ElSwitch :value="row.is_admin" disabled />
       </template>
     </Table>
 

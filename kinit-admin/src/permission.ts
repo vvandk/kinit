@@ -36,14 +36,16 @@ router.beforeEach(async (to, from, next) => {
         return
       }
 
-      if (!dictStore.getIsSetDict) {
-        // 获取所有字典
-        const res = await getDictApi()
-        if (res) {
-          dictStore.setDictObj(res.data)
-          dictStore.setIsSetDict(true)
-        }
-      }
+      // 取消一次性获取所有字典，改为按需获取
+      // if (!dictStore.getIsSetDict) {
+      //   获取所有字典
+      //   const res = await getDictApi()
+      //   if (res) {
+      //     dictStore.setDictObj(res.data)
+      //     dictStore.setIsSetDict(true)
+      //   }
+      // }
+
       // 开发者可根据实际情况进行修改
       const res = await getRoleMenusApi()
       const { wsCache } = useCache()
