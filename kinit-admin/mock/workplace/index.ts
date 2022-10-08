@@ -93,22 +93,6 @@ export default [
           {
             keys: ['workplace.push', 'Github'],
             time: new Date()
-          },
-          {
-            keys: ['workplace.push', 'Github'],
-            time: new Date()
-          },
-          {
-            keys: ['workplace.push', 'Github'],
-            time: new Date()
-          },
-          {
-            keys: ['workplace.push', 'Github'],
-            time: new Date()
-          },
-          {
-            keys: ['workplace.push', 'Github'],
-            time: new Date()
           }
         ]
       }
@@ -147,24 +131,6 @@ export default [
             name: 'Vite',
             icon: 'vscode-icons:file-type-vite'
           }
-        ]
-      }
-    }
-  },
-  // 获取指数
-  {
-    url: '/api/workplace/radar',
-    method: 'get',
-    timeout,
-    response: () => {
-      return {
-        code: result_code,
-        data: [
-          { name: 'workplace.quote', max: 65, personal: 42, team: 50 },
-          { name: 'workplace.contribution', max: 160, personal: 30, team: 140 },
-          { name: 'workplace.hot', max: 300, personal: 20, team: 28 },
-          { name: 'workplace.yield', max: 130, personal: 35, team: 35 },
-          { name: 'workplace.follow', max: 100, personal: 80, team: 90 }
         ]
       }
     }

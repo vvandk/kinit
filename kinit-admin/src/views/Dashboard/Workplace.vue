@@ -5,19 +5,13 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive } from 'vue'
 import { CountTo } from '@/components/CountTo'
 import { formatTime } from '@/utils'
-import { Echart } from '@/components/Echart'
-import { EChartsOption } from 'echarts'
-import { radarOption } from './echarts-data'
 import { Highlight } from '@/components/Highlight'
-import {
-  getCountApi,
-  getProjectApi,
-  getDynamicApi,
-  getTeamApi,
-  getRadarApi
-} from '@/api/dashboard/workplace'
+import { getCountApi, getProjectApi, getDynamicApi, getTeamApi } from '@/api/dashboard/workplace'
 import type { WorkplaceTotal, Project, Dynamic, Team } from '@/api/dashboard/workplace/types'
-import { set } from 'lodash-es'
+import { useCache } from '@/hooks/web/useCache'
+import { useAppStoreWithOut } from '@/store/modules/app'
+
+const { wsCache } = useCache()
 
 const loading = ref(true)
 
@@ -65,49 +59,18 @@ const getTeam = async () => {
   }
 }
 
-// 获取指数
-let radarOptionData = reactive<EChartsOption>(radarOption) as EChartsOption
-
-const getRadar = async () => {
-  const res = await getRadarApi().catch(() => {})
-  if (res) {
-    set(
-      radarOptionData,
-      'radar.indicator',
-      res.data.map((v) => {
-        return {
-          name: t(v.name),
-          max: v.max
-        }
-      })
-    )
-    set(radarOptionData, 'series', [
-      {
-        name: `xxx${t('workplace.index')}`,
-        type: 'radar',
-        data: [
-          {
-            value: res.data.map((v) => v.personal),
-            name: t('workplace.personal')
-          },
-          {
-            value: res.data.map((v) => v.team),
-            name: t('workplace.team')
-          }
-        ]
-      }
-    ])
-  }
-}
-
 const getAllApi = async () => {
-  await Promise.all([getCount(), getProject(), getDynamic(), getTeam(), getRadar()])
+  await Promise.all([getCount(), getProject(), getDynamic(), getTeam()])
   loading.value = false
 }
 
 getAllApi()
 
 const { t } = useI18n()
+
+const appStore = useAppStoreWithOut()
+
+const user = wsCache.get(appStore.getUserInfo)
 </script>
 
 <template>
@@ -124,7 +87,7 @@ const { t } = useI18n()
               />
               <div>
                 <div class="text-20px text-700">
-                  {{ t('workplace.goodMorning') }}，Archer，{{ t('workplace.happyDay') }}
+                  {{ t('workplace.goodMorning') }}，{{ user.name }}，{{ t('workplace.happyDay') }}
                 </div>
                 <div class="mt-10px text-14px text-gray-500">
                   {{ t('workplace.toady') }}，20℃ - 32℃！
@@ -243,29 +206,11 @@ const { t } = useI18n()
           <span>{{ t('workplace.shortcutOperation') }}</span>
         </template>
         <ElSkeleton :loading="loading" animated>
-          <ElCol
-            v-for="item in 9"
-            :key="`card-${item}`"
-            :xl="12"
-            :lg="12"
-            :md="12"
-            :sm="24"
-            :xs="24"
-            class="mb-10px"
-          >
+          <ElCol :xl="12" :lg="12" :md="12" :sm="24" :xs="24" class="mb-10px">
             <ElLink type="default" :underline="false">
-              {{ t('workplace.operation') }}{{ item }}
+              {{ t('workplace.operation') }}
             </ElLink>
           </ElCol>
-        </ElSkeleton>
-      </ElCard>
-
-      <ElCard shadow="never" class="mt-20px">
-        <template #header>
-          <span>xx{{ t('workplace.index') }}</span>
-        </template>
-        <ElSkeleton :loading="loading" animated>
-          <Echart :options="radarOptionData" :height="400" />
         </ElSkeleton>
       </ElCard>
 

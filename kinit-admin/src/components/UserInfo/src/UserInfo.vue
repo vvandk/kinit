@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router'
 import { loginOutApi } from '@/api/login'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useTagsViewStore } from '@/store/modules/tagsView'
+import { useAppStoreWithOut } from '@/store/modules/app'
 
 const tagsViewStore = useTagsViewStore()
 
@@ -41,6 +42,10 @@ const loginOut = () => {
 const toDocument = () => {
   window.open('https://element-plus-admin-doc.cn/')
 }
+
+const appStore = useAppStoreWithOut()
+
+const user = wsCache.get(appStore.getUserInfo)
 </script>
 
 <template>
@@ -51,12 +56,14 @@ const toDocument = () => {
         alt=""
         class="w-[calc(var(--logo-height)-25px)] rounded-[50%]"
       />
-      <span class="<lg:hidden text-14px pl-[5px] text-[var(--top-header-text-color)]">Archer</span>
+      <span class="<lg:hidden text-14px pl-[5px] text-[var(--top-header-text-color)]">{{
+        user.name
+      }}</span>
     </div>
     <template #dropdown>
       <ElDropdownMenu>
         <ElDropdownItem>
-          <div @click="toDocument">{{ t('common.document') }}</div>
+          <div @click="toDocument">前端项目文档</div>
         </ElDropdownItem>
         <ElDropdownItem divided>
           <div @click="loginOut">{{ t('common.loginOut') }}</div>

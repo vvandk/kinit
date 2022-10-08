@@ -13,7 +13,7 @@ import { columns } from './components/user.data'
 import { ref, unref } from 'vue'
 import Write from './components/Write.vue'
 import { Dialog } from '@/components/Dialog'
-import { ElButton, ElMessage } from 'element-plus'
+import { ElButton, ElMessage, ElSwitch } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
@@ -119,6 +119,10 @@ getList()
         <ElButton type="danger" text size="small" @click="delData(row)">
           {{ t('exampleDemo.del') }}
         </ElButton>
+      </template>
+
+      <template #is_active="{ row }">
+        <ElSwitch :value="row.is_active" disabled />
       </template>
     </Table>
 
