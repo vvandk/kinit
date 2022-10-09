@@ -61,14 +61,15 @@ ALLOW_HEADERS = ["*"]
 """
 数据库配置项
 连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
+数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
 """
 if DEBUG:
     # 测试库
-    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:Ktianc123@rm-bp181adf0phw2o0r05o.mysql.rds.aliyuncs.com:3306/kinit"
+    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
     SQLALCHEMY_DATABASE_TYPE = "mysql"
 else:
     # 正式库
-    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:Ktianc123@rm-bp181adf0phw2o0r05o.mysql.rds.aliyuncs.com:3306/kinit"
+    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
     SQLALCHEMY_DATABASE_TYPE = "mysql"
 
 

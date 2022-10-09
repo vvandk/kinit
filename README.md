@@ -6,67 +6,146 @@
 
 因为热爱，所以拥抱未来！
 
-
-
 ## 介绍
-基于fastapi与vue3+typescript-vite3-element-plus的基础项目
 
-前端基于vue-element-plus-admin框架开发
+kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
+- 🧑‍🤝‍🧑前端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)，[TypeScript](https://www.tslang.cn/)，等主流技术开发。
+- 👭后端采用 Python 语言高性能 [FastAPI](https://fastapi.tiangolo.com/zh/) 框架以及强大的 Mysql 数据库。
+- 👫权限认证使用[使用（哈希）密码和 JWT Bearer 令牌的 OAuth2](https://fastapi.tiangolo.com/zh/tutorial/security/oauth2-jwt/)，支持多终端认证系统。
+- 👬支持加载动态权限菜单，多方式轻松权限控制。
+- 💏特别鸣谢：[django-vue-admin](https://gitee.com/liqianglog/django-vue-admin) 、 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin)。
+- 开箱即用的中后台解决方案，可以用来作为项目的启动模版，也可用于学习参考。并且时刻关注着最新技术动向，尽可能的第一时间更新。
 
+## 在线体验
 
-这个项目主要包括项目的基础功能，用户权限管理，登录功能，简单的几个页面。
+👩‍👧‍👦演示地址：[http://demo.django-vue-admin.com](https://gitee.com/link?target=http%3A%2F%2Fdemo.django-vue-admin.com)
 
-之后的项目将由在该项目的基础上开发。
+- 账号：superadmin
+- 密码：admin123456
 
+## 源码地址
 
+gitee地址(主推)：https://gitee.com/ktianc/kinit👩‍👦‍👦
 
-开源项目参考：
+github地址：https://gitee.com/ktianc/kinit👩‍👦‍👦
 
-vue-element-plus-admin：https://gitee.com/kailong110120130/vue-element-plus-admin
+## 内置功能
 
-项目地址：https://gitee.com/ktianc/kinit
+- [x] 👨‍⚕️菜单管理：配置系统菜单，操作权限，按钮权限标识、后端接口权限等。
+- [x] 👩‍⚕️角色管理：角色菜单权限分配。
+- [x] 👨‍🎓用户管理：用户是系统操作者，该功能主要完成系统用户配置。
+- [x] 🧑‍🔧字典管理：对系统中经常使用的一些较为固定的数据进行维护。
+- [ ] 📁附件管理：对平台上所有文件、图片等进行统一管理。
+- [ ] 🗓️登录日志：用户登录日志记录和查询。
+- [ ] 🗓️操作日志：系统正常操作日志记录和查询；系统异常信息日志记录和查询。
 
-## 软件架构
+##  前序准备
 
-### 项目结构
+- [FastAPI](https://fastapi.tiangolo.com/zh/) - 熟悉后台接口 Web 框架
+- [node](https://gitee.com/link?target=http%3A%2F%2Fnodejs.org%2F) 和 [git](https://gitee.com/link?target=https%3A%2F%2Fgit-scm.com%2F) - 项目开发环境
+- [Vite](https://gitee.com/link?target=https%3A%2F%2Fvitejs.dev%2F) - 熟悉 vite 特性
+- [Vue3](https://gitee.com/link?target=https%3A%2F%2Fv3.vuejs.org%2F) - 熟悉 Vue 基础语法
+- [TypeScript](https://gitee.com/link?target=https%3A%2F%2Fwww.typescriptlang.org%2F) - 熟悉 `TypeScript` 基本语法
+- [Es6+](https://gitee.com/link?target=http%3A%2F%2Fes6.ruanyifeng.com%2F) - 熟悉 es6 基本语法
+- [Vue-Router-Next](https://gitee.com/link?target=https%3A%2F%2Fnext.router.vuejs.org%2F) - 熟悉 vue-router 基本使用
+- [Element-Plus](https://gitee.com/link?target=https%3A%2F%2Felement-plus.org%2F) - element-plus 基本使用
+- [Mock.js](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fnuysoft%2FMock) - mockjs 基本语法
 
-| 项目名称     | 开发框架        | 标识        | 访问地址 |
-| ------------ | --------------- | ----------- | -------- |
-| 项目接口     | Fastapi 0.79    | kinit-api   |          |
-| 后台管理系统 | Vue3            | kinit-admin |          |
-| 微信小程序   | Uni-app（Vue3） | kinit-wx    |          |
+## 安装和使用
 
-### 项目分支
+获取代码
 
-Git 仓库：
+```
+git clone https://gitee.com/ktianc/kinit.git
+```
 
-| 分支    | 描述             |
-| ------- | ---------------- |
-| master  | 主分支，开发分支 |
-| release | 版本分支         |
+### 准备工作
 
-### 项目技术
+```
+Python >= 3.8.0 (推荐3.8+版本)
+nodejs >= 14.0 (推荐最新)
+Mysql >= 8.0
+Redis(可选，最新版)
+```
 
-| 分类             | 技术                                     |
-| ---------------- | ---------------------------------------- |
-| 数据库           | Mysql 8.0，Redis                         |
-| 接口开发         | Fastapi 0.79                             |
-| 管理系统前端开发 | Vue3 + Vite3 + Typescript + Element Plus |
-| 微信小程序开发   | Uni-app（Vue3）+ Uview 2.0               |
+### 后端
 
+1. 安装依赖
 
-## 安装教程
+```
+cd kinit-api
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+```
 
-## 使用说明
+2. 修改数据库信息
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+   在 `application/settings.py` 文件中配置数据库信息
+
+   - mysql数据库版本建议：8.0
+   - mysql数据库字符集：utf8mb4
+
+```python
+"""
+数据库配置项
+连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
+数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
+"""
+if DEBUG:
+    # 测试库
+    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
+    SQLALCHEMY_DATABASE_TYPE = "mysql"
+else:
+    # 正式库
+    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
+    SQLALCHEMY_DATABASE_TYPE = "mysql"
+```
+
+3. 迁移数据库
+
+```
+
+```
+
+4. 数据化数据库数据
+
+```
+
+```
+
+5. 启动
+
+```
+python3 main.py
+```
+
+### 前端
+
+1. 安装依赖
+
+```
+cd kinit-admin
+
+pnpm install
+```
+
+2. 运行
+
+```
+pnpm run dev
+```
+
+3. 打包
+
+```
+pnpm run build:pro
+```
+
+### 访问项目
+
+- 访问地址：http://localhost:5000 (默认为此地址，如有修改请按照配置文件)
+- 账号：`superadmin` 密码：`admin123456`
 
 ## 参与贡献
 
@@ -75,12 +154,16 @@ Git 仓库：
 3.  提交代码
 4.  新建 Pull Request
 
+## 浏览器支持
 
-## 特技
+本地开发推荐使用 `Chrome 80+` 浏览器
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+支持现代浏览器, 不支持 IE
+
+| IE          | Edge            | Firefox         | Chrome          | Safari          |
+| ----------- | --------------- | --------------- | --------------- | --------------- |
+| not support | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
+
+## 许可证
+
+[MIT](https://gitee.com/kailong110120130/vue-element-plus-admin/blob/master/LICENSE)
