@@ -8,9 +8,10 @@
 from datetime import datetime
 import os
 from application.settings import TEMP_DIR
+from fastapi import UploadFile
 
 
-def save_tmp_file(file, data):
+def save_tmp_file(file: UploadFile, data):
     """
     保存临时文件
     """

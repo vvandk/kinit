@@ -19,3 +19,7 @@ export const putUserListApi = (data: any): Promise<IResponse> => {
 export const getUserApi = (dataId: number): Promise<IResponse> => {
   return request.get({ url: `/vadmin/auth/users/${dataId}/` })
 }
+
+export const postCurrentUserResetPassword = (data: any): Promise<IResponse> => {
+  return request.get({ url: `/vadmin/auth/user/current/reset/password/`, data })
+}

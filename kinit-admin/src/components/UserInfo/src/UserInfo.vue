@@ -28,13 +28,10 @@ const loginOut = () => {
     type: 'warning'
   })
     .then(async () => {
-      const res = await loginOutApi().catch(() => {})
-      if (res) {
-        wsCache.clear()
-        tagsViewStore.delAllViews()
-        resetRouter() // 重置静态路由表
-        replace('/login')
-      }
+      wsCache.clear()
+      tagsViewStore.delAllViews()
+      resetRouter() // 重置静态路由表
+      replace('/login')
     })
     .catch(() => {})
 }

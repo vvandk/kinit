@@ -65,13 +65,13 @@ ALLOW_HEADERS = ["*"]
 """
 if DEBUG:
     # 测试库
-    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
+    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:Ktianc123@rm-bp181adf0phw2o0r05o.mysql.rds.aliyuncs.com:3306/kinit"
+    # SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
     SQLALCHEMY_DATABASE_TYPE = "mysql"
 else:
     # 正式库
     SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
     SQLALCHEMY_DATABASE_TYPE = "mysql"
-
 
 """
 中间件配置

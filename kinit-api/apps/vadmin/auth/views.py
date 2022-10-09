@@ -50,6 +50,11 @@ async def get_user(data_id: int, auth: Auth = Depends(login_auth)):
     return SuccessResponse(await crud.UserDal(auth.db).get_data(data_id, options, schema))
 
 
+@app.post("/user/current/reset/password/", summary="重置当前用户密码")
+async def user_current_reset_password(data: schemas.ResetPwd, auth: Auth = Depends(login_auth)):
+    return SuccessResponse(await crud.UserDal(auth.db).reset_current_password(auth.user, data))
+
+
 ###########################################################
 #    角色管理
 ###########################################################

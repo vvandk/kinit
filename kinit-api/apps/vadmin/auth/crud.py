@@ -6,11 +6,13 @@
 # @IDE            : PyCharm
 # @desc           : 增删改查
 from typing import List
-
+from core.exception import CustomException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from core.crud import DalBase
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from utils.tools import test_password
 from . import models, schemas
 from application import settings
 
@@ -39,6 +41,19 @@ class UserDal(DalBase):
         if schema:
             return schema.from_orm(obj).dict()
         return self.out_dict(obj)
+
+    async def reset_current_password(self, user: models.VadminUser, data: schemas.ResetPwd):
+        """
+        重置密码
+        """
+        if data.password != data.password_two:
+            raise CustomException(msg="两次密码不一致", code=400)
+        result = test_password(data.password)
+        if isinstance(result, str):
+            raise CustomException(msg=result, code=400)
+        self.db.add(user)
+        await self.db.flush()
+        return True
 
 
 class RoleDal(DalBase):
@@ -203,7 +218,3 @@ class MenuDal(DalBase):
                 router["children"] = self.generate_tree_options(menus, sons)
             data.append(router)
         return data
-
-
-
-

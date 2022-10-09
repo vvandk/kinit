@@ -44,6 +44,16 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     }
   },
   {
+    path: '/reset/password',
+    component: () => import('@/views/Reset/Reset.vue'),
+    name: 'Reset',
+    meta: {
+      hidden: true,
+      title: '重置密码',
+      noTagsView: true
+    }
+  },
+  {
     path: '/404',
     component: () => import('@/views/Error/404.vue'),
     name: 'NoFind',

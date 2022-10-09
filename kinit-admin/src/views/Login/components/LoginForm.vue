@@ -125,8 +125,14 @@ const signIn = async () => {
         const authStore = useAuthStoreWithOut()
         const res = await authStore.login(formData)
         if (res) {
-          // 是否使用动态路由
-          getMenu()
+          console.log(res)
+          if (!res.data.is_reset_password) {
+            // 重置密码
+            push({ path: '/reset/password' })
+          } else {
+            // 是否使用动态路由
+            getMenu()
+          }
         }
       } finally {
         loading.value = false
