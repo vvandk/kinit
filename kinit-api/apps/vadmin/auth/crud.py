@@ -51,6 +51,8 @@ class UserDal(DalBase):
         result = test_password(data.password)
         if isinstance(result, str):
             raise CustomException(msg=result, code=400)
+        user.password = self.model.get_password_hash(data.password)
+        user.is_reset_password = True
         self.db.add(user)
         await self.db.flush()
         return True

@@ -125,7 +125,6 @@ const signIn = async () => {
         const authStore = useAuthStoreWithOut()
         const res = await authStore.login(formData)
         if (res) {
-          console.log(res)
           if (!res.data.is_reset_password) {
             // 重置密码
             push({ path: '/reset/password' })

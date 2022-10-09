@@ -4,7 +4,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useCache } from '@/hooks/web/useCache'
 import { resetRouter } from '@/router'
 import { useRouter } from 'vue-router'
-import { loginOutApi } from '@/api/login'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -59,6 +58,9 @@ const user = wsCache.get(appStore.getUserInfo)
     </div>
     <template #dropdown>
       <ElDropdownMenu>
+        <ElDropdownItem>
+          <div @click="toDocument">个人主页</div>
+        </ElDropdownItem>
         <ElDropdownItem>
           <div @click="toDocument">前端项目文档</div>
         </ElDropdownItem>

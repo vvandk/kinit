@@ -7,7 +7,7 @@ import { postCurrentUserResetPassword } from '@/api/vadmin/auth/user'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
 import type { RouteRecordRaw, RouteLocationNormalizedLoaded } from 'vue-router'
-import { UserLoginType } from '@/api/login/types'
+import { getRoleMenusApi } from '@/api/login'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStore } from '@/store/modules/app'
@@ -25,8 +25,14 @@ const permissionStore = usePermissionStore()
 const { addRoute, push, currentRoute } = useRouter()
 
 const rules = {
-  password: [required()],
-  password_two: [required()]
+  password: [
+    required(),
+    { min: 8, max: 16, message: '长度需为8-16个字符,请重新输入。', trigger: 'blur' }
+  ],
+  password_two: [
+    required(),
+    { min: 8, max: 16, message: '长度需为8-16个字符,请重新输入。', trigger: 'blur' }
+  ]
 }
 
 const schema = reactive<FormSchema[]>([
@@ -94,9 +100,9 @@ const save = async () => {
     if (isValid) {
       loading.value = true
       const { getFormData } = methods
-      const formData = await getFormData<UserLoginType>()
+      const formData = await getFormData()
       try {
-        const res = postCurrentUserResetPassword(formData)
+        const res = await postCurrentUserResetPassword(formData)
         if (res) {
           // 是否使用动态路由
           getMenu()

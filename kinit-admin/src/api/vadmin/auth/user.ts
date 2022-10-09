@@ -21,5 +21,5 @@ export const getUserApi = (dataId: number): Promise<IResponse> => {
 }
 
 export const postCurrentUserResetPassword = (data: any): Promise<IResponse> => {
-  return request.get({ url: `/vadmin/auth/user/current/reset/password/`, data })
+  return request.post({ url: `/vadmin/auth/user/current/reset/password/`, data })
 }
