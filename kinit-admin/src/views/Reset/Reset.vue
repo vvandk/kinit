@@ -3,8 +3,7 @@ import { reactive, unref, ref, watch } from 'vue'
 import { Form } from '@/components/Form'
 import { ElButton, ElCheckbox, ElLink } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
-import { getRoleMenusApi } from '@/api/login'
-import { useAuthStoreWithOut } from '@/store/modules/auth'
+import { postCurrentUserResetPassword } from '@/api/vadmin/auth/user'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
 import type { RouteRecordRaw, RouteLocationNormalizedLoaded } from 'vue-router'
@@ -26,7 +25,7 @@ const permissionStore = usePermissionStore()
 const { addRoute, push, currentRoute } = useRouter()
 
 const rules = {
-  password_one: [required()],
+  password: [required()],
   password_two: [required()]
 }
 
@@ -38,7 +37,7 @@ const schema = reactive<FormSchema[]>([
     }
   },
   {
-    field: 'password_one',
+    field: 'password',
     label: '新密码',
     component: 'InputPassword',
     colProps: {
@@ -96,10 +95,8 @@ const save = async () => {
       loading.value = true
       const { getFormData } = methods
       const formData = await getFormData<UserLoginType>()
-
       try {
-        const authStore = useAuthStoreWithOut()
-        const res = await authStore.login(formData)
+        const res = postCurrentUserResetPassword(formData)
         if (res) {
           // 是否使用动态路由
           getMenu()
