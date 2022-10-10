@@ -224,3 +224,12 @@ pnpm run build:pro
 
 ## 演示图
 
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/1.png)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/2.png)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/3.png)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/4.png)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/5.png)
