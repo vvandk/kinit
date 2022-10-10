@@ -17,8 +17,14 @@ import { ElButton, ElMessage, ElSwitch } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { selectDictLabel, DictDetail } from '@/utils/dict'
 import { useDictStore } from '@/store/modules/dict'
+import { useAuthStoreWithOut } from '@/store/modules/auth'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
+
+const { replace } = useRouter()
+
+const authStore = useAuthStoreWithOut()
 
 let genderOptions = ref<DictDetail[]>([])
 
@@ -91,7 +97,14 @@ const save = async () => {
       if (actionType.value === 'add') {
         res.value = await addUserListApi(data)
       } else if (actionType.value === 'edit') {
+        const user = authStore.getUser
         res.value = await putUserListApi(data)
+        if (user.id === data.id && user.telephone !== data.telephone) {
+          dialogVisible.value = false
+          authStore.logout()
+          replace('/login')
+          return ElMessage.warning('认证已过期，请您重新登陆！')
+        }
       }
       if (res.value) {
         dialogVisible.value = false

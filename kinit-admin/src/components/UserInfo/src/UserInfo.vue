@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElMessageBox } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { resetRouter } from '@/router'
 import { useRouter } from 'vue-router'
 import { useDesign } from '@/hooks/web/useDesign'
-import { useTagsViewStore } from '@/store/modules/tagsView'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
-
-const tagsViewStore = useTagsViewStore()
 
 const { getPrefixCls } = useDesign()
 
@@ -27,8 +23,6 @@ const loginOut = () => {
   })
     .then(async () => {
       authStore.logout()
-      tagsViewStore.delAllViews()
-      resetRouter() // 重置静态路由表
       replace('/login')
     })
     .catch(() => {})

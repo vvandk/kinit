@@ -133,10 +133,15 @@ alembic revision --autogenerate -m "update"
 alembic upgrade head
 ```
 
-4. 数据化数据库数据
+4. 导入数据库数据
 
-```
-
+```shell
+# 数据库文件地址：kinit-api/static/kinit.sql
+# 导入命令
+mysql> create database kinit;             # 创建数据库
+mysql> use kinit;                         # 使用已创建的数据库 
+mysql> set names utf8;                    # 设置编码
+mysql> source kinit-api/static/kinit.sql  # 导入备份数据库
 ```
 
 5. 启动
@@ -170,7 +175,8 @@ pnpm run build:pro
 ### 访问项目
 
 - 访问地址：http://localhost:5000 (默认为此地址，如有修改请按照配置文件)
-- 账号：`superadmin` 密码：`admin123456`
+- 账号：`15020221010` 密码：`kinit2022`
+- 接口地址：http://localhost:9000/docs (默认为此地址，如有修改请按照配置文件)
 
 ## 如何贡献
 

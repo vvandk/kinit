@@ -5,9 +5,12 @@ import { loginApi } from '@/api/login'
 import { useAppStore } from '@/store/modules/app'
 import { useCache } from '@/hooks/web/useCache'
 import { getCurrentUserInfo } from '@/api/vadmin/auth/user'
+import { resetRouter } from '@/router'
+import { useTagsViewStore } from '@/store/modules/tagsView'
 
 const appStore = useAppStore()
 const { wsCache } = useCache()
+const tagsViewStore = useTagsViewStore()
 
 export interface UserState {
   id?: number
@@ -53,12 +56,16 @@ export const useAuthStore = defineStore({
         // 存储用户信息
         wsCache.set(appStore.getUserInfo, res.data.user)
         this.user = res.data.user
+        this.isUser = true
       }
       return res
     },
     logout() {
       wsCache.clear()
       this.user = {}
+      this.isUser = false
+      resetRouter()
+      tagsViewStore.delAllViews()
     },
     updateUser(data: UserState) {
       this.user.gender = data.gender
@@ -69,6 +76,7 @@ export const useAuthStore = defineStore({
     async getUserInfo() {
       const res = await getCurrentUserInfo()
       wsCache.set(appStore.getUserInfo, res.data)
+      this.isUser = true
       this.user = res.data
     }
   }
