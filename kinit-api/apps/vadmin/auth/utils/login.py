@@ -53,6 +53,7 @@ async def login_for_access_token(request: Request, data: dict = Depends(authenti
             "name": user.name,
             "nickname": user.nickname,
             "avatar": user.avatar,
+            "gender": user.gender,
             "roles": [{"name": i.name, "value": i.role_key} for i in user.roles]
         }
     }

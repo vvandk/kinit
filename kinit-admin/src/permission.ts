@@ -7,10 +7,12 @@ import { useNProgress } from '@/hooks/web/useNProgress'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { getRoleMenusApi } from '@/api/login'
+import { useAuthStoreWithOut } from '@/store/modules/auth'
 
 const permissionStore = usePermissionStoreWithOut()
 
 const appStore = useAppStoreWithOut()
+const authStore = useAuthStoreWithOut()
 
 const { wsCache } = useCache()
 
@@ -27,6 +29,9 @@ router.beforeEach(async (to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
+      if (!authStore.getIsUser) {
+        await authStore.getUserInfo()
+      }
       if (permissionStore.getIsAddRouters) {
         next()
         return

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElMessageBox } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useCache } from '@/hooks/web/useCache'
 import { resetRouter } from '@/router'
 import { useRouter } from 'vue-router'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useTagsViewStore } from '@/store/modules/tagsView'
-import { useAppStoreWithOut } from '@/store/modules/app'
+import { useAuthStoreWithOut } from '@/store/modules/auth'
 
 const tagsViewStore = useTagsViewStore()
 
@@ -16,9 +15,9 @@ const prefixCls = getPrefixCls('user-info')
 
 const { t } = useI18n()
 
-const { wsCache } = useCache()
+const authStore = useAuthStoreWithOut()
 
-const { replace } = useRouter()
+const { replace, push } = useRouter()
 
 const loginOut = () => {
   ElMessageBox.confirm(t('common.loginOutMessage'), t('common.reminder'), {
@@ -27,7 +26,7 @@ const loginOut = () => {
     type: 'warning'
   })
     .then(async () => {
-      wsCache.clear()
+      authStore.logout()
       tagsViewStore.delAllViews()
       resetRouter() // 重置静态路由表
       replace('/login')
@@ -39,9 +38,11 @@ const toDocument = () => {
   window.open('https://element-plus-admin-doc.cn/')
 }
 
-const appStore = useAppStoreWithOut()
+const toHome = () => {
+  push('/system/home')
+}
 
-const user = wsCache.get(appStore.getUserInfo)
+const user = authStore.getUser
 </script>
 
 <template>
@@ -59,7 +60,7 @@ const user = wsCache.get(appStore.getUserInfo)
     <template #dropdown>
       <ElDropdownMenu>
         <ElDropdownItem>
-          <div @click="toDocument">个人主页</div>
+          <div @click="toHome">个人主页</div>
         </ElDropdownItem>
         <ElDropdownItem>
           <div @click="toDocument">前端项目文档</div>

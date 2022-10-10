@@ -37,7 +37,7 @@ async def delete_users(ids: list = Depends(id_list), auth: Auth = Depends(login_
     return SuccessResponse("删除成功")
 
 
-@app.put("/users/{data_id}/", summary="更新用户基本信息")
+@app.put("/users/{data_id}/", summary="更新用户信息")
 async def put_user(data_id: int, data: schemas.User, auth: Auth = Depends(login_auth)):
     return SuccessResponse(await crud.UserDal(auth.db).put_data(data_id, data))
 
@@ -53,6 +53,16 @@ async def get_user(data_id: int, auth: Auth = Depends(login_auth)):
 @app.post("/user/current/reset/password/", summary="重置当前用户密码")
 async def user_current_reset_password(data: schemas.ResetPwd, auth: Auth = Depends(login_auth)):
     return SuccessResponse(await crud.UserDal(auth.db).reset_current_password(auth.user, data))
+
+
+@app.post("/user/current/update/info/", summary="更新当前用户基本信息")
+async def post_user_current_update_info( data: schemas.UserUpdate, auth: Auth = Depends(login_auth)):
+    return SuccessResponse(await crud.UserDal(auth.db).update_current_info(auth.user, data))
+
+
+@app.get("/user/current/info/", summary="获取当前用户基本信息")
+async def get_user_current_info(auth: Auth = Depends(login_auth)):
+    return SuccessResponse(schemas.UserSimpleOut.from_orm(auth.user).dict())
 
 
 ###########################################################

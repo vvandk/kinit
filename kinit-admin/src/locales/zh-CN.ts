@@ -201,7 +201,7 @@ export default {
     yield: '产量',
     dynamic: '动态',
     push: '推送',
-    pushCode: 'Archer 推送 代码到 Github',
+    pushCode: 'kinit 推送 代码到 Github',
     follow: '关注'
   },
   formDemo: {

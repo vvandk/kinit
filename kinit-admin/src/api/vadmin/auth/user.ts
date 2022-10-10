@@ -23,3 +23,11 @@ export const getUserApi = (dataId: number): Promise<IResponse> => {
 export const postCurrentUserResetPassword = (data: any): Promise<IResponse> => {
   return request.post({ url: `/vadmin/auth/user/current/reset/password/`, data })
 }
+
+export const postCurrentUserUpdateInfo = (data: any): Promise<IResponse> => {
+  return request.post({ url: `/vadmin/auth/user/current/update/info/`, data })
+}
+
+export const getCurrentUserInfo = (): Promise<IResponse> => {
+  return request.get({ url: `/vadmin/auth/user/current/info/` })
+}

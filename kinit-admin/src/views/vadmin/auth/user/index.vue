@@ -15,8 +15,20 @@ import Write from './components/Write.vue'
 import { Dialog } from '@/components/Dialog'
 import { ElButton, ElMessage, ElSwitch } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
+import { selectDictLabel, DictDetail } from '@/utils/dict'
+import { useDictStore } from '@/store/modules/dict'
 
 const { t } = useI18n()
+
+let genderOptions = ref<DictDetail[]>([])
+
+const getOptions = async () => {
+  const dictStore = useDictStore()
+  const dictOptions = await dictStore.getDictObj(['sys_vadmin_gender'])
+  genderOptions.value = dictOptions.sys_vadmin_gender
+}
+
+getOptions()
 
 const { register, tableObject, methods } = useTable({
   getListApi: getUserListApi,
@@ -123,6 +135,10 @@ getList()
 
       <template #is_active="{ row }">
         <ElSwitch :value="row.is_active" disabled />
+      </template>
+
+      <template #gender="{ row }">
+        {{ selectDictLabel(genderOptions, row.gender) }}
       </template>
     </Table>
 

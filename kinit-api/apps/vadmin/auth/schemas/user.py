@@ -52,10 +52,7 @@ class UserOut(UserSimpleOut):
 class UserUpdate(BaseModel):
     name: str
     nickname: Optional[str] = None
-    is_active: Optional[bool] = True
-    is_cancel: Optional[bool] = False
     gender: Optional[str] = "0"
-    role_ids: Optional[List[int]] = []
 
 
 class ResetPwd(BaseModel):

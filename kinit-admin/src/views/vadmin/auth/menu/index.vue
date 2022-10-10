@@ -24,13 +24,11 @@ let menuTypeOptions = ref<DictDetail[]>([])
 
 const getOptions = async () => {
   const dictStore = useDictStore()
-  const result = await dictStore.getDictObj(['sys_vadmin_menu_type'])
-  menuTypeOptions.value = result.sys_vadmin_menu_type
+  const dictOptions = await dictStore.getDictObj(['sys_vadmin_menu_type'])
+  menuTypeOptions.value = dictOptions.sys_vadmin_menu_type
 }
 
 getOptions()
-
-console.log(menuTypeOptions)
 
 const { register, tableObject, methods } = useTable<TableData>({
   getListApi: getMenuListApi,
@@ -115,6 +113,7 @@ getList()
       :loading="tableObject.loading"
       :selection="false"
       row-key="id"
+      default-expand-all
       @register="register"
     >
       <template #title="{ row }">

@@ -57,6 +57,18 @@ class UserDal(DalBase):
         await self.db.flush()
         return True
 
+    async def update_current_info(self, user: models.VadminUser, data: schemas.UserUpdate):
+        """
+        更新当前用户信息
+        """
+        user.name = data.name
+        user.nickname = data.nickname
+        user.gender = data.gender
+        self.db.add(user)
+        await self.db.flush()
+        await self.db.refresh(user)
+        return self.out_dict(user)
+
 
 class RoleDal(DalBase):
 

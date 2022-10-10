@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, unref, ref, watch } from 'vue'
 import { Form } from '@/components/Form'
-import { ElButton, ElCheckbox, ElLink } from 'element-plus'
+import { ElButton } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { postCurrentUserResetPassword } from '@/api/vadmin/auth/user'
 import { usePermissionStore } from '@/store/modules/permission'
