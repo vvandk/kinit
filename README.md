@@ -1,14 +1,15 @@
-# kinit
+<img src="https://gitee.com/ktianc/kinit/raw/master/kinit-admin/public/logo.png" alt="image-20221010214526082" style="zoom: 25%;" />
 
-一天出租屋的下午，脑子里浮现出了多个画面，但是总是停留在了想，未行动，在娱乐。
 
-这样的日子很不快乐，总想做点什么，但是总觉得做什么都很困难，不管了，我先做了再说。
 
-因为热爱，所以拥抱未来！
+## [关于]
+
+<div align="center"><h3 align="center">Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。</h3></div>
+<div align="center"><h3 align="center">前后端分离架构，开箱即用，紧随前沿技术</h3></div>
+
+<div align="center"><h3 align="center">因为热爱，所以拥抱未来！</h3></div>
 
 ## 介绍
-
-kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
 - 🧑‍🤝‍🧑前端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)，等主流技术开发。
 - 👭后端采用 Python 语言高性能 [FastAPI](https://fastapi.tiangolo.com/zh/) 框架以及强大的 Mysql 数据库。
@@ -80,7 +81,6 @@ git clone https://gitee.com/ktianc/kinit.git
 Python >= 3.8.0 (推荐3.8+版本)
 nodejs >= 14.0 (推荐最新)
 Mysql >= 8.0
-Redis(可选，最新版)
 ```
 
 ### 后端
