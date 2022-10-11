@@ -1,4 +1,4 @@
-# 初始 FastAPI 项目
+# FastAPI 项目
 
 fastapi 源代码：https://github.com/tiangolo/fastapi
 
@@ -44,11 +44,6 @@ SQLAlchemy-Utils：https://sqlalchemy-utils.readthedocs.io/en/latest/
 ## 使用
 
 ```
-# 拉取代码
-git clone https://gitee.com/ktianc/create_fastapi.git
-
-cd create_fastapi/
-
 # 安装依赖库
 pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 

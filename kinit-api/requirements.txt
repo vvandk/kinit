@@ -2,6 +2,7 @@ alembic==1.7.5
 anyio==3.5.0
 asgiref==3.5.0
 asyncmy==0.2.5
+bcrypt==3.2.2
 certifi==2022.6.15
 cffi==1.15.1
 charset-normalizer==2.0.12

@@ -95,26 +95,33 @@ pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 
 2. 修改数据库信息
 
-   在 `application/settings.py` 文件中配置数据库信息
+   在 `application/settings.py` 文件中配置数据库信息，用于项目连接
 
    - mysql数据库版本建议：8.0
    - mysql数据库字符集：utf8mb4
-
-```python
-"""
-数据库配置项
-连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
-数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
-"""
-if DEBUG:
-    # 测试库
-    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
-    SQLALCHEMY_DATABASE_TYPE = "mysql"
-else:
-    # 正式库
-    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
-    SQLALCHEMY_DATABASE_TYPE = "mysql"
-```
+   
+   ```python
+   """
+   数据库配置项
+   连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
+   数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
+   """
+   if DEBUG:
+       # 测试库
+       SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
+       SQLALCHEMY_DATABASE_TYPE = "mysql"
+   else:
+       # 正式库
+       SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
+       SQLALCHEMY_DATABASE_TYPE = "mysql"
+   ```
+   
+   并在`alembic.ini`文件中配置数据库信息，用于数据库映射
+   
+   ```python
+   # mysql+pymysql://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
+   sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
+   ```
 
 3. 迁移数据库
 
