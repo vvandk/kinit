@@ -123,24 +123,28 @@ pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
    sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
    ```
 
-3. 迁移数据库
+3. 映射数据库
 
 ```shell
-# 初次生成迁移文件
-alembic revision -m "生成迁移文件"
+# 初次生成映射文件
+alembic revision -m "生成映射文件"
 
-# 通过该命令可以将模型迁移到数据库
+# 通过该命令可以将模型映射到数据库
 alembic upgrade head
 
-# 如果有更新，则可以使用这个命令再次生成迁移文件，初次也可以使用
+# 如果有更新，则可以使用这个命令再次生成映射文件，初次也可以使用
 alembic revision --autogenerate -m "update"
-# --autogenerate：自动将当前模型的修改，生成迁移脚本。
+# --autogenerate：自动将当前模型的修改，生成映射脚本。
 
-# 通过该命令可以将模型迁移到数据库
+# 通过该命令可以将模型映射到数据库
 alembic upgrade head
 ```
 
 4. 导入数据库数据
+
+   导入数据库数据前，请先保存映射后数据库中`alembic_version`表中的`version_num`数据
+
+   导入完成后，将此数据替换到导入后的对应字段
 
 ```shell
 # 数据库文件地址：kinit-api/static/kinit.sql
