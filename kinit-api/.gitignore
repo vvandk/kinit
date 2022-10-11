@@ -11,6 +11,7 @@ logs/*
 temp/*
 !temp/.gitkeep
 !static/.gitkeep
+!alembic/versions/.gitkeep
 
 # dotenv
 .env
