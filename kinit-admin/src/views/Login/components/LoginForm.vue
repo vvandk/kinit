@@ -155,11 +155,6 @@ const getMenu = async () => {
     push({ path: redirect.value || permissionStore.addRouters[0].path })
   }
 }
-
-// 去注册页面
-const toRegister = () => {
-  emit('to-register')
-}
 </script>
 
 <template>
@@ -187,11 +182,6 @@ const toRegister = () => {
       <div class="w-[100%]">
         <ElButton :loading="loading" type="primary" class="w-[100%]" @click="signIn">
           {{ t('login.login') }}
-        </ElButton>
-      </div>
-      <div class="w-[100%] mt-15px">
-        <ElButton class="w-[100%]" @click="toRegister">
-          {{ t('login.register') }}
         </ElButton>
       </div>
     </template>

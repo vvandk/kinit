@@ -51,6 +51,8 @@ export const useForm = (props?: FormProps) => {
      */
     setSchema: async (schemaProps: FormSetPropsType[]) => {
       const form = await getForm()
+      console.log(1111111111, schemaProps)
+      console.log(222222, form)
       form?.setSchema(schemaProps)
     },
 

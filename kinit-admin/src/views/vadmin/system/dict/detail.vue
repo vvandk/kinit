@@ -6,7 +6,8 @@ import {
   addDictDetailsListApi,
   delDictDetailsListApi,
   putDictDetailsListApi,
-  getDictDetailsApi
+  getDictDetailsApi,
+  getDictTypeOptionsApi
 } from '@/api/vadmin/system/dict'
 import { useTable } from '@/hooks/web/useTable'
 import { columns, searchSchema } from './components/detail.data'
@@ -24,10 +25,21 @@ const { t } = useI18n()
 
 let dictType = currentRoute.value.query.dictType
 
-const searchSetSchemaList = [] as FormSetPropsType[]
+const searchSetSchemaList = ref([] as FormSetPropsType[])
+
+const getOptions = async () => {
+  const res = await getDictTypeOptionsApi()
+  searchSetSchemaList.value.push({
+    field: 'dict_type_id',
+    path: 'componentProps.options',
+    value: res.data
+  })
+}
+
+getOptions()
 
 if (typeof dictType === 'string') {
-  searchSetSchemaList.push({
+  searchSetSchemaList.value.push({
     field: 'dict_type_id',
     path: 'value',
     value: parseInt(dictType)

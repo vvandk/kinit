@@ -1,6 +1,5 @@
 import { ElTag } from 'element-plus'
 import { h, reactive } from 'vue'
-import { getDictTypeOptionsApi } from '@/api/vadmin/system/dict'
 
 export const columns = reactive<TableColumn[]>([
   {
@@ -135,9 +134,6 @@ export const schema = reactive<FormSchema[]>([
   }
 ])
 
-const res = await getDictTypeOptionsApi()
-const data = res.data
-
 export const searchSchema = reactive<FormSchema[]>([
   {
     field: 'label',
@@ -152,7 +148,6 @@ export const searchSchema = reactive<FormSchema[]>([
     label: '字典类型',
     component: 'Select',
     componentProps: {
-      options: data,
       optionsAlias: {
         labelField: 'dict_name',
         valueField: 'id'
