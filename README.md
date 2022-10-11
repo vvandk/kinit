@@ -1,22 +1,28 @@
-<img src="https://gitee.com/ktianc/kinit/raw/master/kinit-admin/public/logo.png" alt="image-20221010214526082" style="zoom: 25%;" />
+<div align="center">
+    <p align="center">
+        <img src="https://gitee.com/ktianc/kinit/raw/master/kinit-admin/public/logo.png" height="150" alt="logo"/>
+    </p>
+</div>
 
 
 
 ## [关于]
 
-<div align="center"><h3 align="center">Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。</h3></div>
+<div align="center"><h3 align="center">Kinit 是一套开箱即用的中后台解决方案，可以作为新项目的启动模版。</h3></div>
 <div align="center"><h3 align="center">前后端分离架构，开箱即用，紧随前沿技术</h3></div>
 
 <div align="center"><h3 align="center">因为热爱，所以拥抱未来！</h3></div>
 
 ## 介绍
 
+Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
+
 - 🧑‍🤝‍🧑前端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)，等主流技术开发。
 - 👭后端采用 Python 语言高性能 [FastAPI](https://fastapi.tiangolo.com/zh/) 框架以及强大的 Mysql 数据库。
 - 👫权限认证使用[（哈希）密码和 JWT Bearer 令牌的 OAuth2](https://fastapi.tiangolo.com/zh/tutorial/security/oauth2-jwt/)，支持多终端认证系统。
 - 👬支持加载动态权限菜单，多方式轻松权限控制。
 - 💏特别鸣谢：[django-vue-admin](https://gitee.com/liqianglog/django-vue-admin) 、 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin)。
-- 开箱即用的中后台解决方案，可以用来作为项目的启动模版，也可用于学习参考。并且时刻关注着最新技术动向，尽可能的第一时间更新。
+- 开箱即用的中后台解决方案，可以用来作为新项目的启动模版，也可用于学习参考。并且时刻关注着最新技术动向，尽可能的第一时间更新。
 
 ## 在线体验
 
