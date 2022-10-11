@@ -33,9 +33,9 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 ## 源码地址
 
-gitee地址(主推)：https://gitee.com/ktianc/kinit👩‍👦‍👦
+gitee地址(主推)：https://gitee.com/ktianc/kinit   👩‍👦‍👦
 
-github地址：https://gitee.com/ktianc/kinit👩‍👦‍👦
+github地址：https://github.com/vvandk/kinit   👩‍👦‍👦
 
 ## 内置功能
 
