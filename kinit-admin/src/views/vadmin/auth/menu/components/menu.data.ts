@@ -138,6 +138,15 @@ export const schema = reactive<FormSchema[]>([
     ifshow: (values) => values.menu_type !== '2'
   },
   {
+    field: 'redirect',
+    label: '重定向',
+    component: 'Input',
+    colProps: {
+      span: 12
+    },
+    ifshow: (values) => values.menu_type !== '2'
+  },
+  {
     field: 'hidden',
     label: '显示状态',
     colProps: {
@@ -192,7 +201,7 @@ export const schema = reactive<FormSchema[]>([
     label: '权限标识',
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     ifshow: (values) => values.menu_type !== '0'
   }

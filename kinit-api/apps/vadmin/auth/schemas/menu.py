@@ -18,6 +18,7 @@ class Menu(BaseModel):
     title: str
     icon: Optional[str] = None
     component: Optional[str] = None
+    redirect: Optional[str] = None
     path: Optional[str] = None
     disabled: bool = False
     hidden: bool = False
