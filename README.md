@@ -129,7 +129,15 @@ pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
    sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
    ```
 
-3. 映射数据库
+3. 创建数据库
+
+```shell
+mysql> create database kinit;             # 创建数据库
+mysql> use kinit;                         # 使用已创建的数据库 
+mysql> set names utf8;                    # 设置编码
+```
+
+4. 映射数据库
 
 ```shell
 # 初次生成映射文件
@@ -146,18 +154,15 @@ alembic revision --autogenerate -m "update"
 alembic upgrade head
 ```
 
-4. 导入数据库数据
+5. 导入数据库数据
 
-   导入数据库数据前，请先保存映射后数据库中`alembic_version`表中的`version_num`数据
+导入数据库数据前，请先保存映射后数据库中`alembic_version`表中的`version_num`数据
 
-   导入完成后，将此数据替换到导入后的对应字段
+导入完成后，将此数据替换到导入后的对应字段
 
 ```shell
 # 数据库文件地址：kinit-api/static/kinit.sql
 # 导入命令
-mysql> create database kinit;             # 创建数据库
-mysql> use kinit;                         # 使用已创建的数据库 
-mysql> set names utf8;                    # 设置编码
 mysql> source kinit-api/static/kinit.sql  # 导入备份数据库
 ```
 
