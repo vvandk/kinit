@@ -141,7 +141,13 @@ getList()
         <ElButton type="primary" text size="small" @click="updateAction(row)">
           {{ t('exampleDemo.edit') }}
         </ElButton>
-        <ElButton type="danger" text size="small" @click="delData(row)">
+        <ElButton
+          type="danger"
+          text
+          size="small"
+          @click="delData(row)"
+          v-if="authStore.getUser.id !== row.id && row.id !== 1"
+        >
           {{ t('exampleDemo.del') }}
         </ElButton>
       </template>

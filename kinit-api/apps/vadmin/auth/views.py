@@ -33,6 +33,10 @@ async def create_user(data: schemas.UserIn, auth: Auth = Depends(login_auth)):
 
 @app.delete("/users/", summary="批量删除用户")
 async def delete_users(ids: list = Depends(id_list), auth: Auth = Depends(login_auth)):
+    if auth.user.id in ids:
+        return ErrorResponse("不能删除当前登录用户")
+    elif 1 in ids:
+        return ErrorResponse("不能删除超级管理员用户")
     await crud.UserDal(auth.db).delete_datas(ids=ids)
     return SuccessResponse("删除成功")
 
@@ -83,12 +87,16 @@ async def create_role(role: schemas.RoleIn, auth: Auth = Depends(login_auth)):
 
 @app.delete("/roles/", summary="批量删除角色")
 async def delete_roles(ids: list = Depends(id_list), auth: Auth = Depends(login_auth)):
+    if 1 in ids:
+        return ErrorResponse("不能删除管理员角色")
     await crud.RoleDal(auth.db).delete_datas(ids)
     return SuccessResponse("删除成功")
 
 
 @app.put("/roles/{data_id}/", summary="更新角色信息")
 async def put_role(data_id: int, data: schemas.RoleIn, auth: Auth = Depends(login_auth)):
+    if 1 == data_id:
+        return ErrorResponse("不能修改管理员角色")
     return SuccessResponse(await crud.RoleDal(auth.db).put_data(data_id, data))
 
 

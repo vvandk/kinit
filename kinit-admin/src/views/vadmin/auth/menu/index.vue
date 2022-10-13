@@ -7,7 +7,6 @@ import {
   addMenuListApi,
   putMenuListApi
 } from '@/api/vadmin/auth/menu'
-import { TableData } from '@/api/table/types'
 import { useTable } from '@/hooks/web/useTable'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElButton, ElSwitch } from 'element-plus'
@@ -30,7 +29,7 @@ const getOptions = async () => {
 
 getOptions()
 
-const { register, tableObject, methods } = useTable<TableData>({
+const { register, tableObject, methods } = useTable({
   getListApi: getMenuListApi,
   delListApi: delMenuListApi,
   response: {

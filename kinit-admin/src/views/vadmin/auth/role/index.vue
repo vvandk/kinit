@@ -116,10 +116,10 @@ getList()
       @register="register"
     >
       <template #action="{ row }">
-        <ElButton type="primary" text size="small" @click="updateAction(row)">
+        <ElButton type="primary" text size="small" @click="updateAction(row)" v-if="row.id !== 1">
           {{ t('exampleDemo.edit') }}
         </ElButton>
-        <ElButton type="danger" text size="small" @click="delData(row)">
+        <ElButton type="danger" text size="small" @click="delData(row)" v-if="row.id !== 1">
           {{ t('exampleDemo.del') }}
         </ElButton>
       </template>
