@@ -181,7 +181,7 @@ export default defineComponent({
       ) : undefined
     }
 
-    const rnderTreeTableColumn = (columnsChildren: TableColumn[]) => {
+    const renderTreeTableColumn = (columnsChildren: TableColumn[]) => {
       const { align, headerAlign, showOverflowTooltip } = unref(getProps)
       return columnsChildren.map((v) => {
         const props = { ...v }
@@ -197,7 +197,7 @@ export default defineComponent({
             {{
               default: (data: TableSlotDefault) =>
                 v.children && v.children.length
-                  ? rnderTableColumn(v.children)
+                  ? renderTableColumn(v.children)
                   : // @ts-ignore
                     getSlot(slots, v.field, data) ||
                     v?.formatter?.(data.row, data.column, data.row[v.field], data.$index) ||
@@ -210,7 +210,7 @@ export default defineComponent({
       })
     }
 
-    const rnderTableColumn = (columnsChildren?: TableColumn[]) => {
+    const renderTableColumn = (columnsChildren?: TableColumn[]) => {
       const { columns, reserveIndex, limit, page, align, headerAlign, showOverflowTooltip } =
         unref(getProps)
       return [...[renderTableExpand()], ...[renderTableSelection()]].concat(
@@ -241,7 +241,7 @@ export default defineComponent({
                 {{
                   default: (data: TableSlotDefault) =>
                     v.children && v.children.length
-                      ? rnderTreeTableColumn(v.children)
+                      ? renderTreeTableColumn(v.children)
                       : // @ts-ignore
                         getSlot(slots, v.field, data) ||
                         v?.formatter?.(data.row, data.column, data.row[v.field], data.$index) ||
@@ -267,15 +267,15 @@ export default defineComponent({
           header-row-style="color: #000;background-color: #000;"
         >
           {{
-            default: () => rnderTableColumn(),
+            default: () => renderTableColumn(),
             // @ts-ignore
             append: () => getSlot(slots, 'append')
           }}
         </ElTable>
         {unref(getProps).pagination ? (
           <ElPagination
-            v-model:limit={limitRef.value}
-            v-model:page={pageRef.value}
+            v-model:pageSize={limitRef.value}
+            v-model:currentPage={pageRef.value}
             class="mt-10px"
             {...unref(pagination)}
           ></ElPagination>
