@@ -118,19 +118,19 @@ async def get_role(data_id: int, auth: Auth = Depends(login_auth)):
 ###########################################################
 @app.get("/menus/", summary="获取菜单列表")
 async def get_menus(auth: Auth = Depends(login_auth)):
-    datas = await crud.MenuDal(auth.db).get_tree_list()
+    datas = await crud.MenuDal(auth.db).get_tree_list(mode=1)
     return SuccessResponse(datas)
 
 
-@app.get("/menus/tree/options/", summary="获取菜单树选择项")
+@app.get("/menus/tree/options/", summary="获取菜单树选择项，添加/修改菜单时使用")
 async def get_menus_options(auth: Auth = Depends(login_auth)):
-    datas = await crud.MenuDal(auth.db).get_tree_options()
+    datas = await crud.MenuDal(auth.db).get_tree_list(mode=2)
     return SuccessResponse(datas)
 
 
 @app.get("/menus/role/tree/options/", summary="获取菜单列表树信息，角色权限使用")
 async def get_menus_treeselect(auth: Auth = Depends(login_auth)):
-    return SuccessResponse(await crud.MenuDal(auth.db).get_treeselect())
+    return SuccessResponse(await crud.MenuDal(auth.db).get_tree_list(mode=3))
 
 
 @app.post("/menus/", summary="创建菜单信息")
@@ -163,6 +163,6 @@ async def put_menus(data_id: int, auth: Auth = Depends(login_auth)):
 
 @app.get("/role/menus/tree/{role_id}/", summary="获取菜单列表树信息以及角色菜单权限ID，角色权限使用")
 async def get_role_menu_tree(role_id: int, auth: Auth = Depends(login_auth)):
-    treeselect = await crud.MenuDal(auth.db).get_treeselect()
+    treeselect = await crud.MenuDal(auth.db).get_tree_list(mode=3)
     role_menu_tree = await crud.RoleDal(auth.db).get_role_menu_tree(role_id)
     return SuccessResponse({"role_menu_tree": role_menu_tree, "menus": treeselect})

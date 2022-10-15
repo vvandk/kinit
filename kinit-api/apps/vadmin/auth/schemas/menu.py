@@ -55,6 +55,7 @@ class RouterOut(BaseModel):
     path: str
     redirect: Optional[str] = None
     meta: Optional[Meta] = None
+    order: Optional[int] = None
     children: List['RouterOut'] = []
 
     class Config:
