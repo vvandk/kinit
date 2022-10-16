@@ -61,14 +61,15 @@ class DalBase:
                 if key != "order" and key != "return_none" and value and getattr(self.model, key, None):
                     kwargs_exist = True
                     break
-        data = None
         if data_id or kwargs_exist or keys_exist:
             sql = select(self.model).where(self.model.id == data_id) if data_id else select(self.model)
             sql = self.add_filter_condition(sql, keys, options, **kwargs)
-            if order and order == "desc":
-                sql = sql.order_by(self.model.create_datetime.desc())
-            queryset = await self.db.execute(sql)
-            data = queryset.scalars().first()
+        else:
+            sql = select(self.model)
+        if order and order == "desc":
+            sql = sql.order_by(self.model.create_datetime.desc())
+        queryset = await self.db.execute(sql)
+        data = queryset.scalars().first()
         if not data and return_none:
             return None
         if data and schema:
