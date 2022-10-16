@@ -220,7 +220,7 @@ class MenuDal(DalBase):
         """
         data = []
         for root in nodes:
-            router = {"value": root.id, "label": root.title}
+            router = {"value": root.id, "label": root.title, "order": root.order}
             if root.menu_type == "0" or root.menu_type == "1":
                 sons = filter(lambda i: i.parent_id == root.id, menus)
                 router["children"] = self.generate_tree_options(menus, sons)
