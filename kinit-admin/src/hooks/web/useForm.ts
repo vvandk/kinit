@@ -32,6 +32,7 @@ export const useForm = (props?: FormProps) => {
   const methods: {
     setProps: (props: Recordable) => void
     setValues: (data: Recordable) => void
+    setValue: (key: string, value: any) => void
     getFormData: <T = Recordable | undefined>() => Promise<T>
     setSchema: (schemaProps: FormSetPropsType[]) => void
     addSchema: (formSchema: FormSchema, index?: number) => void
@@ -46,13 +47,15 @@ export const useForm = (props?: FormProps) => {
       const form = await getForm()
       form?.setValues(data)
     },
+    setValue: async (key: string, value: any) => {
+      const form = await getForm()
+      form?.setValue(key, value)
+    },
     /**
      * @param schemaProps 需要设置的schemaProps
      */
     setSchema: async (schemaProps: FormSetPropsType[]) => {
       const form = await getForm()
-      console.log(1111111111, schemaProps)
-      console.log(222222, form)
       form?.setSchema(schemaProps)
     },
 

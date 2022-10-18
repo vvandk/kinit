@@ -75,6 +75,11 @@ export default defineComponent({
       formModel.value = Object.assign(unref(formModel), data)
     }
 
+    // 对表单单个属性赋值
+    const setValue = (key: string, value: any) => {
+      formModel.value[key] = value
+    }
+
     const setProps = (props: FormProps = {}) => {
       mergeProps.value = Object.assign(unref(mergeProps), props)
       outsideProps.value = props
@@ -115,6 +120,7 @@ export default defineComponent({
 
     expose({
       setValues,
+      setValue,
       formModel,
       setProps,
       delSchema,

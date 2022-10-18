@@ -7,16 +7,17 @@
 # @desc           : 数据库 增删改查操作
 
 # sqlalchemy 查询操作：https://segmentfault.com/a/1190000016767008
+# sqlalchemy 增删改操作：https://www.osgeo.cn/sqlalchemy/tutorial/orm_data_manipulation.html#updating-orm-objects
 # SQLAlchemy lazy load和eager load: https://www.jianshu.com/p/dfad7c08c57a
 # Mysql中内连接,左连接和右连接的区别总结:https://www.cnblogs.com/restartyang/articles/9080993.html
 # SQLAlchemy join 内连接
 # selectinload 官方文档：
 # https://www.osgeo.cn/sqlalchemy/orm/loading_relationships.html?highlight=selectinload#sqlalchemy.orm.selectinload
-
+import datetime
 from typing import List
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import func, delete, and_
+from sqlalchemy import func, delete, update
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -61,11 +62,11 @@ class DalBase:
                 if key != "order" and key != "return_none" and value and getattr(self.model, key, None):
                     kwargs_exist = True
                     break
+        sql = select(self.model).where(self.model.delete_datetime.is_(None))
         if data_id or kwargs_exist or keys_exist:
-            sql = select(self.model).where(self.model.id == data_id) if data_id else select(self.model)
+            if data_id:
+                sql = sql.where(self.model.id == data_id)
             sql = self.add_filter_condition(sql, keys, options, **kwargs)
-        else:
-            sql = select(self.model)
         if order and order == "desc":
             sql = sql.order_by(self.model.create_datetime.desc())
         queryset = await self.db.execute(sql)
@@ -97,7 +98,9 @@ class DalBase:
         order_field = kwargs.get("order_field", None)
         return_objs = kwargs.get("return_objs", False)
         start_sql = kwargs.get("start_sql", None)
-        sql = self.add_filter_condition(start_sql if isinstance(start_sql, Select) else select(self.model), keys, options, **kwargs)
+        if not isinstance(start_sql, Select):
+            start_sql = select(self.model).where(self.model.delete_datetime.is_(None))
+        sql = self.add_filter_condition(start_sql, keys, options, **kwargs)
         if order_field and order == "desc":
             sql = sql.order_by(getattr(self.model, order_field).desc(), self.model.id.desc())
         elif order_field:
@@ -115,7 +118,7 @@ class DalBase:
 
     async def get_count(self, keys: dict = None, **kwargs):
         """获取数据总数"""
-        sql = select(func.count(self.model.id).label('total'))
+        sql = select(func.count(self.model.id).label('total')).where(self.model.delete_datetime.is_(None))
         sql = self.add_filter_condition(sql, keys, **kwargs)
         queryset = await self.db.execute(sql)
         return queryset.one()['total']
@@ -153,12 +156,17 @@ class DalBase:
             return schema.from_orm(obj).dict()
         return self.out_dict(obj)
 
-    async def delete_datas(self, ids: List[int]):
+    async def delete_datas(self, ids: List[int], soft: bool = False):
         """
-        删除多个数据
+        删除多条数据
+        :param ids: 数据集
+        :param soft: 是否执行软删除
         """
-        for data_id in ids:
-            await self.db.execute(delete(self.model).where(self.model.id == data_id))
+        if soft:
+            await self.db.execute(update(self.model).where(self.model.id.in_(ids)).
+                                  values(delete_datetime=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        else:
+            await self.db.execute(delete(self.model).where(self.model.id.in_(ids)))
 
     def add_filter_condition(self, sql: select, keys: dict = None, options: list = None, **kwargs) -> select:
         """

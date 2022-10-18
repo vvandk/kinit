@@ -21,3 +21,4 @@ class BaseModel(Model):
     id = Column(Integer, primary_key=True, unique=True, comment='主键ID', index=True)
     create_datetime = Column(DateTime, server_default=func.now(), comment='创建时间')
     update_datetime = Column(DateTime, server_default=func.now(), onupdate=func.now(), comment='更新时间')
+    delete_datetime = Column(DateTime, nullable=True, comment='删除时间')
