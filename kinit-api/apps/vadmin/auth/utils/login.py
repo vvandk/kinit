@@ -21,29 +21,40 @@ PassLib 是一个用于处理哈希密码的很棒的 Python 包。它支持许�
 import json
 from datetime import timedelta
 from fastapi import APIRouter, Depends, Request
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.database import db_getter
 from utils.response import SuccessResponse, ErrorResponse
 from application import settings
-from .auth_util import authenticate_user, create_access_token
+from .login_manage import LoginManage
+from .validation import LoginForm
 from apps.vadmin.record.models import VadminLoginRecord
 from apps.vadmin.auth.crud import MenuDal
-from .current import AdminAuth, full_admin
+from .current import full_admin, Auth
 
 app = APIRouter()
 
 
 @app.post("/login/", summary="登录")
-async def login_for_access_token(request: Request, data: dict = Depends(authenticate_user)):
-    if not data.get("status", False):
-        await VadminLoginRecord.create_login_record(telephone=data["data"].telephone, status=data.get("status"),
-                                                    request=request, response=data.get("msg"), db=data.get("db"))
-        return ErrorResponse(msg=data.get("msg"))
-    user = data.get("user")
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+async def login_for_access_token(request: Request, data: LoginForm, manage: LoginManage = Depends(),
+                                 db: AsyncSession = Depends(db_getter)):
+    if data.method == "0":
+        result = await manage.password_login(data, db, request)
+    elif data.method == "1":
+        result = await manage.sms_login(data, db, request)
+    else:
+        return ErrorResponse(msg="请使用正确的登录方式")
+    if not result.status:
+        res = {"message": result.msg}
+        telephone = data.telephone
+        await VadminLoginRecord.\
+            create_login_record(telephone=telephone, status=result.status, request=request, response=res, db=db)
+        return ErrorResponse(msg=result.msg)
 
-    access_token = create_access_token(
-        data={"sub": user.telephone}, expires_delta=access_token_expires
-    )
-    result = {
+    user = result.user
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = LoginManage.create_access_token(data={"sub": user.telephone}, expires_delta=access_token_expires)
+    res = {
         "access_token": access_token,
         "token_type": "bearer",
         "is_reset_password": user.is_reset_password,
@@ -54,16 +65,15 @@ async def login_for_access_token(request: Request, data: dict = Depends(authenti
             "nickname": user.nickname,
             "avatar": user.avatar,
             "gender": user.gender,
-            "create_datetime": user.create_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+            "create_datetime": user.create_datetime,
             "roles": [{"name": i.name, "value": i.role_key} for i in user.roles]
         }
     }
-    await VadminLoginRecord.create_login_record(telephone=user.telephone, status=data.get("status"), request=request,
-                                                response=json.dumps(result), db=data.get("db"))
-    return SuccessResponse(result)
+    await VadminLoginRecord.\
+        create_login_record(telephone=user.telephone, status=result.status, request=request, response=res, db=db)
+    return SuccessResponse(res)
 
 
 @app.get("/getMenuList/", summary="获取当前用户菜单树")
-async def get_menu_list(auth: AdminAuth = Depends(full_admin)):
-    datas = await MenuDal(auth.db).get_routers(auth.admin)
-    return SuccessResponse(datas)
+async def get_menu_list(auth: Auth = Depends(full_admin)):
+    return SuccessResponse(await MenuDal(auth.db).get_routers(auth.user))

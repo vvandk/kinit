@@ -56,6 +56,12 @@ git clone https://github.com/kailong321200875/vue-element-plus-admin.git
 - 安装依赖
 
 ```bash
+临时修改
+pnpm --registry https://registry.npm.taobao.org install any-touch
+
+持久使用
+pnpm config set registry https://registry.npm.taobao.org
+
 cd vue-element-plus-admin
 
 pnpm install

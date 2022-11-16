@@ -12,10 +12,11 @@ import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
 import { UserLoginType } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useCache } from '@/hooks/web/useCache'
+import { FormSchema } from '@/types/form'
+
+const emit = defineEmits(['to-telephone-code'])
 
 const { required } = useValidator()
-
-const emit = defineEmits(['to-register'])
 
 const permissionStore = usePermissionStore()
 
@@ -25,6 +26,7 @@ const { t } = useI18n()
 
 const rules = {
   telephone: [required()],
+  method: [required()],
   password: [required()]
 }
 
@@ -39,18 +41,24 @@ const schema = reactive<FormSchema[]>([
     field: 'telephone',
     label: t('login.telephone'),
     value: '15020221010',
+    // value: '15000000006',
     component: 'Input',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: t('login.telephonePlaceholder')
+      style: {
+        width: '100%'
+      },
+      placeholder: t('login.telephonePlaceholder'),
+      maxlength: 11
     }
   },
   {
     field: 'password',
     label: t('login.password'),
     value: 'kinit2022',
+    // value: '000006',
     component: 'InputPassword',
     colProps: {
       span: 24
@@ -61,6 +69,12 @@ const schema = reactive<FormSchema[]>([
       },
       placeholder: t('login.passwordPlaceholder')
     }
+  },
+  {
+    field: 'method',
+    label: '登录类型',
+    value: '0',
+    ifshow: () => false
   },
   {
     field: 'tool',
@@ -91,15 +105,10 @@ const schema = reactive<FormSchema[]>([
 ])
 
 const iconSize = 30
-
 const remember = ref(false)
-
 const { register, elFormRef, methods } = useForm()
-
 const loading = ref(false)
-
 const iconColor = '#999'
-
 const redirect = ref<string>('')
 
 watch(
@@ -120,7 +129,6 @@ const signIn = async () => {
       loading.value = true
       const { getFormData } = methods
       const formData = await getFormData<UserLoginType>()
-
       try {
         const authStore = useAuthStoreWithOut()
         const res = await authStore.login(formData)
@@ -152,9 +160,13 @@ const getMenu = async () => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
     })
     permissionStore.setIsAddRouters(true)
-    console.log(redirect.value || permissionStore.addRouters[0].path)
     push({ path: redirect.value || permissionStore.addRouters[0].path })
   }
+}
+
+// 手机验证码登录
+const toTelephoneSignIn = () => {
+  emit('to-telephone-code')
 }
 </script>
 
@@ -184,6 +196,9 @@ const getMenu = async () => {
         <ElButton :loading="loading" type="primary" class="w-[100%]" @click="signIn">
           {{ t('login.login') }}
         </ElButton>
+      </div>
+      <div class="w-[100%] mt-15px">
+        <ElButton class="w-[100%]" @click="toTelephoneSignIn"> 短信验证码登录 </ElButton>
       </div>
     </template>
 

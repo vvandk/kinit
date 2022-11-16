@@ -81,6 +81,9 @@ const loading = ref(false)
 
 // 提交
 const save = async () => {
+  if (authStore.getUser.id === 1) {
+    return ElMessage.warning('编辑账号为演示账号，无权限操作！')
+  }
   const formRef = unref(elFormRef)
   await formRef?.validate(async (isValid) => {
     if (isValid) {

@@ -9,9 +9,9 @@
 # pydantic 验证数据：https://blog.csdn.net/qq_44291044/article/details/104693526
 
 
-from typing import Optional, List
+from typing import Optional
 from pydantic import BaseModel
-from core.validator import ValiDatetime
+from core.data_types import DatetimeStr
 
 
 class LoginRecord(BaseModel):
@@ -22,12 +22,20 @@ class LoginRecord(BaseModel):
     browser: Optional[str] = None
     system: Optional[str] = None
     response: Optional[str] = None
+    request: Optional[str] = None
+    postal_code: Optional[str] = None
+    area_code: Optional[str] = None
+    country: Optional[str] = None
+    province: Optional[str] = None
+    city: Optional[str] = None
+    county: Optional[str] = None
+    operator: Optional[str] = None
 
 
 class LoginRecordSimpleOut(LoginRecord):
     id: int
-    create_datetime: ValiDatetime
-    update_datetime: ValiDatetime
+    create_datetime: DatetimeStr
+    update_datetime: DatetimeStr
 
     class Config:
         orm_mode = True

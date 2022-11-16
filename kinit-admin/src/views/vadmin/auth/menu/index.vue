@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ContentWrap } from '@/components/ContentWrap'
+import { RightToolbar } from '@/components/RightToolbar'
 import { Table } from '@/components/Table'
 import {
   getMenuListApi,
@@ -9,8 +10,8 @@ import {
 } from '@/api/vadmin/auth/menu'
 import { useTable } from '@/hooks/web/useTable'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElButton, ElSwitch } from 'element-plus'
-import { ref, unref } from 'vue'
+import { ElButton, ElSwitch, ElRow, ElCol } from 'element-plus'
+import { ref, unref, watch, nextTick } from 'vue'
 import { Dialog } from '@/components/Dialog'
 import Write from './components/Write.vue'
 import { columns } from './components/menu.data'
@@ -29,7 +30,7 @@ const getOptions = async () => {
 
 getOptions()
 
-const { register, tableObject, methods } = useTable({
+const { register, elTableRef, tableObject, methods } = useTable({
   getListApi: getMenuListApi,
   delListApi: delMenuListApi,
   response: {
@@ -99,18 +100,42 @@ const save = async () => {
 const { getList } = methods
 
 getList()
+
+const tableSize = ref('default')
+
+watch(tableSize, (val) => {
+  tableSize.value = val
+})
+
+watch(
+  columns,
+  async () => {
+    await nextTick()
+    elTableRef.value?.doLayout()
+  },
+  {
+    deep: true
+  }
+)
 </script>
 
 <template>
   <ContentWrap>
-    <div class="mb-10px">
-      <ElButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</ElButton>
+    <div class="mb-8px flex justify-between">
+      <ElRow :gutter="10">
+        <ElCol :span="1.5">
+          <ElButton type="primary" @click="AddAction">新增菜单</ElButton>
+        </ElCol>
+      </ElRow>
+      <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
     </div>
 
     <Table
       :data="tableObject.tableData"
       :loading="tableObject.loading"
       :selection="false"
+      :border="true"
+      :size="tableSize"
       row-key="id"
       default-expand-all
       @register="register"
@@ -124,10 +149,10 @@ getList()
         </div>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" text size="small" @click="updateAction(row)">
+        <ElButton type="primary" link size="small" @click="updateAction(row)">
           {{ t('exampleDemo.edit') }}
         </ElButton>
-        <ElButton type="danger" text size="small" @click="delData(row)">
+        <ElButton type="danger" link size="small" @click="delData(row)">
           {{ t('exampleDemo.del') }}
         </ElButton>
       </template>

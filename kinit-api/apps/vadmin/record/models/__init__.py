@@ -8,5 +8,4 @@
 
 
 from .login import VadminLoginRecord
-from .operation import VadminOperationRecord
 from .sms import VadminSMSSendRecord

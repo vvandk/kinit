@@ -76,7 +76,8 @@ export default {
     uniqueOpened: '菜单手风琴',
     tagsViewIcon: '标签页图标',
     dynamicRouter: '动态路由',
-    reExperienced: '请重新退出登录体验'
+    reExperienced: '请重新退出登录体验',
+    fixedMenu: '固定菜单'
   },
   size: {
     default: '默认',
@@ -186,7 +187,7 @@ export default {
     happyDay: '祝你开心每一天!',
     toady: '今日晴',
     project: '项目数',
-    access: '项目访问',
+    access: '系统登录',
     toDo: '待办',
     introduction: '一个正经的简介',
     more: '更多',

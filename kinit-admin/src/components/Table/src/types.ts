@@ -1,6 +1,8 @@
+import { Pagination, TableColumn } from '@/types/table'
+
 export type TableProps = {
-  limit?: number
-  page?: number
+  pageSize?: number
+  currentPage?: number
   // 是否多选
   selection?: boolean
   // 是否所有的超出隐藏，优先级低于schema中的showOverflowTooltip,

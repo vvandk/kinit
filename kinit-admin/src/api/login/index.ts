@@ -8,3 +8,7 @@ export const loginApi = (data: UserLoginType): Promise<IResponse> => {
 export const getRoleMenusApi = (): Promise<IResponse<AppCustomRouteRecordRaw[]>> => {
   return request.get({ url: '/auth/getMenuList/' })
 }
+
+export const postSMSCodeApi = (params: any): Promise<IResponse> => {
+  return request.post({ url: '/vadmin/system/sms/send/', params })
+}

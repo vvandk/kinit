@@ -6,25 +6,38 @@
 # @IDE            : PyCharm
 # @desc           : 常用依赖项
 
+"""
+类依赖项-官方文档：https://fastapi.tiangolo.com/zh/tutorial/dependencies/classes-as-dependencies/
+"""
+
 from typing import List
 from fastapi import Body
-from pydantic import BaseModel
+import copy
 
 
-class Params(BaseModel):
-    page: int
-    limit: int
-
-
-async def paging(page: int = 1, limit: int = 10) -> Params:
+class Paging:
     """
-    分页依赖项
+    列表分页
     """
-    return Params(page=page, limit=limit)
+    def __init__(self, page: int = 1, limit: int = 10):
+        self.page = page
+        self.limit = limit
+        self.order = None
+
+    def dict(self):
+        return self.__dict__
+
+    def to_count(self):
+        params = copy.deepcopy(self.__dict__)
+        del params["page"]
+        del params["limit"]
+        del params["order"]
+        return params
 
 
-async def id_list(ids: List[int] = Body(None, title="ID 列表")) -> list:
+class IdList:
     """
     id 列表
     """
-    return ids
+    def __init__(self, ids: List[int] = Body(None, title="ID 列表")):
+        self.ids = ids

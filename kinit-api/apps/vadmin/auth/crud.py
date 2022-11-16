@@ -5,19 +5,38 @@
 # @File           : crud.py
 # @IDE            : PyCharm
 # @desc           : 增删改查
+
 from typing import List
+
+from aioredis import Redis
+from fastapi import UploadFile
 from core.exception import CustomException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from core.crud import DalBase
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from core.validator import vali_telephone
+from utils.aliyun_sms import AliyunSMS
+from utils.excel.import_manage import ImportManage, FieldType
+from utils.excel.write_xlsx import WriteXlsx
+from .params import UserParams
 from utils.tools import test_password
 from . import models, schemas
 from application import settings
+from utils.excel.excel_manage import ExcelManage
+from apps.vadmin.system import crud as vadminSystemCRUD
+import copy
 
 
 class UserDal(DalBase):
+
+    import_headers = [
+        {"label": "姓名", "field": "name", "required": True},
+        {"label": "昵称", "field": "nickname", "required": False},
+        {"label": "手机号", "field": "telephone", "required": True, "rules": [vali_telephone]},
+        {"label": "性别", "field": "gender", "required": False},
+        {"label": "关联角色", "field": "role_ids", "required": True, "type": FieldType.list},
+    ]
 
     def __init__(self, db: AsyncSession):
         super(UserDal, self).__init__(db, models.VadminUser, schemas.UserSimpleOut)
@@ -26,6 +45,9 @@ class UserDal(DalBase):
         """
         创建用户
         """
+        unique = await self.get_data(telephone=data.telephone, return_none=True)
+        if unique:
+            raise ValueError("手机号已存在！")
         password = data.telephone[5:12] if settings.DEFAULT_PASSWORD == "0" else settings.DEFAULT_PASSWORD
         data.password = self.model.get_password_hash(password)
         obj = self.model(**data.dict(exclude={'role_ids'}))
@@ -55,6 +77,7 @@ class UserDal(DalBase):
         user.is_reset_password = True
         self.db.add(user)
         await self.db.flush()
+        await self.db.refresh(user)
         return True
 
     async def update_current_info(self, user: models.VadminUser, data: schemas.UserUpdate):
@@ -68,6 +91,121 @@ class UserDal(DalBase):
         await self.db.flush()
         await self.db.refresh(user)
         return self.out_dict(user)
+
+    async def export_query_list(self, header: list, params: UserParams):
+        """
+        导出用户查询列表为excel
+        """
+        datas = await self.get_datas(**params.dict(), return_objs=True)
+        # 获取表头
+        row = list(map(lambda i: i.get("label"), header))
+        rows = []
+        options = await vadminSystemCRUD.DictTypeDal(self.db).get_dicts_details(["sys_vadmin_gender"])
+        for user in datas:
+            data = []
+            for item in header:
+                field = item.get("field")
+                # 通过反射获取对应的属性值
+                value = getattr(user, field, "")
+                if field == "is_active":
+                    value = "可用" if value else "停用"
+                elif field == "gender":
+                    result = list(filter(lambda i: i["value"] == value, options["sys_vadmin_gender"]))
+                    value = result[0]["label"] if result else ""
+                data.append(value)
+            rows.append(data)
+        em = ExcelManage()
+        em.create_excel("用户列表")
+        em.write_list(rows, row)
+        file_url = em.save_excel()
+        em.close()
+        return {"url": file_url, "filename": "用户列表.xlsx"}
+
+    async def get_import_headers_options(self):
+        """
+        补全表头数据选项
+        """
+        # 角色选择项
+        roles = await RoleDal(self.db).get_datas(limit=0, return_objs=True, disabled=False, is_admin=False)
+        role_options = self.import_headers[4]
+        assert isinstance(role_options, dict)
+        role_options["options"] = [{"label": role.name, "value": role.id} for role in roles]
+
+        # 性别选择项
+        dict_types = await vadminSystemCRUD.DictTypeDal(self.db).get_dicts_details(["sys_vadmin_gender"])
+        gender_options = self.import_headers[3]
+        assert isinstance(gender_options, dict)
+        sys_vadmin_gender = dict_types.get("sys_vadmin_gender")
+        gender_options["options"] = [{"label": item["label"], "value": item["value"]} for item in sys_vadmin_gender]
+
+    async def download_import_template(self):
+        """
+        下载用户最新版导入模板
+        """
+        await self.get_import_headers_options()
+        em = WriteXlsx(sheet_name="用户导入模板")
+        em.generate_template(copy.deepcopy(self.import_headers))
+        em.close()
+        return {"url": em.file_url, "filename": "用户导入模板.xlsx"}
+
+    async def import_users(self, file: UploadFile):
+        """
+        批量导入用户数据
+        """
+        await self.get_import_headers_options()
+        im = ImportManage(file, copy.deepcopy(self.import_headers))
+        await im.get_table_data()
+        im.check_table_data()
+        for item in im.success:
+            old_data_list = item.pop("old_data_list")
+            data = schemas.UserIn(**item)
+            try:
+                await self.create_data(data)
+            except ValueError as e:
+                old_data_list.append(e.__str__())
+                im.add_error_data(old_data_list)
+            except Exception:
+                old_data_list.append("创建失败，请联系管理员！")
+                im.add_error_data(old_data_list)
+        return {
+            "success_number": im.success_number,
+            "error_number": im.error_number,
+            "error_url": im.generate_error_url()
+        }
+
+    async def init_password_send_sms(self, ids: List[int], rd: Redis):
+        """
+        初始化所选用户密码并发送通知短信
+        将用户密码改为系统默认密码，并将初始化密码状态改为false
+        """
+        users = await self.get_datas(limit=0, id=("in", ids), return_objs=True)
+        result = []
+        for user in users:
+            # 重置密码
+            data = {"id": user.id, "telephone": user.telephone, "name": user.name}
+            password = user.telephone[5:12] if settings.DEFAULT_PASSWORD == "0" else settings.DEFAULT_PASSWORD
+            user.password = self.model.get_password_hash(password)
+            user.is_reset_password = False
+            self.db.add(user)
+            data["reset_password_status"] = True
+            data["password"] = password
+            result.append(data)
+        await self.db.flush()
+        for user in result:
+            if not user["reset_password_status"]:
+                user["send_sms_status"] = False
+                user["send_sms_msg"] = "重置密码失败"
+                continue
+            password = user.pop("password")
+            sms = AliyunSMS(rd, user.get("telephone"))
+            try:
+                send_result = await sms.main_async(AliyunSMS.Scene.reset_password, password=password)
+                user["send_sms_status"] = send_result
+                user["send_sms_msg"] = "" if send_result else "发送失败，请联系管理员"
+            except CustomException as e:
+                user["send_sms_status"] = False
+                user["send_sms_msg"] = e.msg
+        return result
 
 
 class RoleDal(DalBase):
@@ -177,21 +315,22 @@ class MenuDal(DalBase):
         menus = self.generate_router_tree(datas, roots)
         return self.menus_order(menus)
 
-    def generate_router_tree(self, menus: List[models.VadminMenu], nodes: filter) -> list:
+    def generate_router_tree(self, menus: List[models.VadminMenu], nodes: filter, name: str = "") -> list:
         """
         生成路由树
 
         menus: 总菜单列表
         nodes：节点菜单列表
+        name：name拼接，切记Name不能重复
         """
         data = []
         for root in nodes:
             router = schemas.RouterOut.from_orm(root)
-            router.name = router.path.split("/")[-1].capitalize()
-            router.meta = schemas.Meta(title=root.title, icon=root.icon, hidden=root.hidden)
+            router.name = name + "".join(name.capitalize() for name in router.path.split("/"))
+            router.meta = schemas.Meta(title=root.title, icon=root.icon, hidden=root.hidden, alwaysShow=root.alwaysShow)
             if root.menu_type == "0":
                 sons = filter(lambda i: i.parent_id == root.id, menus)
-                router.children = self.generate_router_tree(menus, sons)
+                router.children = self.generate_router_tree(menus, sons, router.name)
             data.append(router.dict())
         return data
 

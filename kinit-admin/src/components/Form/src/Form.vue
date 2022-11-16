@@ -20,6 +20,7 @@ import { findIndex } from '@/utils'
 import { set } from 'lodash-es'
 import { FormProps } from './types'
 import { Icon } from '@/components/Icon'
+import { FormSchema, FormSetPropsType } from '@/types/form'
 
 const { getPrefixCls } = useDesign()
 
@@ -244,6 +245,11 @@ export default defineComponent({
                   vModel={formModel.value[item.field]}
                   {...(autoSetPlaceholder && setTextPlaceholder(item))}
                   {...setComponentProps(item)}
+                  style={
+                    item?.component === 'Input'
+                      ? { width: '100%', ...item.componentProps?.style }
+                      : { ...item.componentProps?.style }
+                  }
                   {...(notRenderOptions.includes(item?.component as string) &&
                   item?.componentProps?.options
                     ? { options: item?.componentProps?.options || [] }

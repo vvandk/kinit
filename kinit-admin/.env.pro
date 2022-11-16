@@ -1,10 +1,7 @@
 # 环境
 NODE_ENV=production
 
-# 接口前缀
-VITE_API_BASEPATH=pro
-
-# 打包路径
+# 访问基础路径
 VITE_BASE_PATH=/
 
 # 是否删除debugger
@@ -16,8 +13,8 @@ VITE_DROP_CONSOLE=true
 # 是否sourcemap
 VITE_SOURCEMAP=false
 
-# 输出路径
+# 打包输出路径
 VITE_OUT_DIR=dist-pro
 
 # 标题
-VITE_APP_TITLE=Kinit
+VITE_APP_TITLE=后台系统

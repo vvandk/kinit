@@ -6,14 +6,30 @@ import { ref, reactive } from 'vue'
 import { CountTo } from '@/components/CountTo'
 import { formatTime } from '@/utils'
 import { Highlight } from '@/components/Highlight'
-import { getCountApi, getProjectApi, getDynamicApi, getTeamApi } from '@/api/dashboard/workplace'
-import type { WorkplaceTotal, Project, Dynamic, Team } from '@/api/dashboard/workplace/types'
+import {
+  getCountApi,
+  getProjectApi,
+  getDynamicApi,
+  getTeamApi,
+  getShortcutsApi
+} from '@/api/dashboard/workplace'
+import type {
+  WorkplaceTotal,
+  Project,
+  Dynamic,
+  Team,
+  Shortcuts
+} from '@/api/dashboard/workplace/types'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
 
 const { wsCache } = useCache()
 
 const loading = ref(true)
+
+const toLink = (link: string) => {
+  window.open(link)
+}
 
 // 获取统计数
 let totalSate = reactive<WorkplaceTotal>({
@@ -38,6 +54,18 @@ const getProject = async () => {
     projects = Object.assign(projects, res.data)
   }
 }
+
+let shortcuts = reactive<Shortcuts[]>([])
+
+// 获取快捷操作
+const getShortcuts = async () => {
+  const res = await getShortcutsApi().catch(() => {})
+  if (res) {
+    shortcuts = Object.assign(shortcuts, res.data)
+  }
+}
+
+getShortcuts()
 
 // 获取动态
 let dynamics = reactive<Dynamic[]>([])
@@ -154,14 +182,16 @@ const user = wsCache.get(appStore.getUserInfo)
               :xs="24"
             >
               <ElCard shadow="hover">
-                <div class="flex items-center">
-                  <Icon :icon="item.icon" :size="25" class="mr-10px" />
-                  <span class="text-16px">{{ item.name }}</span>
-                </div>
-                <div class="mt-15px text-14px text-gray-400">{{ t(item.message) }}</div>
-                <div class="mt-20px text-12px text-gray-400 flex justify-between">
-                  <span>{{ item.personal }}</span>
-                  <span>{{ formatTime(item.time, 'yyyy-MM-dd') }}</span>
+                <div class="cursor-pointer" @click="toLink(item.link)">
+                  <div class="flex items-center">
+                    <Icon :icon="item.icon" :size="25" class="mr-10px" />
+                    <span class="text-16px">{{ item.name }}</span>
+                  </div>
+                  <div class="mt-15px text-14px text-gray-400">{{ t(item.message) }}</div>
+                  <div class="mt-20px text-12px text-gray-400 flex justify-between">
+                    <span>{{ item.personal }}</span>
+                    <span>{{ formatTime(item.time, 'yyyy-MM-dd') }}</span>
+                  </div>
                 </div>
               </ElCard>
             </ElCol>
@@ -206,9 +236,18 @@ const user = wsCache.get(appStore.getUserInfo)
           <span>{{ t('workplace.shortcutOperation') }}</span>
         </template>
         <ElSkeleton :loading="loading" animated>
-          <ElCol :xl="12" :lg="12" :md="12" :sm="24" :xs="24" class="mb-10px">
-            <ElLink type="default" :underline="false">
-              {{ t('workplace.operation') }}
+          <ElCol
+            v-for="(item, index) in shortcuts"
+            :key="`card-${index}`"
+            :xl="12"
+            :lg="12"
+            :md="12"
+            :sm="12"
+            :xs="12"
+            class="mb-10px"
+          >
+            <ElLink type="primary" :href="item.link" target="_blank" :underline="false">
+              {{ item.name }}
             </ElLink>
           </ElCol>
         </ElSkeleton>

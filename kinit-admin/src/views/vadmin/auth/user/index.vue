@@ -6,19 +6,24 @@ import {
   addUserListApi,
   delUserListApi,
   putUserListApi,
-  getUserApi
+  getUserApi,
+  postExportUserQueryListApi
 } from '@/api/vadmin/auth/user'
 import { useTable } from '@/hooks/web/useTable'
-import { columns } from './components/user.data'
-import { ref, unref } from 'vue'
+import { columns, searchSchema } from './components/user.data'
+import { ref, unref, watch, nextTick } from 'vue'
 import Write from './components/Write.vue'
+import Import from './components/Import.vue'
+import Password from './components/Password.vue'
 import { Dialog } from '@/components/Dialog'
-import { ElButton, ElMessage, ElSwitch } from 'element-plus'
+import { ElButton, ElMessage, ElSwitch, ElRow, ElCol } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { selectDictLabel, DictDetail } from '@/utils/dict'
 import { useDictStore } from '@/store/modules/dict'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
 import { useRouter } from 'vue-router'
+import { RightToolbar } from '@/components/RightToolbar'
+import { Search } from '@/components/Search'
 
 const { t } = useI18n()
 
@@ -36,9 +41,10 @@ const getOptions = async () => {
 
 getOptions()
 
-const { register, tableObject, methods } = useTable({
+const { register, elTableRef, tableObject, methods } = useTable({
   getListApi: getUserListApi,
   delListApi: delUserListApi,
+  exportQueryListApi: postExportUserQueryListApi,
   response: {
     data: 'data',
     count: 'count'
@@ -52,6 +58,8 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const actionType = ref('')
 const loading = ref(false)
+
+const { getList, setSearchParams, exportQueryList } = methods
 
 // 添加事件
 const AddAction = () => {
@@ -72,11 +80,18 @@ const updateAction = async (row: any) => {
 }
 
 // 删除事件
-const delData = async (row: any) => {
-  tableObject.currentRow = row
-  const { delListApi } = methods
+const delDatas = async (row: any, multiple: boolean) => {
+  const { delListApi, getSelections } = methods
   loading.value = true
-  await delListApi([row.id], false).finally(() => {
+  const selections = ref([] as any[])
+  if (multiple) {
+    selections.value = await getSelections()
+    selections.value = selections.value.map((item) => item.id)
+  } else {
+    tableObject.currentRow = row
+    selections.value = [row.id]
+  }
+  await delListApi(selections.value, multiple).finally(() => {
     loading.value = false
   })
 }
@@ -115,15 +130,72 @@ const save = async () => {
   })
 }
 
-const { getList } = methods
-
 getList()
+
+const tableSize = ref('default')
+
+watch(tableSize, (val) => {
+  tableSize.value = val
+})
+
+watch(
+  columns,
+  async () => {
+    await nextTick()
+    elTableRef.value?.doLayout()
+  },
+  {
+    deep: true
+  }
+)
+
+const importDialogVisible = ref(false)
+const importDialogTitle = ref('批量导入用户')
+
+// 批量导入用户
+const importList = () => {
+  importDialogVisible.value = true
+}
+
+const passwordDialogVisible = ref(false)
+const passwordDialogTitle = ref('重置密码并发送短信')
+const selections = ref([] as any[])
+
+// 批量发送密码至短信
+const sendPasswordToSMS = async () => {
+  const { getSelections } = methods
+  selections.value = await getSelections()
+  if (selections.value.length > 0) {
+    passwordDialogVisible.value = true
+  } else {
+    return ElMessage.warning('请先选择数据')
+  }
+}
 </script>
 
 <template>
   <ContentWrap>
-    <div class="mb-10px">
-      <ElButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</ElButton>
+    <Search :schema="searchSchema" @search="setSearchParams" @reset="setSearchParams" />
+
+    <div class="mb-8px flex justify-between">
+      <ElRow :gutter="10">
+        <ElCol :span="1.5">
+          <ElButton type="primary" @click="AddAction">新增用户</ElButton>
+        </ElCol>
+        <ElCol :span="1.5">
+          <ElButton @click="importList">批量导入用户</ElButton>
+        </ElCol>
+        <ElCol :span="1.5">
+          <ElButton @click="exportQueryList">导出筛选用户</ElButton>
+        </ElCol>
+        <ElCol :span="1.5">
+          <ElButton @click="sendPasswordToSMS">重置密码通知短信</ElButton>
+        </ElCol>
+        <ElCol :span="1.5">
+          <ElButton type="danger" @click="delDatas(null, true)">批量删除</ElButton>
+        </ElCol>
+      </ElRow>
+      <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
     </div>
 
     <Table
@@ -131,21 +203,23 @@ getList()
       v-model:page="tableObject.page"
       :data="tableObject.tableData"
       :loading="tableObject.loading"
-      :selection="false"
+      :selection="true"
+      :size="tableSize"
+      :border="true"
       :pagination="{
         total: tableObject.count
       }"
       @register="register"
     >
       <template #action="{ row }">
-        <ElButton type="primary" text size="small" @click="updateAction(row)">
+        <ElButton type="primary" link size="small" @click="updateAction(row)">
           {{ t('exampleDemo.edit') }}
         </ElButton>
         <ElButton
           type="danger"
-          text
+          link
           size="small"
-          @click="delData(row)"
+          @click="delDatas(row, false)"
           v-if="authStore.getUser.id !== row.id && row.id !== 1"
         >
           {{ t('exampleDemo.del') }}
@@ -170,6 +244,24 @@ getList()
         </ElButton>
         <ElButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</ElButton>
       </template>
+    </Dialog>
+
+    <Dialog
+      v-model="importDialogVisible"
+      :title="importDialogTitle"
+      width="750px"
+      maxHeight="550px"
+    >
+      <Import @get-list="getList" />
+    </Dialog>
+
+    <Dialog
+      v-model="passwordDialogVisible"
+      :title="passwordDialogTitle"
+      width="850px"
+      maxHeight="550px"
+    >
+      <Password :selections="selections" @get-list="getList" />
     </Dialog>
   </ContentWrap>
 </template>

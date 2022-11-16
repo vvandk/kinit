@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ContentWrap } from '@/components/ContentWrap'
 import { Table } from '@/components/Table'
+import { RightToolbar } from '@/components/RightToolbar'
 import {
   getDictTypeListApi,
   addDictTypeListApi,
@@ -10,10 +11,10 @@ import {
 } from '@/api/vadmin/system/dict'
 import { useTable } from '@/hooks/web/useTable'
 import { columns, searchSchema } from './components/dict.data'
-import { ref, unref } from 'vue'
+import { ref, unref, watch, nextTick } from 'vue'
 import Write from './components/Write.vue'
 import { Dialog } from '@/components/Dialog'
-import { ElButton, ElMessage } from 'element-plus'
+import { ElButton, ElMessage, ElRow, ElCol } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
 import { Search } from '@/components/Search'
@@ -22,7 +23,7 @@ const { push } = useRouter()
 
 const { t } = useI18n()
 
-const { register, tableObject, methods } = useTable({
+const { register, elTableRef, tableObject, methods } = useTable({
   getListApi: getDictTypeListApi,
   delListApi: delDictTypeListApi,
   response: {
@@ -101,14 +102,34 @@ const save = async () => {
 const { getList, setSearchParams } = methods
 
 getList()
+
+const tableSize = ref('default')
+watch(tableSize, (val) => {
+  tableSize.value = val
+})
+watch(
+  columns,
+  async () => {
+    await nextTick()
+    elTableRef.value?.doLayout()
+  },
+  {
+    deep: true
+  }
+)
 </script>
 
 <template>
   <ContentWrap>
     <Search :schema="searchSchema" @search="setSearchParams" @reset="setSearchParams" />
 
-    <div class="mb-10px">
-      <ElButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</ElButton>
+    <div class="mb-8px flex justify-between">
+      <ElRow :gutter="10">
+        <ElCol :span="1.5">
+          <ElButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</ElButton>
+        </ElCol>
+      </ElRow>
+      <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
     </div>
 
     <Table
@@ -120,6 +141,8 @@ getList()
       :pagination="{
         total: tableObject.count
       }"
+      :border="true"
+      :size="tableSize"
       @register="register"
     >
       <template #action="{ row }">

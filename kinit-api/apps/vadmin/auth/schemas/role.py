@@ -11,7 +11,7 @@
 
 from typing import Optional, List
 from pydantic import BaseModel
-from core.validator import ValiDatetime
+from core.data_types import DatetimeStr
 from .menu import MenuSimpleOut
 
 
@@ -26,8 +26,8 @@ class Role(BaseModel):
 
 class RoleSimpleOut(Role):
     id: int
-    create_datetime: ValiDatetime
-    update_datetime: ValiDatetime
+    create_datetime: DatetimeStr
+    update_datetime: DatetimeStr
 
     class Config:
         orm_mode = True

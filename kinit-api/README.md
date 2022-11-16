@@ -44,6 +44,8 @@ SQLAlchemy-Utils：https://sqlalchemy-utils.readthedocs.io/en/latest/
 ## 使用
 
 ```
+source /opt/env/kinit-pro/bin/activate
+
 # 安装依赖库
 pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 

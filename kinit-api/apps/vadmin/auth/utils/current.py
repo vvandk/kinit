@@ -5,16 +5,9 @@
 # @IDE            : PyCharm
 # @desc           : 获取认证后的信息工具
 
-
-from fastapi import Depends
-from pydantic import BaseModel
-from starlette import status
 from sqlalchemy.ext.asyncio import AsyncSession
-from core.database import db_getter
-from application import settings
-from jose import JWTError, jwt
 from apps.vadmin.auth import crud, models
-from core.exception import CustomException
+from .validation import AuthValidation, Auth
 
 
 async def get_user_permissions(user: models.VadminUser, db: AsyncSession):
@@ -35,15 +28,8 @@ async def get_user_permissions(user: models.VadminUser, db: AsyncSession):
     return list(permissions)
 
 
-class Auth(BaseModel):
-    user: models.VadminUser = None
-    db: AsyncSession
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-async def login_auth(token: str = Depends(settings.oauth2_scheme), db: AsyncSession = Depends(db_getter)):
+@AuthValidation
+async def login_auth(telephone: str, db: AsyncSession):
     """
     更新 login_auth 以接收 JWT 令牌。
 
@@ -51,36 +37,11 @@ async def login_auth(token: str = Depends(settings.oauth2_scheme), db: AsyncSess
 
     如果令牌无效，立即返回一个 HTTP 错误。
     """
-    if not settings.OAUTH_ENABLE:
-        return Auth(db=db)
-    if not token:
-        raise CustomException(msg="请先登录！", code=status.HTTP_403_FORBIDDEN)
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        telephone: str = payload.get("sub")
-        if telephone is None:
-            raise CustomException(msg="无效 Token！", code=status.HTTP_403_FORBIDDEN)
-    except JWTError:
-        raise CustomException(msg="无效 Token！", code=status.HTTP_403_FORBIDDEN)
-    user = await crud.UserDal(db).get_data(telephone=telephone, return_none=True)
-    if user is None:
-        raise CustomException(msg="用户不存在！", code=status.HTTP_404_NOT_FOUND)
-    elif not user.is_active:
-        raise CustomException(msg="用户已被冻结！", code=status.HTTP_403_FORBIDDEN)
-    elif user.is_cancel:
-        raise CustomException(msg="用户已被注销！", code=status.HTTP_403_FORBIDDEN)
-    return Auth(user=user, db=db)
+    return await crud.UserDal(db).get_data(telephone=telephone, return_none=True)
 
 
-class AdminAuth(BaseModel):
-    admin: models.VadminUser
-    db: AsyncSession
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-async def full_admin(token: str = Depends(settings.oauth2_scheme), db: AsyncSession = Depends(db_getter)):
+@AuthValidation
+async def full_admin(telephone: str, db: AsyncSession):
     """
     更新 full_user 以接收 JWT 令牌。
 
@@ -88,21 +49,6 @@ async def full_admin(token: str = Depends(settings.oauth2_scheme), db: AsyncSess
 
     如果令牌无效，立即返回一个 HTTP 错误。
     """
-    if not token:
-        raise CustomException(msg="请先登录！", code=status.HTTP_403_FORBIDDEN)
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        telephone: str = payload.get("sub")
-        if telephone is None:
-            raise CustomException(msg="无效 Token！", code=status.HTTP_403_FORBIDDEN)
-    except JWTError:
-        raise CustomException(msg="无效 Token！", code=status.HTTP_403_FORBIDDEN)
-    admin = await crud.UserDal(db).get_data(telephone=telephone, return_none=True,
-                                            options=[models.VadminUser.roles, "roles.menus"])
-    if admin is None:
-        raise CustomException(msg="用户不存在！", code=status.HTTP_404_NOT_FOUND)
-    elif not admin.is_active:
-        raise CustomException(msg="用户已被冻结！", code=status.HTTP_403_FORBIDDEN)
-    elif admin.is_cancel:
-        raise CustomException(msg="用户已被注销！", code=status.HTTP_403_FORBIDDEN)
-    return AdminAuth(admin=admin, db=db)
+    options = [models.VadminUser.roles, "roles.menus"]
+    return await crud.UserDal(db).get_data(telephone=telephone, return_none=True, options=options)
+

@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { LoginForm } from './components'
+import { LoginForm, TelephoneCodeForm } from './components'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { useI18n } from '@/hooks/web/useI18n'
 import { underlineToHump } from '@/utils'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
+import { computed, ref } from 'vue'
+import { ElButton } from 'element-plus'
 
 const { getPrefixCls } = useDesign()
 
@@ -13,7 +15,23 @@ const prefixCls = getPrefixCls('login')
 
 const appStore = useAppStore()
 
+const icpNumber = computed(() => appStore.getIcpNumber)
+
 const { t } = useI18n()
+
+const toICO = () => {
+  window.open('https://beian.miit.gov.cn/#/Integrated/index')
+}
+
+const isLogin = ref(true)
+
+const toTelephoneCode = () => {
+  isLogin.value = false
+}
+
+const toLogin = () => {
+  isLogin.value = true
+}
 </script>
 
 <template>
@@ -26,7 +44,7 @@ const { t } = useI18n()
         :class="`${prefixCls}__left flex-1 bg-gray-500 bg-opacity-20 relative p-30px <xl:hidden`"
       >
         <div class="flex items-center relative text-white">
-          <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" />
+          <img :src="appStore.getLogoImage" alt="" class="w-48px h-48px mr-10px" />
           <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span>
         </div>
         <div class="flex justify-center items-center h-[calc(100%-60px)]">
@@ -46,7 +64,7 @@ const { t } = useI18n()
       <div class="flex-1 p-30px <sm:p-10px dark:bg-v-dark relative">
         <div class="flex justify-between items-center text-white @2xl:justify-end @xl:justify-end">
           <div class="flex items-center @2xl:hidden @xl:hidden">
-            <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" />
+            <img :src="appStore.getLogoImage" alt="" class="w-48px h-48px mr-10px" />
             <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span>
           </div>
 
@@ -59,9 +77,21 @@ const { t } = useI18n()
           <div
             class="h-full flex items-center m-auto w-[100%] @2xl:max-w-500px @xl:max-w-500px @md:max-w-500px @lg:max-w-500px"
           >
-            <LoginForm class="p-20px h-auto m-auto <xl:(rounded-3xl light:bg-white)" />
+            <LoginForm
+              v-if="isLogin"
+              class="p-20px h-auto m-auto <xl:(rounded-3xl light:bg-white)"
+              @to-telephone-code="toTelephoneCode"
+            />
+            <TelephoneCodeForm
+              v-else
+              class="p-20px h-auto m-auto <xl:(rounded-3xl light:bg-white)"
+              @to-login="toLogin"
+            />
           </div>
         </Transition>
+        <div class="text-14px text-white font-normal absolute bottom-5 right-10">
+          <ElButton type="info" link @click="toICO">{{ icpNumber }}</ElButton>
+        </div>
       </div>
     </div>
   </div>

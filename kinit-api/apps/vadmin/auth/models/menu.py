@@ -28,7 +28,7 @@ class VadminMenu(BaseModel):
     component = Column(String(50), comment="前端组件地址")
     path = Column(String(50), comment="前端路由地址")
     disabled = Column(Boolean, default=False, comment="是否禁用")
-    hidden = Column(Boolean, default=False, comment="是否显示")
+    hidden = Column(Boolean, default=False, comment="是否隐藏")
     order = Column(Integer, comment="排序")
     menu_type = Column(String(8), comment="菜单类型")
     parent_id = Column(ForeignKey("vadmin_auth_menu.id", ondelete='CASCADE'), comment="父菜单")
@@ -38,5 +38,8 @@ class VadminMenu(BaseModel):
     affix = Column(Boolean, comment="如果设置为true，则会一直固定在tag项中(默认 false)", default=False)
     noTagsView = Column(Boolean, comment="如果设置为true，则不会出现在tag中(默认 false)", default=False)
     canTo = Column(Boolean, comment="设置为true即使hidden为true，也依然可以进行路由跳转(默认 false)", default=False)
+    alwaysShow = Column(Boolean, comment="""当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式，
+    只有一个时，会将那个子路由当做根路由显示在侧边栏，若你想不管路由下面的 children 声明的个数都显示你的根路由，
+    你可以设置 alwaysShow: true，这样它就会忽略之前定义的规则，一直显示根路由(默认 true)""", default=True)
 
     roles = relationship("VadminRole", back_populates='menus', secondary=vadmin_role_menus)

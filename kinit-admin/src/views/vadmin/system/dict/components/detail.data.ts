@@ -1,22 +1,30 @@
+import { FormSchema } from '@/types/form'
+import { TableColumn } from '@/types/table'
 import { ElTag } from 'element-plus'
 import { h, reactive } from 'vue'
 
 export const columns = reactive<TableColumn[]>([
   {
     field: 'id',
-    label: '字典编号'
+    label: '字典编号',
+    show: true,
+    disabled: true
   },
   {
     field: 'label',
-    label: '字典标签'
+    label: '字典标签',
+    show: true,
+    disabled: true
   },
   {
     field: 'value',
-    label: '字典键值'
+    label: '字典键值',
+    show: true
   },
   {
     field: 'order',
-    label: '字典排序'
+    label: '字典排序',
+    show: true
   },
   {
     field: 'disabled',
@@ -29,20 +37,24 @@ export const columns = reactive<TableColumn[]>([
         },
         () => (cellValue ? '禁用' : '启用')
       )
-    }
+    },
+    show: true
   },
   {
     field: 'remark',
-    label: '备注'
+    label: '备注',
+    show: true
   },
   {
     field: 'create_datetime',
-    label: '创建时间'
+    label: '创建时间',
+    show: true
   },
   {
     field: 'action',
-    width: '260px',
-    label: '操作'
+    width: '150px',
+    label: '操作',
+    show: true
   }
 ])
 

@@ -10,8 +10,8 @@
 
 
 from typing import Optional, List
-from pydantic import BaseModel, Field, validator
-from core.validator import ValiDatetime
+from pydantic import BaseModel
+from core.data_types import DatetimeStr
 
 
 class Menu(BaseModel):
@@ -26,12 +26,13 @@ class Menu(BaseModel):
     perms: Optional[str] = None
     parent_id: Optional[int] = None
     menu_type: str
+    alwaysShow: Optional[bool] = True
 
 
 class MenuSimpleOut(Menu):
     id: int
-    create_datetime: ValiDatetime
-    update_datetime: ValiDatetime
+    create_datetime: DatetimeStr
+    update_datetime: DatetimeStr
 
     class Config:
         orm_mode = True
@@ -41,17 +42,18 @@ class Meta(BaseModel):
     title: str
     icon: Optional[str] = None
     hidden: bool = False
-    noCache: Optional[bool] = True
+    noCache: Optional[bool] = False
     breadcrumb: Optional[bool] = True
     affix: Optional[bool] = False
     noTagsView: Optional[bool] = False
     canTo: Optional[bool] = False
+    alwaysShow: Optional[bool] = True
 
 
 # 路由展示
 class RouterOut(BaseModel):
     name: Optional[str] = None
-    component: str
+    component: Optional[str] = None
     path: str
     redirect: Optional[str] = None
     meta: Optional[Meta] = None

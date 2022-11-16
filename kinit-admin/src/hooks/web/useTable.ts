@@ -4,6 +4,8 @@ import { ref, reactive, watch, computed, unref, nextTick } from 'vue'
 import { get } from 'lodash-es'
 import type { TableProps } from '@/components/Table/src/types'
 import { useI18n } from '@/hooks/web/useI18n'
+import { TableSetPropsType } from '@/types/table'
+import { columns } from 'element-plus/es/components/table-v2/src/common'
 
 const { t } = useI18n()
 
@@ -15,6 +17,7 @@ interface TableResponse<T = any> {
 interface UseTableConfig<T = any> {
   getListApi: (option: any) => Promise<IResponse<TableResponse<T>>>
   delListApi?: (option: any) => Promise<IResponse>
+  exportQueryListApi?: (params: any, data: any) => Promise<IResponse>
   // 返回数据格式配置
   response: {
     data: string
@@ -136,6 +139,7 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
     },
     // 与Search组件结合
     setSearchParams: (data: Recordable) => {
+      tableObject.page = 1
       tableObject.params = Object.assign(tableObject.params, {
         limit: tableObject.limit,
         page: tableObject.page,
@@ -167,6 +171,31 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
         })
       } else {
         await delData(ids)
+      }
+    },
+    // 导出筛选列表
+    exportQueryList: async () => {
+      if (config?.exportQueryListApi) {
+        const header = config?.props?.columns
+          ?.filter((item) => item.show === true)
+          .map((item) => {
+            return { field: item.field, label: item.label }
+          })
+        tableObject.loading = true
+        const res = await config?.exportQueryListApi(unref(paramsObj), header).finally(() => {
+          tableObject.loading = false
+        })
+        if (res) {
+          const a = document.createElement('a')
+          a.style.display = 'none'
+          a.href = res.data.url
+          a.target = '_blank'
+          a.download = res.data.filename
+          const event = new MouseEvent('click')
+          a.dispatchEvent(event)
+        }
+      } else {
+        ElMessage.error('删除失败，请配置删除接口！')
       }
     }
   }

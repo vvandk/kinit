@@ -9,16 +9,18 @@ import {
   getRoleApi
 } from '@/api/vadmin/auth/role'
 import { useTable } from '@/hooks/web/useTable'
-import { ElButton, ElMessage, ElSwitch } from 'element-plus'
-import { columns } from './components/role.data'
-import { ref, unref } from 'vue'
+import { ElButton, ElMessage, ElSwitch, ElRow, ElCol } from 'element-plus'
+import { columns, searchSchema } from './components/role.data'
+import { ref, unref, watch, nextTick } from 'vue'
 import Write from './components/Write.vue'
 import { Dialog } from '@/components/Dialog'
 import { useI18n } from '@/hooks/web/useI18n'
+import { RightToolbar } from '@/components/RightToolbar'
+import { Search } from '@/components/Search'
 
 const { t } = useI18n()
 
-const { register, tableObject, methods } = useTable({
+const { register, elTableRef, tableObject, methods } = useTable({
   getListApi: getRoleListApi,
   delListApi: delRoleListApi,
   response: {
@@ -93,15 +95,39 @@ const save = async () => {
   })
 }
 
-const { getList } = methods
+const { getList, setSearchParams } = methods
 
 getList()
+
+const tableSize = ref('default')
+
+watch(tableSize, (val) => {
+  tableSize.value = val
+})
+
+watch(
+  columns,
+  async () => {
+    await nextTick()
+    elTableRef.value?.doLayout()
+  },
+  {
+    deep: true
+  }
+)
 </script>
 
 <template>
   <ContentWrap>
-    <div class="mb-10px">
-      <ElButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</ElButton>
+    <Search :schema="searchSchema" @search="setSearchParams" @reset="setSearchParams" />
+
+    <div class="mb-8px flex justify-between">
+      <ElRow :gutter="10">
+        <ElCol :span="1.5">
+          <ElButton type="primary" @click="AddAction">新增角色</ElButton>
+        </ElCol>
+      </ElRow>
+      <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
     </div>
 
     <Table
@@ -109,6 +135,8 @@ getList()
       v-model:page="tableObject.page"
       :data="tableObject.tableData"
       :loading="tableObject.loading"
+      :size="tableSize"
+      :border="true"
       :selection="false"
       :pagination="{
         total: tableObject.count
@@ -116,10 +144,10 @@ getList()
       @register="register"
     >
       <template #action="{ row }">
-        <ElButton type="primary" text size="small" @click="updateAction(row)" v-if="row.id !== 1">
+        <ElButton type="primary" link size="small" @click="updateAction(row)" v-if="row.id !== 1">
           {{ t('exampleDemo.edit') }}
         </ElButton>
-        <ElButton type="danger" text size="small" @click="delData(row)" v-if="row.id !== 1">
+        <ElButton type="danger" link size="small" @click="delData(row)" v-if="row.id !== 1">
           {{ t('exampleDemo.del') }}
         </ElButton>
       </template>

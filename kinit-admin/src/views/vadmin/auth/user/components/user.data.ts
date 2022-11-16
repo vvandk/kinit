@@ -1,42 +1,57 @@
+import { FormSchema } from '@/types/form'
+import { TableColumn } from '@/types/table'
 import { reactive } from 'vue'
 
 export const columns = reactive<TableColumn[]>([
   {
     field: 'id',
-    label: '用户编号'
+    label: '用户编号',
+    width: '150px',
+    show: true,
+    disabled: true
   },
   {
     field: 'name',
-    label: '姓名'
+    label: '姓名',
+    show: true,
+    disabled: true
   },
   {
     field: 'nickname',
-    label: '昵称'
+    label: '昵称',
+    show: true
   },
   {
     field: 'telephone',
-    label: '手机号'
+    label: '手机号',
+    show: true,
+    disabled: true
   },
   {
     field: 'gender',
-    label: '性别'
+    label: '性别',
+    show: true
   },
   {
     field: 'is_active',
-    label: '是否可用'
+    label: '是否可用',
+    show: true
   },
   {
     field: 'last_login',
-    label: '最近一次登录时间'
+    label: '最近一次登录时间',
+    show: true
   },
   {
     field: 'create_datetime',
-    label: '创建时间'
+    label: '创建时间',
+    show: true
   },
   {
     field: 'action',
-    width: '260px',
-    label: '操作'
+    width: '150px',
+    label: '操作',
+    show: true
   }
 ])
 
@@ -132,5 +147,45 @@ export const schema = reactive<FormSchema[]>([
       collapseTags: true
     },
     value: []
+  }
+])
+
+export const searchSchema = reactive<FormSchema[]>([
+  {
+    field: 'name',
+    label: '姓名',
+    component: 'Input',
+    componentProps: {
+      clearable: false
+    }
+  },
+  {
+    field: 'telephone',
+    label: '手机号',
+    component: 'Input',
+    componentProps: {
+      clearable: false
+    }
+  },
+  {
+    field: 'is_active',
+    label: '状态',
+    component: 'Select',
+    componentProps: {
+      style: {
+        width: '100%'
+      },
+      options: [
+        {
+          label: '正常',
+          value: true
+        },
+        {
+          label: '停用',
+          value: false
+        }
+      ]
+    },
+    value: true
   }
 ])

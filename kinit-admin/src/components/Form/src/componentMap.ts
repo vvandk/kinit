@@ -22,6 +22,8 @@ import {
 } from 'element-plus'
 import { InputPassword } from '@/components/InputPassword'
 import { Editor } from '@/components/Editor'
+import { Text } from '@/components/Text'
+import { ComponentName } from '@/types/components'
 
 const componentMap: Recordable<Component, ComponentName> = {
   Radio: ElRadioGroup,
@@ -46,7 +48,8 @@ const componentMap: Recordable<Component, ComponentName> = {
   InputPassword: InputPassword,
   Editor: Editor,
   TreeSelect: ElTreeSelect,
-  Tree: ElTree
+  Tree: ElTree,
+  Text: Text
 }
 
 export { componentMap }

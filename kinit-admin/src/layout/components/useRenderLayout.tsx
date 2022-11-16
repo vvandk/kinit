@@ -32,6 +32,9 @@ const fixedHeader = computed(() => appStore.getFixedHeader)
 // 是否是移动端
 const mobile = computed(() => appStore.getMobile)
 
+// 固定菜单
+const fixedMenu = computed(() => appStore.getFixedMenu)
+
 export const useRenderLayout = () => {
   const renderClassic = () => {
     return (
@@ -107,7 +110,7 @@ export const useRenderLayout = () => {
     return (
       <>
         <div class="flex items-center bg-[var(--top-header-bg-color)] border-bottom-1 border-solid border-[var(--top-tool-border-color)] dark:border-[var(--el-border-color)]">
-          {logo.value ? <Logo class="hover-tigger !pr-15px"></Logo> : undefined}
+          {logo.value ? <Logo class="hover-trigger !pr-15px"></Logo> : undefined}
 
           <ToolHeader class="flex-1"></ToolHeader>
         </div>
@@ -164,7 +167,7 @@ export const useRenderLayout = () => {
     return (
       <>
         <div class="flex items-center justify-between bg-[var(--top-header-bg-color)] border-bottom-1 border-solid border-[var(--top-tool-border-color)] dark:border-[var(--el-border-color)]">
-          {logo.value ? <Logo class="hover-tigger"></Logo> : undefined}
+          {logo.value ? <Logo class="hover-trigger"></Logo> : undefined}
           <Menu class="flex-1 px-10px h-[var(--top-tool-height)]"></Menu>
           <ToolHeader></ToolHeader>
         </div>
@@ -201,7 +204,7 @@ export const useRenderLayout = () => {
     return (
       <>
         <div class="flex items-center bg-[var(--top-header-bg-color)] border-bottom-1 border-solid border-[var(--top-tool-border-color)] dark:border-[var(--el-border-color)]">
-          {logo.value ? <Logo class="hover-tigger !pr-15px"></Logo> : undefined}
+          {logo.value ? <Logo class="hover-trigger !pr-15px"></Logo> : undefined}
 
           <ToolHeader class="flex-1"></ToolHeader>
         </div>
@@ -213,9 +216,13 @@ export const useRenderLayout = () => {
               'h-[100%]',
               {
                 'w-[calc(100%-var(--tab-menu-min-width))] left-[var(--tab-menu-min-width)]':
-                  collapse.value,
+                  collapse.value && !fixedMenu.value,
                 'w-[calc(100%-var(--tab-menu-max-width))] left-[var(--tab-menu-max-width)]':
-                  !collapse.value
+                  !collapse.value && !fixedMenu.value,
+                'w-[calc(100%-var(--tab-menu-min-width)-var(--left-menu-max-width))] ml-[var(--left-menu-max-width)]':
+                  collapse.value && fixedMenu.value,
+                'w-[calc(100%-var(--tab-menu-max-width)-var(--left-menu-max-width))] ml-[var(--left-menu-max-width)]':
+                  !collapse.value && fixedMenu.value
               }
             ]}
             style="transition: all var(--transition-time-02);"
@@ -239,7 +246,13 @@ export const useRenderLayout = () => {
                       'w-[calc(100%-var(--tab-menu-min-width))] left-[var(--tab-menu-min-width)] mt-[var(--logo-height)]':
                         collapse.value && fixedHeader.value,
                       'w-[calc(100%-var(--tab-menu-max-width))] left-[var(--tab-menu-max-width)] mt-[var(--logo-height)]':
-                        !collapse.value && fixedHeader.value
+                        !collapse.value && fixedHeader.value,
+                      '!fixed top-0 left-[var(--tab-menu-min-width)+var(--left-menu-max-width)] z-10':
+                        fixedHeader.value && fixedMenu.value,
+                      'w-[calc(100%-var(--tab-menu-min-width)-var(--left-menu-max-width))] left-[var(--tab-menu-min-width)+var(--left-menu-max-width)] mt-[var(--logo-height)]':
+                        collapse.value && fixedHeader.value && fixedMenu.value,
+                      'w-[calc(100%-var(--tab-menu-max-width)-var(--left-menu-max-width))] left-[var(--tab-menu-max-width)+var(--left-menu-max-width)] mt-[var(--logo-height)]':
+                        !collapse.value && fixedHeader.value && fixedMenu.value
                     }
                   ]}
                   style="transition: width var(--transition-time-02), left var(--transition-time-02);"

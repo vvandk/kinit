@@ -60,14 +60,22 @@ def register_exception(app: FastAPI):
         print("捕捉到重写请求验证异常异常：validation_exception_handler")
         logger.error(exc.errors())
         print(exc.errors())
+        msg = exc.errors()[0].get("msg")
+        if msg == "field required":
+            msg = "请求失败，缺少必填项！"
+        elif msg == "value is not a valid list":
+            print(exc.errors())
+            msg = f"类型错误，提交参数应该为列表！"
+        elif msg == "value is not a valid int":
+            msg = f"类型错误，提交参数应该为整数！"
         return JSONResponse(
             status_code=200,
             content=jsonable_encoder(
                 {
-                    "message": exc.errors()[0].get("msg")
+                    "message": msg
                     , "body": exc.body
                     , "code": status.HTTP_400_BAD_REQUEST
-                 }
+                }
             ),
         )
 

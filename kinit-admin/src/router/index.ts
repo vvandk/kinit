@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { App } from 'vue'
 import { Layout } from '@/utils/routerHelper'
@@ -13,7 +13,9 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     redirect: '/dashboard',
     name: 'Root',
     meta: {
-      hidden: true
+      hidden: true,
+      title: '首页',
+      noTagsView: true
     }
   },
   {
@@ -29,7 +31,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/reset/password',
     component: () => import('@/views/Reset/Reset.vue'),
-    name: 'Reset',
+    name: 'ResetPassword',
     meta: {
       hidden: true,
       title: '重置密码',
@@ -48,80 +50,20 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   }
 ]
 
-export const asyncRouterMap: AppRouteRecordRaw[] = [
-  // {
-  //   path: '/dashboard',
-  //   component: Layout,
-  //   redirect: '/dashboard/analysis',
-  //   name: 'Dashboard',
-  //   meta: {
-  //     title: t('router.dashboard'),
-  //     icon: 'ant-design:dashboard-filled',
-  //     alwaysShow: true
-  //   },
-  //   children: [
-  //     {
-  //       path: 'analysis',
-  //       component: () => import('@/views/Dashboard/Analysis.vue'),
-  //       name: 'Analysis',
-  //       meta: {
-  //         title: t('router.analysis'),
-  //         noCache: true,
-  //         affix: true
-  //       }
-  //     },
-  //     {
-  //       path: 'workplace',
-  //       component: () => import('@/views/Dashboard/Workplace.vue'),
-  //       name: 'Workplace',
-  //       meta: {
-  //         title: t('router.workplace'),
-  //         noCache: true
-  //       }
-  //     }
-  //   ]
-  // }
-  // {
-  //   path: '/authorization',
-  //   component: Layout,
-  //   redirect: '/authorization/user',
-  //   name: 'Authorization',
-  //   meta: {
-  //     title: t('router.authorization'),
-  //     icon: 'eos-icons:role-binding',
-  //     alwaysShow: true
-  //   },
-  //   children: [
-  //     {
-  //       path: 'user',
-  //       component: () => import('@/views/Authorization/User.vue'),
-  //       name: 'User',
-  //       meta: {
-  //         title: t('router.user')
-  //       }
-  //     },
-  //     {
-  //       path: 'role',
-  //       component: () => import('@/views/Authorization/Role.vue'),
-  //       name: 'Role',
-  //       meta: {
-  //         title: t('router.role')
-  //       }
-  //     }
-  //   ]
-  // }
-]
+export const asyncRouterMap: AppRouteRecordRaw[] = []
 
 const router = createRouter({
   history: createWebHistory(), // HTML5 模式，https://router.vuejs.org/zh/guide/essentials/history-mode.html#hash-%E6%A8%A1%E5%BC%8F
+  // history: createWebHashHistory(), // Hash 模式，https://router.vuejs.org/zh/guide/essentials/history-mode.html#hash-%E6%A8%A1%E5%BC%8F
   strict: true,
   routes: constantRouterMap as RouteRecordRaw[],
   scrollBehavior: () => ({ left: 0, top: 0 })
 })
 
 export const resetRouter = (): void => {
-  const resetWhiteNameList = ['Redirect', 'Login', 'NoFind', 'Root', 'Reset']
+  const resetWhiteNameList = ['Login', 'NoFind', 'Root', 'ResetPassword']
   router.getRoutes().forEach((route) => {
+    // 切记 name 不能重复
     const { name } = route
     if (name && !resetWhiteNameList.includes(name as string)) {
       router.hasRoute(name) && router.removeRoute(name)

@@ -5,12 +5,20 @@
 # @IDE            : PyCharm
 # @desc           : 主要接口文件
 
+# UploadFile 库依赖：pip install python-multipart
 from typing import Optional, List
-from fastapi import APIRouter, Depends, Query, Body
+from fastapi import APIRouter, Depends, Query, Body, UploadFile, Request, Form
+from sqlalchemy.ext.asyncio import AsyncSession
+from application.settings import ALIYUN_OSS
+from core.database import db_getter
+from utils.aliyun_oss import AliyunOSS, BucketConf
+from utils.aliyun_sms import AliyunSMS
+from utils.file_manage import FileManage
 from utils.response import SuccessResponse, ErrorResponse
-from . import schemas, crud
-from core.dependencies import paging, id_list, Params
+from . import schemas, crud, models
+from core.dependencies import Paging, IdList
 from apps.vadmin.auth.utils.current import login_auth, Auth
+from .params import DictTypeParams, DictDetailParams
 
 app = APIRouter()
 
@@ -19,10 +27,9 @@ app = APIRouter()
 #    字典类型管理
 ###########################################################
 @app.get("/dict/types/", summary="获取字典类型列表")
-async def get_dict_types(params: Params = Depends(paging), auth: Auth = Depends(login_auth),
-                         dict_name: Optional[str] = Query(None, title="字典名称", description="查询字典名称")):
-    datas = await crud.DictTypeDal(auth.db).get_datas(params.page, params.limit, dict_name=dict_name)
-    count = await crud.DictTypeDal(auth.db).get_count(dict_name=dict_name)
+async def get_dict_types(params: DictTypeParams = Depends(), auth: Auth = Depends(login_auth)):
+    datas = await crud.DictTypeDal(auth.db).get_datas(**params.dict())
+    count = await crud.DictTypeDal(auth.db).get_count(**params.to_count())
     return SuccessResponse(datas, count=count)
 
 
@@ -32,8 +39,8 @@ async def create_dict_types(data: schemas.DictType, auth: Auth = Depends(login_a
 
 
 @app.delete("/dict/types/", summary="批量删除字典类型")
-async def delete_dict_types(ids: list = Depends(id_list), auth: Auth = Depends(login_auth)):
-    await crud.DictTypeDal(auth.db).delete_datas(ids=ids)
+async def delete_dict_types(ids: IdList = Depends(), auth: Auth = Depends(login_auth)):
+    await crud.DictTypeDal(auth.db).delete_datas(ids=ids.ids)
     return SuccessResponse("删除成功")
 
 
@@ -70,20 +77,17 @@ async def create_dict_details(data: schemas.DictDetails, auth: Auth = Depends(lo
 
 
 @app.get("/dict/details/", summary="获取单个字典类型下的字典元素列表，分页")
-async def get_dict_details(params: Params = Depends(paging), auth: Auth = Depends(login_auth),
-                           dict_type_id: Optional[int] = Query(None, title="查询字典类型", description="查询字典类型"),
-                           label: Optional[str] = Query(None, title="查询字典标签", description="查询字典标签")):
-    if not dict_type_id:
+async def get_dict_details(params: DictDetailParams = Depends(), auth: Auth = Depends(login_auth)):
+    if not params.dict_type_id:
         return ErrorResponse(msg="未获取到字典类型！")
-    datas = await crud.DictDetailsDal(auth.db).\
-        get_datas(params.page, params.limit, label=label, dict_type_id=dict_type_id)
-    count = await crud.DictDetailsDal(auth.db).get_count(label=label, dict_type_id=dict_type_id)
+    datas = await crud.DictDetailsDal(auth.db).get_datas(**params.dict())
+    count = await crud.DictDetailsDal(auth.db).get_count(**params.to_count())
     return SuccessResponse(datas, count=count)
 
 
 @app.delete("/dict/details/", summary="批量删除字典元素")
-async def delete_dict_details(ids: list = Depends(id_list), auth: Auth = Depends(login_auth)):
-    await crud.DictDetailsDal(auth.db).delete_datas(ids)
+async def delete_dict_details(ids: IdList = Depends(), auth: Auth = Depends(login_auth)):
+    await crud.DictDetailsDal(auth.db).delete_datas(ids.ids)
     return SuccessResponse("删除成功")
 
 
@@ -99,11 +103,51 @@ async def get_dict_detail(data_id: int, auth: Auth = Depends(login_auth)):
 
 
 ###########################################################
-#    默认配置
+#    文件上传管理
 ###########################################################
-@app.get("/config/default/{key}/", summary="获取系统默认配置")
-def system_default_config(key: str):
-    data = {
-        "sys.user.initPassword": "123456"
-    }
-    return SuccessResponse(data=data.get(key, None))
+@app.post("/upload/image/to/oss/", summary="上传图片到阿里云OSS")
+async def upload_image_to_oss(file: UploadFile, path: str = Form(...)):
+    manage = FileManage(file, path)
+    result = await AliyunOSS(BucketConf(**ALIYUN_OSS)).upload_image(manage.path, file)
+    if not result:
+        return ErrorResponse(msg="上传失败")
+    return SuccessResponse(result)
+
+
+@app.post("/upload/image/to/local/", summary="上传图片到本地")
+async def upload_image_to_local(file: UploadFile, path: str = Form(...)):
+    manage = FileManage(file, path)
+    path = await manage.save_image_local()
+    return SuccessResponse(path)
+
+
+###########################################################
+#    短信服务管理
+###########################################################
+@app.post("/sms/send/", summary="发送短信验证码（阿里云服务）")
+async def sms_send(request: Request, telephone: str):
+    sms = AliyunSMS(request.app.state.redis, telephone)
+    return SuccessResponse(await sms.main_async(AliyunSMS.Scene.login))
+
+
+###########################################################
+#    系统配置管理
+###########################################################
+@app.get("/settings/tabs/", summary="获取系统配置标签列表")
+async def get_settings_tabs(classify: str, auth: Auth = Depends(login_auth)):
+    return SuccessResponse(await crud.SettingsTabDal(auth.db).get_datas(limit=0, classify=classify))
+
+
+@app.get("/settings/tabs/values/", summary="获取系统配置标签下的信息")
+async def get_settings_tabs_values(tab_id: int, auth: Auth = Depends(login_auth)):
+    return SuccessResponse(await crud.SettingsDal(auth.db).get_tab_values(tab_id=tab_id))
+
+
+@app.put("/settings/tabs/values/", summary="更新系统配置信息")
+async def put_settings_tabs_values(datas: dict = Body(...), auth: Auth = Depends(login_auth)):
+    return SuccessResponse(await crud.SettingsDal(auth.db).update_datas(datas))
+
+
+@app.get("/settings/classifys/", summary="获取系统配置分类下的所有显示标签信息")
+async def get_settings_classifys(classify: str, db: AsyncSession = Depends(db_getter)):
+    return SuccessResponse(await crud.SettingsTabDal(db).get_classify_tab_values([classify]))

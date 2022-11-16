@@ -16,8 +16,8 @@ import re
 def vali_telephone(value: str) -> str:
     """
     手机号验证器
-    :param value: 手机号
-    :return: 手机号
+    @param value: 手机号
+    @return: 手机号
     """
     if not value or len(value) != 11 or not value.isdigit():
         raise ValueError("请输入正确手机号")
@@ -30,13 +30,5 @@ def vali_telephone(value: str) -> str:
     return value
 
 
-class ValiDatetime(str):
 
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        return v.strftime("%Y-%m-%d %H:%M:%S")
 

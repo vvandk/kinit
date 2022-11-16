@@ -6,6 +6,7 @@ import { setIndex } from './helper'
 import { getSlot } from '@/utils/tsxHelper'
 import type { TableProps } from './types'
 import { set } from 'lodash-es'
+import { TableColumn, TableSlotDefault, Pagination, TableSetPropsType } from '../../../types/table'
 
 export default defineComponent({
   name: 'Table',
@@ -23,6 +24,8 @@ export default defineComponent({
     },
     // 展开行
     expand: propTypes.bool.def(false),
+    // 是否为斑马纹 table
+    stripe: propTypes.bool.def(true),
     // 是否展示分页
     pagination: {
       type: Object as PropType<Pagination>,
@@ -49,6 +52,7 @@ export default defineComponent({
   },
   emits: ['update:limit', 'update:page', 'register'],
   setup(props, { attrs, slots, emit, expose }) {
+    console.log('attrs', attrs)
     const elTableRef = ref<ComponentRef<typeof ElTable>>()
 
     // 注册
@@ -230,6 +234,7 @@ export default defineComponent({
           } else {
             const props = { ...v }
             if (props.children) delete props.children
+            if (props.show === false) return
             return (
               <ElTableColumn
                 showOverflowTooltip={showOverflowTooltip}

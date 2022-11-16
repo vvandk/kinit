@@ -1,53 +1,66 @@
 import { reactive } from 'vue'
+import { FormSchema } from '@/types/form'
+import { TableColumn } from '@/types/table'
 
 export const columns = reactive<TableColumn[]>([
   {
     field: 'title',
     label: '菜单名称',
-    width: '200px'
+    width: '200px',
+    disabled: true,
+    show: true
   },
   {
     field: 'icon',
     label: '图标',
-    width: '120px'
+    width: '120px',
+    show: false
   },
   {
     field: 'order',
     label: '排序',
-    width: '120px'
+    width: '120px',
+    show: true
   },
   {
     field: 'menu_type',
     label: '菜单类型',
-    width: '120px'
+    width: '120px',
+    show: true
   },
   {
     field: 'perms',
     label: '权限标识',
-    width: '150px'
+    width: '150px',
+    show: true
   },
   {
     field: 'path',
-    label: '路由地址'
+    label: '路由地址',
+    show: true
   },
   {
     field: 'component',
-    label: '组件路径'
+    label: '组件路径',
+    show: true
   },
   {
     field: 'hidden',
     label: '显示状态',
-    width: '120px'
+    width: '120px',
+    show: true
   },
   {
     field: 'disabled',
     label: '菜单状态',
-    width: '120px'
+    width: '120px',
+    show: true
   },
   {
     field: 'action',
-    width: '200px',
-    label: '操作'
+    width: '150px',
+    label: '操作',
+    show: true
   }
 ])
 

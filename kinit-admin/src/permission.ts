@@ -28,6 +28,8 @@ router.beforeEach(async (to, from, next) => {
   if (wsCache.get(appStore.getUserInfo)) {
     if (to.path === '/login') {
       next({ path: '/' })
+    } else if (to.path === '/reset/password') {
+      next()
     } else {
       if (!authStore.getIsUser) {
         await authStore.getUserInfo()
@@ -36,16 +38,6 @@ router.beforeEach(async (to, from, next) => {
         next()
         return
       }
-
-      // 取消一次性获取所有字典，改为按需获取
-      // if (!dictStore.getIsSetDict) {
-      //   获取所有字典
-      //   const res = await getDictApi()
-      //   if (res) {
-      //     dictStore.setDictObj(res.data)
-      //     dictStore.setIsSetDict(true)
-      //   }
-      // }
 
       // 开发者可根据实际情况进行修改
       const res = await getRoleMenusApi()

@@ -10,22 +10,19 @@
 
 
 from typing import List, Optional
-from pydantic import BaseModel, validator
-from core.validator import vali_telephone, ValiDatetime
+from pydantic import BaseModel, root_validator
+from core.data_types import Telephone, DatetimeStr
 from .role import RoleSimpleOut
 
 
 class User(BaseModel):
     name: str
-    telephone: str
+    telephone: Telephone
     nickname: Optional[str] = None
     avatar: Optional[str] = None
     is_active: Optional[bool] = True
     is_cancel: Optional[bool] = False
     gender: Optional[str] = "0"
-
-    # validators
-    _normalize_telephone = validator('telephone', allow_reuse=True)(vali_telephone)
 
 
 class UserIn(User):
@@ -35,8 +32,12 @@ class UserIn(User):
 
 class UserSimpleOut(User):
     id: int
-    update_datetime: ValiDatetime
-    create_datetime: ValiDatetime
+    update_datetime: DatetimeStr
+    create_datetime: DatetimeStr
+
+    is_reset_password: Optional[bool] = None
+    last_login: Optional[DatetimeStr] = None
+    last_ip: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -58,3 +59,10 @@ class UserUpdate(BaseModel):
 class ResetPwd(BaseModel):
     password: str
     password_two: str
+
+    @root_validator
+    def check_passwords_match(cls, values):
+        pw1, pw2 = values.get('password'), values.get('password_two')
+        if pw1 is not None and pw2 is not None and pw1 != pw2:
+            raise ValueError('两次密码不一致!')
+        return values

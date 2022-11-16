@@ -28,9 +28,9 @@ def create_async_engine_session(database_url: str, database_type: str = "mysql")
     pool_timeout=20, # 池中没有连接最多等待的时间，否则报错
     pool_recycle=-1  # 多久之后对线程池中的线程进行一次连接的回收（重置）
 
-    :param database_type: 数据库类型
-    :param database_url: 数据库地址
-    :return:
+    @param database_type: 数据库类型
+    @param database_url: 数据库地址
+    @return:
     """
     engine = create_async_engine(
         database_url
@@ -78,7 +78,7 @@ SQLAlchemy基础知识 Autoflush和Autocommit
 """
 
 
-async def db_getter() -> AsyncSession:
+async def db_getter():
     """
     获取主数据库
 

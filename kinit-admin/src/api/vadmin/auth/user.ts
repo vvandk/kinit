@@ -31,3 +31,26 @@ export const postCurrentUserUpdateInfo = (data: any): Promise<IResponse> => {
 export const getCurrentUserInfo = (): Promise<IResponse> => {
   return request.get({ url: `/vadmin/auth/user/current/info/` })
 }
+
+export const postExportUserQueryListApi = (params: any, data: any): Promise<IResponse> => {
+  return request.post({ url: `/vadmin/auth/user/export/query/list/to/excel/`, params, data })
+}
+
+export const getImportTemplateApi = (): Promise<IResponse> => {
+  return request.get({ url: `/vadmin/auth/user/download/import/template/` })
+}
+
+export const postImportUserApi = (data: any): Promise<IResponse> => {
+  return request.post({
+    url: `/vadmin/auth/import/users/`,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    timeout: 5 * 60 * 1000,
+    data
+  })
+}
+
+export const postUsersInitPasswordSendSMSApi = (data: any): Promise<IResponse> => {
+  return request.post({ url: `/vadmin/auth/users/init/password/send/sms/`, data })
+}

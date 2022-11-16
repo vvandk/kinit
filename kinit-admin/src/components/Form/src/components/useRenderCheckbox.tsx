@@ -1,3 +1,4 @@
+import { FormSchema } from '@/types/form'
 import { ElCheckbox, ElCheckboxButton } from 'element-plus'
 import { defineComponent } from 'vue'
 
@@ -11,6 +12,12 @@ export const useRenderCheckbox = () => {
     >
     return item?.componentProps?.options?.map((option) => {
       return <Com label={option[labelAlias || 'value']}>{option[valueAlias || 'label']}</Com>
+      // const { value, ...other } = option
+      // return (
+      //   <Com label={option[labelAlias || 'value']} {...other}>
+      //     {option[valueAlias || 'label']}
+      //   </Com>
+      // )
     })
   }
 

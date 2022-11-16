@@ -11,3 +11,5 @@ from apps.vadmin.auth.utils.login import app as auth_app
 from apps.vadmin.auth.views import app as vadmin_auth_app
 from apps.vadmin.system.views import app as vadmin_system_app
 from apps.vadmin.record.views import app as vadmin_record_app
+from apps.vadmin.workplace.views import app as vadmin_workplace_app
+from apps.vadmin.analysis.views import app as vadmin_analysis_app

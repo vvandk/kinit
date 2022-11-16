@@ -8,17 +8,15 @@ import { config } from './config'
 
 import { ElMessage } from 'element-plus'
 
-const { result_code, base_url } = config
+const { result_code, request_timeout } = config
 
 const appStore = useAppStore()
 const { wsCache } = useCache()
 
-export const PATH_URL = base_url[import.meta.env.VITE_API_BASEPATH]
-
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: PATH_URL, // api 的 base_url
-  timeout: config.request_timeout, // 请求超时时间
+  baseURL: '/api', // api 的 base_url
+  timeout: request_timeout, // 请求超时时间
   headers: {} // 请求头信息
 })
 

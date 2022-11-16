@@ -5,12 +5,43 @@ import { ConfigGlobal } from '@/components/ConfigGlobal'
 import { isDark } from '@/utils/is'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useCache } from '@/hooks/web/useCache'
+import { getSystemSettingsClassifysApi } from '@/api/vadmin/system/settings'
 
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('app')
 
 const appStore = useAppStore()
+
+// 手动添加mate标签
+const addMeta = (name: string, content: string) => {
+  const meta = document.createElement('meta')
+  meta.content = content
+  meta.name = name
+  document.getElementsByTagName('head')[0].appendChild(meta)
+}
+
+// 获取并设置系统配置
+const setSystemConfig = async () => {
+  const res = await getSystemSettingsClassifysApi({ classify: 'web' })
+  if (res) {
+    appStore.setTitle(res.data.web_basic.web_title || import.meta.env.VITE_APP_TITLE)
+    appStore.setLogoImage(res.data.web_basic.web_logo || '/static/system/logo.png')
+    appStore.setFooterContent(res.data.web_basic.web_copyright || 'Copyright ©2022-present K')
+    appStore.setIcpNumber(res.data.web_basic.web_icp_number || '')
+    addMeta(
+      'description',
+      res.data.web_basic.web_desc ||
+        'Kinit 是一套开箱即用的中后台解决方案，可以作为新项目的启动模版。'
+    )
+    // 接入百度统计
+    if (res.data.web_baidu.web_baidu) {
+      eval(res.data.web_baidu.web_baidu)
+    }
+  }
+}
+
+setSystemConfig()
 
 const currentSize = computed(() => appStore.getCurrentSize)
 
@@ -59,5 +90,15 @@ body {
 
 .@{prefix-cls}-grey-mode {
   filter: grayscale(100%);
+}
+
+ol {
+  display: block;
+  list-style-type: decimal;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
 }
 </style>

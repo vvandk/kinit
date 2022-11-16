@@ -13,6 +13,7 @@ import { useCache } from '@/hooks/web/useCache'
 import { useAppStore } from '@/store/modules/app'
 import { Footer } from '@/components/Footer'
 import { computed } from 'vue'
+import { FormSchema } from '@/types/form'
 
 const appStore = useAppStore()
 

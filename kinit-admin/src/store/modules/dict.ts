@@ -6,8 +6,7 @@ export interface DictState {
   dictObj: Recordable
 }
 
-export const useDictStore = defineStore({
-  id: 'dict',
+export const useDictStore = defineStore('dict', {
   state: (): DictState => ({
     dictObj: {}
   }),

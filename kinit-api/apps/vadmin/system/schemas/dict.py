@@ -11,7 +11,7 @@
 
 from typing import Optional, List
 from pydantic import BaseModel
-from core.validator import ValiDatetime
+from core.data_types import DatetimeStr
 
 
 class DictType(BaseModel):
@@ -23,8 +23,8 @@ class DictType(BaseModel):
 
 class DictTypeSimpleOut(DictType):
     id: int
-    create_datetime: ValiDatetime
-    update_datetime: ValiDatetime
+    create_datetime: DatetimeStr
+    update_datetime: DatetimeStr
 
     class Config:
         orm_mode = True
@@ -51,8 +51,8 @@ class DictDetails(BaseModel):
 
 class DictDetailsSimpleOut(DictDetails):
     id: int
-    create_datetime: ValiDatetime
-    update_datetime: ValiDatetime
+    create_datetime: DatetimeStr
+    update_datetime: DatetimeStr
 
     class Config:
         orm_mode = True

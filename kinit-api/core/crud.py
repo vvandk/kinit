@@ -14,16 +14,17 @@
 # selectinload 官方文档：
 # https://www.osgeo.cn/sqlalchemy/orm/loading_relationships.html?highlight=selectinload#sqlalchemy.orm.selectinload
 import datetime
-from typing import List
+from typing import List, Union
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import func, delete, update
+from sqlalchemy import func, delete, update, or_
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from starlette import status
 from core.logger import logger
 from sqlalchemy.sql.selectable import Select
+from pydantic import BaseModel
 
 
 class DalBase:
@@ -38,13 +39,13 @@ class DalBase:
         """
         获取单个数据，默认使用 ID 查询，否则使用关键词查询
 
-        :param data_id:
-        :param keys: 外键字段查询，内连接
-        :param options: 指示应使用select在预加载中加载给定的属性。
-        :param schema: 指定使用的序列化对象
-        :param kwargs: 关键词参数,
-        :param kwargs: order，排序，默认正序，为 desc 是倒叙
-        :param kwargs: return_none，是否返回空 None，否认 抛出异常，默认抛出异常
+        @param data_id:
+        @param keys: 外键字段查询，内连接
+        @param options: 指示应使用select在预加载中加载给定的属性。
+        @param schema: 指定使用的序列化对象
+        @param kwargs: 关键词参数,
+        @param kwargs: order，排序，默认正序，为 desc 是倒叙
+        @param kwargs: return_none，是否返回空 None，否认 抛出异常，默认抛出异常
         """
         order = kwargs.get("order", None)
         return_none = kwargs.get("return_none", False)
@@ -79,20 +80,20 @@ class DalBase:
             return data
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="未找到此数据")
 
-    async def get_datas(self, page: int = 1, limit: int = 10, keys: dict = None, options: list = None
-                        , schema=None, **kwargs):
+    async def get_datas(self, page: int = 1, limit: int = 10, keys: dict = None, options: list = None, schema=None,
+                        **kwargs):
         """
         获取数据列表
 
-        :param page: 页码
-        :param limit: 当前页数据量
-        :param keys: 外键字段查询
-        :param options: 指示应使用select在预加载中加载给定的属性。
-        :param schema: 指定使用的序列化对象
-        :param kwargs: order，排序，默认正序，为 desc 是倒叙
-        :param kwargs: order_field，排序字段
-        :param kwargs: return_objs，是否返回对象
-        :param kwargs: start_sql，初始 sql
+        @param page: 页码
+        @param limit: 当前页数据量
+        @param keys: 外键字段查询
+        @param options: 指示应使用select在预加载中加载给定的属性。
+        @param schema: 指定使用的序列化对象
+        @param kwargs: order，排序，默认正序，为 desc 是倒叙
+        @param kwargs: order_field，排序字段
+        @param kwargs: return_objs，是否返回对象
+        @param kwargs: start_sql，初始 sql
         """
         order = kwargs.get("order", None)
         order_field = kwargs.get("order_field", None)
@@ -159,8 +160,8 @@ class DalBase:
     async def delete_datas(self, ids: List[int], soft: bool = False):
         """
         删除多条数据
-        :param ids: 数据集
-        :param soft: 是否执行软删除
+        @param ids: 数据集
+        @param soft: 是否执行软删除
         """
         if soft:
             await self.db.execute(update(self.model).where(self.model.id.in_(ids)).
@@ -171,10 +172,10 @@ class DalBase:
     def add_filter_condition(self, sql: select, keys: dict = None, options: list = None, **kwargs) -> select:
         """
         添加过滤条件，以及内连接过滤条件
-        :param sql:
-        :param keys: 外键字段查询，内连接
-        :param options: 指示应使用select在预加载中加载给定的属性。
-        :param kwargs: 关键词参数
+        @param sql:
+        @param keys: 外键字段查询，内连接
+        @param options: 指示应使用select在预加载中加载给定的属性。
+        @param kwargs: 关键词参数
         """
         if keys and self.key_models:
             for key, value in keys.items():
@@ -184,16 +185,7 @@ class DalBase:
                     for v_key, v_value in value.items():
                         if v_value is not None and v_value != "":
                             v_attr = getattr(model, v_key, None)
-                            if not v_attr:
-                                continue
-                            if isinstance(v_value, tuple):
-                                if v_value[0] == "date":
-                                    # 根据日期查询， 关键函数是：func.time_format和func.date_format
-                                    sql = sql.where(func.date_format(v_attr, "%Y-%m-%d") == v_value[1])
-                                elif v_value[0] == "like":
-                                    sql = sql.where(v_attr.like(f"%{v_value[1]}%"))
-                            else:
-                                sql = sql.where(v_attr == v_value)
+                            sql = self.filter_condition(sql, v_attr, v_value)
                 else:
                     logger.error(f"外键查询报错：{key}模型不存在，无法进行下一步查询。")
         elif keys and not self.key_models:
@@ -202,24 +194,40 @@ class DalBase:
             value = kwargs.get(field)
             if value is not None and value != "":
                 attr = getattr(self.model, field, None)
-                if not attr:
-                    continue
-                if isinstance(value, tuple):
-                    if value[0] == "date":
-                        # 根据日期查询， 关键函数是：func.time_format和func.date_format
-                        sql = sql.where(func.date_format(attr, "%Y-%m-%d") == value[1])
-                    elif value[0] == "like":
-                        sql = sql.where(attr.like(f"%{value[1]}%"))
-                else:
-                    sql = sql.where(attr == value)
+                sql = self.filter_condition(sql, attr, value)
         if options:
             sql = sql.options(*[selectinload(i) for i in options])
+        return sql
+
+    @classmethod
+    def filter_condition(cls, sql, attr, value):
+        """
+        过滤条件
+        """
+        if not attr:
+            return sql
+        if isinstance(value, tuple):
+            if value[0] == "date" and value[1]:
+                # 根据日期查询， 关键函数是：func.time_format和func.date_format
+                sql = sql.where(func.date_format(attr, "%Y-%m-%d") == value[1])
+            elif value[0] == "like" and value[1]:
+                sql = sql.where(attr.like(f"%{value[1]}%"))
+            elif value[0] == "or" and value[1]:
+                sql = sql.where(or_(i for i in value[1]))
+            elif value[0] == "in" and value[1]:
+                sql = sql.where(attr.in_(value[1]))
+            elif value[0] == "between" and value[1]:
+                sql = sql.where(attr.between(value[1][0], value[1][1]))
+            elif value[0] == "month" and value[1]:
+                sql = sql.where(func.date_format(attr, "%Y-%m") == value[1])
+        else:
+            sql = sql.where(attr == value)
         return sql
 
     def out_dict(self, data):
         """
         序列化
-        :param data:
-        :return:
+        @param data:
+        @return:
         """
         return self.schema.from_orm(data).dict()

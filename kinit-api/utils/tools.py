@@ -6,10 +6,12 @@
 # @IDE            : PyCharm
 # @desc           : 工具类
 
+import datetime
 import re
+from typing import List, Union
 
 
-def test_password(password: str):
+def test_password(password: str) -> Union[str, bool]:
     """
     检测密码强度
     """
@@ -30,5 +32,16 @@ def test_password(password: str):
                 return '至少含数字/字母/字符2种组合，请重新输入。'
 
 
+def list_dict_find(options: List[dict], key: str, value: any) -> Union[dict, None]:
+    """
+    字典列表查找
+    """
+    for item in options:
+        if item.get(key) == value:
+            return item
+    return None
+
+
 if __name__ == '__main__':
-    print(test_password("123456121a"))
+    # print(generate_invitation_code())
+    print(int(datetime.datetime.now().timestamp()))

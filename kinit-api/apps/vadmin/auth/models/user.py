@@ -48,9 +48,9 @@ class VadminUser(BaseModel):
     async def update_login_info(self, db: AsyncSession, last_ip: str):
         """
         更新当前登录信息
-        :param db: 数据库
-        :param last_ip: 最近一次登录 IP
-        :return:
+        @param db: 数据库
+        @param last_ip: 最近一次登录 IP
+        @return:
         """
         self.last_ip = last_ip
         self.last_login = datetime.datetime.now()
@@ -62,6 +62,6 @@ class VadminUser(BaseModel):
 
         以最高权限为准
 
-        :return:
+        @return:
         """
         return any([i.is_admin for i in self.roles])

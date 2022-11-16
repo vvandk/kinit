@@ -59,17 +59,17 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         svgoOptions: true
       }),
       PurgeIcons(),
-      viteMockServe({
-        ignore: /^\_/,
-        mockPath: 'mock',
-        localEnabled: !isBuild,
-        prodEnabled: isBuild,
-        injectCode: `
-          import { setupProdMockServer } from '../mock/_createProductionServer'
+      // viteMockServe({
+      //   ignore: /^\_/,
+      //   mockPath: 'mock',
+      //   localEnabled: !isBuild,
+      //   prodEnabled: isBuild,
+      //   injectCode: `
+      //     import { setupProdMockServer } from '../mock/_createProductionServer'
 
-          setupProdMockServer()
-          `
-      }),
+      //     setupProdMockServer()
+      //     `
+      // }),
       VueMarcos(),
       createHtmlPlugin({
         inject: {
@@ -122,6 +122,18 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           target: 'http://127.0.0.1:9000',
           changeOrigin: true,
           rewrite: path => path.replace(/^\/api/, '')
+        },
+        // 选项写法
+        '/static': {
+          target: 'http://127.0.0.1:9000',
+          changeOrigin: true,
+          rewrite: path => path
+        },
+        // 选项写法
+        '/temp': {
+          target: 'http://127.0.0.1:9000',
+          changeOrigin: true,
+          rewrite: path => path
         }
       },
       hmr: {

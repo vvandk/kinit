@@ -28,8 +28,7 @@ export interface AuthState {
   isUser: boolean
 }
 
-export const useAuthStore = defineStore({
-  id: 'auth',
+export const useAuthStore = defineStore('auth', {
   state: (): AuthState => {
     return {
       user: {},
@@ -64,8 +63,8 @@ export const useAuthStore = defineStore({
       wsCache.clear()
       this.user = {}
       this.isUser = false
-      resetRouter()
       tagsViewStore.delAllViews()
+      resetRouter()
     },
     updateUser(data: UserState) {
       this.user.gender = data.gender

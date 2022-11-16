@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElMessageBox } from 'element-plus'
+import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElMessageBox, ElButton } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
 import { useDesign } from '@/hooks/web/useDesign'
@@ -21,15 +21,11 @@ const loginOut = () => {
     cancelButtonText: t('common.cancel'),
     type: 'warning'
   })
-    .then(async () => {
+    .then(() => {
       authStore.logout()
       replace('/login')
     })
     .catch(() => {})
-}
-
-const toDocument = () => {
-  window.open('https://element-plus-admin-doc.cn/')
 }
 
 const toHome = () => {
@@ -54,13 +50,10 @@ const user = authStore.getUser
     <template #dropdown>
       <ElDropdownMenu>
         <ElDropdownItem>
-          <div @click="toHome">个人主页</div>
-        </ElDropdownItem>
-        <ElDropdownItem>
-          <div @click="toDocument">前端项目文档</div>
+          <ElButton @click="toHome" link>个人主页</ElButton>
         </ElDropdownItem>
         <ElDropdownItem divided>
-          <div @click="loginOut">{{ t('common.loginOut') }}</div>
+          <ElButton @click="loginOut" link>退出系统</ElButton>
         </ElDropdownItem>
       </ElDropdownMenu>
     </template>

@@ -5,6 +5,11 @@
 # @IDE            : PyCharm
 # @desc           : 主程序入口
 
+"""
+FastApi 更新文档：https://github.com/tiangolo/fastapi/releases
+FastApi Github：https://github.com/tiangolo/fastapi
+"""
+
 from fastapi import FastAPI
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
@@ -23,24 +28,34 @@ openapi_url：配置接口文件json数据文件路由地址，如果禁用则�
 """
 app = FastAPI(
     title="KInit",
-    description="初始项目，故事来源于，有一次我去面试，当时面试官给的一道题是让我使用Django+Vue写出一个客户信息列表的CRUD，"
-                "里面给出的信息还是蛮复杂的，当时写了接近一下午，最后还没过，哈哈哈哈。写现在的这个初始项目也是为了真的再次遇到这种情况，"
-                "我就可以很好的很快速的完成了。也能当领导安排新的项目，能够及时启动项目，不用再搭建脚手架了。",
-    version="1.0.0",
+    description="本项目基于Fastapi与Vue3+Typescript+Vite3+element-plus的基础项目 前端基于vue-element-plus-admin框架开发",
+    version="1.0.0"
 )
+
+
+def import_module(modules: list, desc: str):
+    for module in modules:
+        if not module:
+            continue
+        try:
+            # 动态导入模块
+            module_pag = importlib.import_module(module[0:module.rindex(".")])
+            getattr(module_pag, module[module.rindex(".") + 1:])(app)
+        except ModuleNotFoundError:
+            logger.error(f"AttributeError：导入{desc}失败，未找到该模块：{module}")
+        except AttributeError:
+            logger.error(f"ModuleNotFoundError：导入{desc}失败，未找到该模块下的方法：{module}")
+
 
 """
 添加中间件
 """
-for middle in settings.MIDDLEWARES:
-    try:
-        # 动态导入模块
-        middle_pag = importlib.import_module(middle[0:middle.rindex(".")])
-        getattr(middle_pag, middle[middle.rindex(".")+1:])(app)
-    except ModuleNotFoundError:
-        logger.error(f"AttributeError：导入中间件失败，未找到该模块：{middle}")
-    except AttributeError:
-        logger.error(f"ModuleNotFoundError：导入中间件失败，未找到该模块下的方法：{middle}")
+import_module(settings.MIDDLEWARES, "中间件")
+
+"""
+添加全局事件
+"""
+import_module(settings.EVENTS, "全局事件")
 
 """
 全局异常捕捉处理
@@ -63,6 +78,8 @@ if settings.CORS_ORIGIN_ENABLE:
 """
 if settings.STATIC_ENABLE:
     app.mount(settings.STATIC_URL, app=StaticFiles(directory=settings.STATIC_ROOT))
+if settings.TEMP_ENABLE:
+    app.mount(settings.TEMP_URL, app=StaticFiles(directory=settings.TEMP_DIR))
 
 """
 引入应用中的路由
@@ -77,4 +94,4 @@ if __name__ == '__main__':
     # debug：调试
     # workers：启动几个进程
     """
-    uvicorn.run(app='main:app', host="0.0.0.0", port=9000, reload=True, debug=True, workers=1)
+    uvicorn.run(app='main:app', host="0.0.0.0", port=9000)

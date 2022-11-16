@@ -18,6 +18,7 @@ const props = defineProps({
 
 const rules = reactive({
   title: [required()],
+  menu_type: [required()],
   disabled: [required()],
   hidden: [required()],
   path: [required()],

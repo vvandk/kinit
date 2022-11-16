@@ -2,14 +2,17 @@
 import { ElCollapseTransition, ElDescriptions, ElDescriptionsItem, ElTooltip } from 'element-plus'
 import { useDesign } from '@/hooks/web/useDesign'
 import { propTypes } from '@/utils/propTypes'
-import { ref, unref, PropType, computed, useAttrs } from 'vue'
+import { ref, unref, PropType, computed, useAttrs, useSlots } from 'vue'
 import { useAppStore } from '@/store/modules/app'
+import { DescriptionsSchema } from '@/types/descriptions'
 
 const appStore = useAppStore()
 
 const mobile = computed(() => appStore.getMobile)
 
 const attrs = useAttrs()
+
+const slots = useSlots()
 
 const props = defineProps({
   title: propTypes.string.def(''),
@@ -95,6 +98,9 @@ const toggleClick = () => {
           :direction="mobile ? 'vertical' : 'horizontal'"
           v-bind="getBindValue"
         >
+          <template v-if="slots['extra']" #extra>
+            <slot name="extra"></slot>
+          </template>
           <ElDescriptionsItem
             v-for="item in schema"
             :key="item.field"
