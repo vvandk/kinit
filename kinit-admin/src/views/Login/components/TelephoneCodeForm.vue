@@ -97,8 +97,8 @@ const telephoneCodeLogin = async () => {
       loading.value = true
       const { getFormData } = methods
       const formData = await getFormData<UserLoginType>()
+      const authStore = useAuthStoreWithOut()
       try {
-        const authStore = useAuthStoreWithOut()
         const res = await authStore.login(formData)
         if (res) {
           if (!res.data.is_reset_password) {
@@ -108,8 +108,10 @@ const telephoneCodeLogin = async () => {
             // 是否使用动态路由
             getMenu()
           }
+        } else {
+          loading.value = false
         }
-      } finally {
+      } catch (e: any) {
         loading.value = false
       }
     }
@@ -127,17 +129,21 @@ const getSMSCode = async () => {
       SMSCodeNumber.value = 60
       const { getFormData } = methods
       const formData = await getFormData<UserLoginType>()
-      const res = await postSMSCodeApi({ telephone: formData.telephone })
-      if (res?.data) {
-        let timer = setInterval(() => {
-          SMSCodeNumber.value--
-          if (SMSCodeNumber.value < 1) {
-            SMSCodeStatus.value = true
-            clearInterval(timer)
-          }
-        }, 1000)
-      } else {
-        ElMessage.error('发送失败，请联系管理员')
+      try {
+        const res = await postSMSCodeApi({ telephone: formData.telephone })
+        if (res?.data) {
+          let timer = setInterval(() => {
+            SMSCodeNumber.value--
+            if (SMSCodeNumber.value < 1) {
+              SMSCodeStatus.value = true
+              clearInterval(timer)
+            }
+          }, 1000)
+        } else {
+          ElMessage.error('发送失败，请联系管理员')
+          SMSCodeStatus.value = true
+        }
+      } catch (e: any) {
         SMSCodeStatus.value = true
       }
     }

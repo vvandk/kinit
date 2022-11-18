@@ -58,7 +58,7 @@ export const columns = reactive<TableColumn[]>([
   },
   {
     field: 'action',
-    width: '150px',
+    width: '200px',
     label: '操作',
     show: true
   }
@@ -77,7 +77,9 @@ export const schema = reactive<FormSchema[]>([
         width: '100%'
       },
       checkStrictly: true,
-      placeholder: '请选择上级菜单'
+      placeholder: '请选择上级菜单',
+      nodeKey: 'value',
+      defaultExpandAll: true
     }
   },
   {
@@ -130,6 +132,11 @@ export const schema = reactive<FormSchema[]>([
     component: 'InputNumber',
     colProps: {
       span: 12
+    },
+    componentProps: {
+      style: {
+        width: '100%'
+      }
     }
   },
   {
@@ -216,6 +223,6 @@ export const schema = reactive<FormSchema[]>([
     colProps: {
       span: 12
     },
-    ifshow: (values) => values.menu_type !== '0'
+    ifshow: (values) => values.menu_type === '2'
   }
 ])

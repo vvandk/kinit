@@ -70,7 +70,7 @@ github地址：https://github.com/vvandk/kinit   👩‍👦‍👦
 
 - [x] 📚字典管理：对系统中经常使用的一些较为固定的数据进行维护。
 
-- [ ] 📁附件管理：对平台上所有文件、图片等进行统一管理，对接阿里云OSS。
+- [x] 📁文件上传：对接阿里云OSS与本地存储。
 
 - [x] 🔒登录认证：目前支持用户使用手机号+密码方式登录。
 
@@ -82,7 +82,7 @@ github地址：https://github.com/vvandk/kinit   👩‍👦‍👦
 
   网站标题，LOGO，描述，ICO，备案号，底部内容，百度统计代码，等等
 
-- [ ] 数据分析：根据用户的登录用户地址分析出哪个地区的人最多
+- [x] 用户分布：接入高德地图显示各地区用户分布情况
 
 - [x] 🗓️登录日志：用户登录日志记录和查询。
 
@@ -94,7 +94,7 @@ github地址：https://github.com/vvandk/kinit   👩‍👦‍👦
 
 - [x] 导入导出：灵活支持数据导入导出功能
 
-- [x] 手机验证码登录功能’
+- [x] 手机验证码登录功能
 
 ## TODO
 
@@ -123,6 +123,7 @@ github地址：https://github.com/vvandk/kinit   👩‍👦‍👦
 - [vue3-json-viewer](https://gitee.com/isfive/vue3-json-viewer)：简单易用的json内容展示组件,适配vue3和vite。
 - [vue3-slide-verify](https://github.com/monoplasty/vue3-slide-verify)：滑块验证码插件 vue3 + typescript
 - [SortableJS/vue.draggable.next](https://github.com/SortableJS/vue.draggable.next)：Vue 组件 （Vue.js 3.0） 允许拖放和与视图模型数组同步。
+- [高德地图API (amap.com)](https://lbs.amap.com/api/jsapi-v2/guide/webcli/map-vue1)：地图 JSAPI 2.0 是高德开放平台免费提供的第四代 Web 地图渲染引擎， 以 WebGL 为主要绘图手段，本着“更轻、更快、更易用”的服务原则，广泛采用了各种前沿技术，交互体验、视觉体验大幅提升，同时提供了众多新增能力和特性。
 
 #### 后端
 

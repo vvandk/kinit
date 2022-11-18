@@ -9,8 +9,8 @@
 from fastapi import APIRouter, Depends, Body, UploadFile, Request
 from utils.response import SuccessResponse, ErrorResponse
 from . import schemas, crud, models
-from core.dependencies import Paging, IdList
-from apps.vadmin.auth.utils.current import login_auth, Auth
+from core.dependencies import IdList
+from apps.vadmin.auth.utils.current import login_auth, Auth, get_user_permissions, full_admin
 from .params import UserParams, RoleParams
 
 app = APIRouter()
@@ -65,8 +65,10 @@ async def post_user_current_update_info(data: schemas.UserUpdate, auth: Auth = D
 
 
 @app.get("/user/current/info/", summary="获取当前用户基本信息")
-async def get_user_current_info(auth: Auth = Depends(login_auth)):
-    return SuccessResponse(schemas.UserSimpleOut.from_orm(auth.user).dict())
+async def get_user_current_info(auth: Auth = Depends(full_admin)):
+    result = schemas.UserSimpleOut.from_orm(auth.user).dict()
+    result["permissions"] = await get_user_permissions(auth.user)
+    return SuccessResponse(result)
 
 
 @app.get("/user/current/info/", summary="获取当前用户基本信息")

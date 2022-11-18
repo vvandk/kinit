@@ -5,9 +5,7 @@
 # @IDE            : PyCharm
 # @desc           : 主要接口文件
 
-from typing import Optional
-from fastapi import APIRouter, Depends, Query
-from core.dependencies import Paging, IdList
+from fastapi import APIRouter, Depends
 from utils.response import SuccessResponse
 from . import crud, schemas
 from apps.vadmin.auth.utils.current import login_auth, Auth
@@ -40,3 +38,11 @@ async def get_sms_send_list(params: SMSParams = Depends(), auth: Auth = Depends(
     datas = await crud.SMSSendRecordDal(auth.db).get_datas(**params.dict())
     count = await crud.SMSSendRecordDal(auth.db).get_count(**params.to_count())
     return SuccessResponse(datas, count=count)
+
+
+###########################################################
+#    日志分析
+###########################################################
+@app.get("/analysis/user/login/distribute/", summary="获取用户登录分布情况列表")
+async def get_user_login_distribute(auth: Auth = Depends(login_auth)):
+    return SuccessResponse(await crud.LoginRecordDal(auth.db).get_user_distribute())

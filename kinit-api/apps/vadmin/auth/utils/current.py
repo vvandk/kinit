@@ -10,20 +10,16 @@ from apps.vadmin.auth import crud, models
 from .validation import AuthValidation, Auth
 
 
-async def get_user_permissions(user: models.VadminUser, db: AsyncSession):
+async def get_user_permissions(user):
     """
     获取跟进系统用户所有权限列表
     """
-    roles = []
-    for i in user.roles:
-        if i.is_admin:
-            return ["*:*:*"]
-        roles.append(i.id)
+    if any([role.is_admin for role in user.roles]):
+        return ['*.*.*']
     permissions = set()
-    for data_id in roles:
-        role_obj = await crud.RoleDal(db).get_data(data_id, options=[models.VadminUser])
+    for role_obj in user.roles:
         for menu in role_obj.menus:
-            if menu.perms and menu.status:
+            if menu.perms and not menu.disabled:
                 permissions.add(menu.perms)
     return list(permissions)
 

@@ -35,24 +35,22 @@ class VadminLoginRecord(BaseModel):
     request = Column(TEXT, comment="请求信息")
 
     @classmethod
-    async def create_login_record(cls, telephone: str, status: bool, request: Request, response: dict,
-                                  db: AsyncSession):
+    async def create_login_record(cls, db: AsyncSession, telephone: str, status: bool, req: Request, resp: dict):
         """
         创建登录记录
         @return:
         """
         header = {}
-        for k, v in request.headers.items():
+        for k, v in req.headers.items():
             header[k] = v
-        body = json.loads((await request.body()).decode())
-        user_agent = parse(request.headers.get("user-agent"))
+        body = json.loads((await req.body()).decode())
+        user_agent = parse(req.headers.get("user-agent"))
         system = f"{user_agent.os.family} {user_agent.os.version_string}"
         browser = f"{user_agent.browser.family} {user_agent.browser.version_string}"
-        ip = IPManage(request.client.host)
+        ip = IPManage(req.client.host)
         location = await ip.parse()
-        resp = json.dumps(response)
-        resq = json.dumps({"body": body, "headers": header})
+        params = json.dumps({"body": body, "headers": header})
         obj = VadminLoginRecord(**location.dict(), telephone=telephone, status=status, browser=browser,
-                                system=system, response=resp, request=resq)
+                                system=system, response=json.dumps(resp), request=params)
         db.add(obj)
         await db.flush()

@@ -179,19 +179,19 @@ const sendPasswordToSMS = async () => {
 
     <div class="mb-8px flex justify-between">
       <ElRow :gutter="10">
-        <ElCol :span="1.5">
+        <ElCol :span="1.5" v-hasPermi="['auth.user.create']">
           <ElButton type="primary" @click="AddAction">新增用户</ElButton>
         </ElCol>
-        <ElCol :span="1.5">
+        <ElCol :span="1.5" v-hasPermi="['auth.user.import']">
           <ElButton @click="importList">批量导入用户</ElButton>
         </ElCol>
-        <ElCol :span="1.5">
+        <ElCol :span="1.5" v-hasPermi="['auth.user.export']">
           <ElButton @click="exportQueryList">导出筛选用户</ElButton>
         </ElCol>
-        <ElCol :span="1.5">
+        <ElCol :span="1.5" v-hasPermi="['auth.user.reset']">
           <ElButton @click="sendPasswordToSMS">重置密码通知短信</ElButton>
         </ElCol>
-        <ElCol :span="1.5">
+        <ElCol :span="1.5" v-hasPermi="['auth.user.delete']">
           <ElButton type="danger" @click="delDatas(null, true)">批量删除</ElButton>
         </ElCol>
       </ElRow>
@@ -212,11 +212,18 @@ const sendPasswordToSMS = async () => {
       @register="register"
     >
       <template #action="{ row }">
-        <ElButton type="primary" link size="small" @click="updateAction(row)">
+        <ElButton
+          type="primary"
+          v-hasPermi="['auth.user.update']"
+          link
+          size="small"
+          @click="updateAction(row)"
+        >
           {{ t('exampleDemo.edit') }}
         </ElButton>
         <ElButton
           type="danger"
+          v-hasPermi="['auth.user.delete']"
           link
           size="small"
           @click="delDatas(row, false)"

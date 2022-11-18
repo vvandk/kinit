@@ -5,7 +5,6 @@
 # @IDE            : PyCharm
 # @desc           : 安全认证视图
 
-
 """
 JWT 表示 「JSON Web Tokens」。https://jwt.io/
 
@@ -16,13 +15,13 @@ JWT 表示 「JSON Web Tokens」。https://jwt.io/
 
 我们需要安装 python-jose 以在 Python 中生成和校验 JWT 令牌：pip install python-jose[cryptography]
 
-PassLib 是一个用于处理哈希密码的很棒的 Python 包。它支持许多安全哈希算法以及配合算法使用的实用程序。推荐的算法是 「Bcrypt」：pip install passlib[bcrypt]
+PassLib 是一个用于处理哈希密码的很棒的 Python 包。它支持许多安全哈希算法以及配合算法使用的实用程序。
+推荐的算法是 「Bcrypt」：pip install passlib[bcrypt]
 """
-import json
+
 from datetime import timedelta
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from core.database import db_getter
 from utils.response import SuccessResponse, ErrorResponse
 from application import settings
@@ -45,33 +44,22 @@ async def login_for_access_token(request: Request, data: LoginForm, manage: Logi
     else:
         return ErrorResponse(msg="请使用正确的登录方式")
     if not result.status:
-        res = {"message": result.msg}
+        resp = {"message": result.msg}
         telephone = data.telephone
         await VadminLoginRecord.\
-            create_login_record(telephone=telephone, status=result.status, request=request, response=res, db=db)
+            create_login_record(db, telephone, result.status, request, resp)
         return ErrorResponse(msg=result.msg)
 
     user = result.user
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = LoginManage.create_access_token(data={"sub": user.telephone}, expires_delta=access_token_expires)
-    res = {
+    resp = {
         "access_token": access_token,
         "token_type": "bearer",
-        "is_reset_password": user.is_reset_password,
-        "user": {
-            "id": user.id,
-            "telephone": user.telephone,
-            "name": user.name,
-            "nickname": user.nickname,
-            "avatar": user.avatar,
-            "gender": user.gender,
-            "create_datetime": user.create_datetime,
-            "roles": [{"name": i.name, "value": i.role_key} for i in user.roles]
-        }
+        "is_reset_password": user.is_reset_password
     }
-    await VadminLoginRecord.\
-        create_login_record(telephone=user.telephone, status=result.status, request=request, response=res, db=db)
-    return SuccessResponse(res)
+    await VadminLoginRecord.create_login_record(db, user.telephone, result.status, request, resp)
+    return SuccessResponse(resp)
 
 
 @app.get("/getMenuList/", summary="获取当前用户菜单树")

@@ -6,6 +6,7 @@ import { useValidator } from '@/hooks/web/useValidator'
 import { getMenuTreeOptionsApi } from '@/api/vadmin/auth/menu'
 import { ElButton, ElInput } from 'element-plus'
 import { schema } from './menu.data'
+import { propTypes } from '@/utils/propTypes'
 
 const { required } = useValidator()
 
@@ -13,7 +14,8 @@ const props = defineProps({
   currentRow: {
     type: Object as PropType<Nullable<any>>,
     default: () => null
-  }
+  },
+  parentId: propTypes.number.def(undefined)
 })
 
 const rules = reactive({
@@ -53,6 +55,10 @@ const getMenuTreeOptions = async () => {
         value: res.data
       }
     ])
+    if (props.parentId) {
+      const { setValue } = methods
+      setValue('parent_id', props.parentId)
+    }
   }
 }
 

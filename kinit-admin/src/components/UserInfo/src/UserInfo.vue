@@ -32,6 +32,14 @@ const toHome = () => {
   push('/system/home')
 }
 
+const toGitee = () => {
+  window.open('https://gitee.com/ktianc/kinit')
+}
+
+const toGithub = () => {
+  window.open('https://github.com/vvandk/kinit')
+}
+
 const user = authStore.getUser
 </script>
 
@@ -51,6 +59,12 @@ const user = authStore.getUser
       <ElDropdownMenu>
         <ElDropdownItem>
           <ElButton @click="toHome" link>个人主页</ElButton>
+        </ElDropdownItem>
+        <ElDropdownItem>
+          <ElButton @click="toGitee" link>Gitee</ElButton>
+        </ElDropdownItem>
+        <ElDropdownItem>
+          <ElButton @click="toGithub" link>Github</ElButton>
         </ElDropdownItem>
         <ElDropdownItem divided>
           <ElButton @click="loginOut" link>退出系统</ElButton>

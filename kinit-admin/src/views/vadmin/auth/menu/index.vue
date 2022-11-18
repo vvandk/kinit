@@ -45,9 +45,11 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const delLoading = ref(false)
 const actionType = ref('')
+const parentId = ref()
 
 // 添加事件
 const AddAction = () => {
+  parentId.value = null
   dialogTitle.value = t('exampleDemo.add')
   tableObject.currentRow = null
   dialogVisible.value = true
@@ -56,6 +58,7 @@ const AddAction = () => {
 
 // 编辑事件
 const updateAction = (row: any) => {
+  parentId.value = null
   dialogTitle.value = '编辑'
   tableObject.currentRow = row
   dialogVisible.value = true
@@ -64,12 +67,22 @@ const updateAction = (row: any) => {
 
 // 删除事件
 const delData = async (row: any) => {
+  parentId.value = null
   tableObject.currentRow = row
   const { delListApi } = methods
   delLoading.value = true
   await delListApi([row.id], false).finally(() => {
     delLoading.value = false
   })
+}
+
+// 添加子菜单事件
+const addSonMenu = async (row: any) => {
+  parentId.value = row.id
+  dialogTitle.value = t('exampleDemo.add')
+  tableObject.currentRow = null
+  dialogVisible.value = true
+  actionType.value = 'add'
 }
 
 const loading = ref(false)
@@ -124,7 +137,9 @@ watch(
     <div class="mb-8px flex justify-between">
       <ElRow :gutter="10">
         <ElCol :span="1.5">
-          <ElButton type="primary" @click="AddAction">新增菜单</ElButton>
+          <ElButton type="primary" v-hasPermi="['auth.menu.create']" @click="AddAction"
+            >新增菜单</ElButton
+          >
         </ElCol>
       </ElRow>
       <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
@@ -149,10 +164,31 @@ watch(
         </div>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" link size="small" @click="updateAction(row)">
+        <ElButton
+          type="primary"
+          v-hasPermi="['auth.menu.update']"
+          link
+          size="small"
+          @click="updateAction(row)"
+        >
           {{ t('exampleDemo.edit') }}
         </ElButton>
-        <ElButton type="danger" link size="small" @click="delData(row)">
+        <ElButton
+          type="primary"
+          v-hasPermi="['auth.menu.create']"
+          link
+          size="small"
+          @click="addSonMenu(row)"
+        >
+          添加子菜单
+        </ElButton>
+        <ElButton
+          type="danger"
+          v-hasPermi="['auth.menu.delete']"
+          link
+          size="small"
+          @click="delData(row)"
+        >
           {{ t('exampleDemo.del') }}
         </ElButton>
       </template>
@@ -173,7 +209,7 @@ watch(
     </Table>
 
     <Dialog v-model="dialogVisible" :title="dialogTitle" width="700px">
-      <Write ref="writeRef" :current-row="tableObject.currentRow" />
+      <Write ref="writeRef" :current-row="tableObject.currentRow" :parent-id="parentId" />
 
       <template #footer>
         <ElButton type="primary" :loading="loading" @click="save">

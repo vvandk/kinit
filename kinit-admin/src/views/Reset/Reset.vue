@@ -107,8 +107,10 @@ const save = async () => {
         if (res) {
           // 是否使用动态路由
           getMenu()
+        } else {
+          loading.value = false
         }
-      } finally {
+      } catch (e: any) {
         loading.value = false
       }
     }

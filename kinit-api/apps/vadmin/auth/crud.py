@@ -273,7 +273,7 @@ class MenuDal(DalBase):
         3：获取菜单树列表，角色添加菜单权限时使用
         """
         if mode == 3:
-            sql = select(self.model).where(self.model.disabled == 0, self.model.menu_type != "2")
+            sql = select(self.model).where(self.model.disabled == 0)
         else:
             sql = select(self.model)
         queryset = await self.db.execute(sql)

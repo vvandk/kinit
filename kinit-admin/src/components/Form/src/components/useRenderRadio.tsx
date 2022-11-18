@@ -11,13 +11,12 @@ export const useRenderRadio = () => {
       typeof defineComponent
     >
     return item?.componentProps?.options?.map((option) => {
-      return <Com label={option[labelAlias || 'value']}>{option[valueAlias || 'label']}</Com>
-      // const { value, ...other } = option
-      // return (
-      //   <Com label={option[labelAlias || 'value']} {...other}>
-      //     {option[valueAlias || 'label']}
-      //   </Com>
-      // )
+      const { value, ...other } = option
+      return (
+        <Com {...other} label={option[valueAlias || 'value']}>
+          {option[labelAlias || 'label']}
+        </Com>
+      )
     })
   }
 

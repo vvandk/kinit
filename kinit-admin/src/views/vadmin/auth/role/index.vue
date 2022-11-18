@@ -53,6 +53,7 @@ const updateAction = async (row: any) => {
   dialogTitle.value = '编辑'
   tableObject.currentRow = res.data
   defaultCheckedKeys.value = res.data.menus.map((item: any) => item.id)
+  console.log(defaultCheckedKeys.value)
   dialogVisible.value = true
   actionType.value = 'edit'
 }
@@ -123,7 +124,7 @@ watch(
 
     <div class="mb-8px flex justify-between">
       <ElRow :gutter="10">
-        <ElCol :span="1.5">
+        <ElCol :span="1.5" v-hasPermi="['auth.role.create']">
           <ElButton type="primary" @click="AddAction">新增角色</ElButton>
         </ElCol>
       </ElRow>
@@ -144,10 +145,24 @@ watch(
       @register="register"
     >
       <template #action="{ row }">
-        <ElButton type="primary" link size="small" @click="updateAction(row)" v-if="row.id !== 1">
+        <ElButton
+          type="primary"
+          v-hasPermi="['auth.role.update']"
+          link
+          size="small"
+          @click="updateAction(row)"
+          v-if="row.id !== 1"
+        >
           {{ t('exampleDemo.edit') }}
         </ElButton>
-        <ElButton type="danger" link size="small" @click="delData(row)" v-if="row.id !== 1">
+        <ElButton
+          type="danger"
+          v-hasPermi="['auth.role.delete']"
+          link
+          size="small"
+          @click="delData(row)"
+          v-if="row.id !== 1"
+        >
           {{ t('exampleDemo.del') }}
         </ElButton>
       </template>
@@ -161,7 +176,7 @@ watch(
       </template>
     </Table>
 
-    <Dialog v-model="dialogVisible" :title="dialogTitle" width="700px">
+    <Dialog v-model="dialogVisible" :title="dialogTitle" width="700px" maxHeight="600px">
       <Write
         ref="writeRef"
         :current-row="tableObject.currentRow"

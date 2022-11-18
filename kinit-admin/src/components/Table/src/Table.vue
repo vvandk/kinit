@@ -52,7 +52,6 @@ export default defineComponent({
   },
   emits: ['update:limit', 'update:page', 'register'],
   setup(props, { attrs, slots, emit, expose }) {
-    console.log('attrs', attrs)
     const elTableRef = ref<ComponentRef<typeof ElTable>>()
 
     // 注册

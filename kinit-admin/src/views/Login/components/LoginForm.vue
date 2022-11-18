@@ -129,8 +129,8 @@ const signIn = async () => {
       loading.value = true
       const { getFormData } = methods
       const formData = await getFormData<UserLoginType>()
+      const authStore = useAuthStoreWithOut()
       try {
-        const authStore = useAuthStoreWithOut()
         const res = await authStore.login(formData)
         if (res) {
           if (!res.data.is_reset_password) {
@@ -140,8 +140,10 @@ const signIn = async () => {
             // 是否使用动态路由
             getMenu()
           }
+        } else {
+          loading.value = false
         }
-      } finally {
+      } catch (e: any) {
         loading.value = false
       }
     }

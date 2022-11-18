@@ -22,14 +22,12 @@ pip install alibabacloud_dysmsapi20170525
 import json
 import random
 import re
-import uuid
 from enum import Enum, unique
 from core.exception import CustomException
 from alibabacloud_dysmsapi20170525.client import Client as Dysmsapi20170525Client
 from alibabacloud_tea_openapi import models as open_api_models
 from alibabacloud_dysmsapi20170525 import models as dysmsapi_20170525_models
 from alibabacloud_tea_util import models as util_models
-from alibabacloud_tea_util.client import Client as UtilClient
 from core.logger import logger
 import datetime
 from aioredis.client import Redis
@@ -44,8 +42,8 @@ class AliyunSMS:
 
     @unique
     class Scene(Enum):
-        login = "template_code_1"
-        reset_password = "template_code_2"
+        login = "sms_template_code_1"
+        reset_password = "sms_template_code_2"
 
     def __init__(self, rd: Redis, telephone: str):
         self.check_telephone_format(telephone)
@@ -67,14 +65,14 @@ class AliyunSMS:
             raise CustomException("获取短信配置信息失败，请联系管理员！", code=status.HTTP_ERROR)
         else:
             aliyun_sms = json.loads(aliyun_sms)
-            self.access_key = aliyun_sms.get("access_key")
-            self.access_key_secret = aliyun_sms.get("access_key_secret")
-            self.send_interval = int(aliyun_sms.get("send_interval"))
-            self.valid_time = int(aliyun_sms.get("valid_time"))
+            self.access_key = aliyun_sms.get("sms_access_key")
+            self.access_key_secret = aliyun_sms.get("sms_access_key_secret")
+            self.send_interval = int(aliyun_sms.get("sms_send_interval"))
+            self.valid_time = int(aliyun_sms.get("sms_valid_time"))
             if self.scene == self.Scene.login:
-                self.sign_name = aliyun_sms.get("sign_name_1")
+                self.sign_name = aliyun_sms.get("sms_sign_name_1")
             else:
-                self.sign_name = aliyun_sms.get("sign_name_2")
+                self.sign_name = aliyun_sms.get("sms_sign_name_2")
             self.template_code = aliyun_sms.get(self.scene.value)
 
     async def main_async(self, scene: Scene, **kwargs) -> bool:

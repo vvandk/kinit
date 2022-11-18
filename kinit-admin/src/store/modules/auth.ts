@@ -53,9 +53,8 @@ export const useAuthStore = defineStore('auth', {
       if (res) {
         wsCache.set(appStore.getToken, `${res.data.token_type} ${res.data.access_token}`)
         // 存储用户信息
-        wsCache.set(appStore.getUserInfo, res.data.user)
-        this.user = res.data.user
-        this.isUser = true
+        const auth = useAuthStore()
+        await auth.getUserInfo()
       }
       return res
     },
