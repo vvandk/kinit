@@ -1,3 +1,4 @@
+import { FormSchema } from '@/types/form'
 import { TableColumn } from '@/types/table'
 import { reactive } from 'vue'
 
@@ -96,7 +97,10 @@ export const searchSchema = reactive<FormSchema[]>([
     label: '手机号',
     component: 'Input',
     componentProps: {
-      clearable: false
+      clearable: false,
+      style: {
+        width: '214px'
+      }
     }
   },
   {
@@ -104,7 +108,10 @@ export const searchSchema = reactive<FormSchema[]>([
     label: '登陆地址',
     component: 'Input',
     componentProps: {
-      clearable: false
+      clearable: false,
+      style: {
+        width: '214px'
+      }
     }
   },
   {
@@ -113,7 +120,7 @@ export const searchSchema = reactive<FormSchema[]>([
     component: 'Select',
     componentProps: {
       style: {
-        width: '100%'
+        width: '214px'
       },
       options: [
         {

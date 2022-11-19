@@ -149,7 +149,10 @@ export const searchSchema = reactive<FormSchema[]>([
     label: '角色名称',
     component: 'Input',
     componentProps: {
-      clearable: false
+      clearable: false,
+      style: {
+        width: '214px'
+      }
     }
   },
   {
@@ -157,7 +160,10 @@ export const searchSchema = reactive<FormSchema[]>([
     label: '权限字符',
     component: 'Input',
     componentProps: {
-      clearable: false
+      clearable: false,
+      style: {
+        width: '214px'
+      }
     }
   },
   {
@@ -166,7 +172,7 @@ export const searchSchema = reactive<FormSchema[]>([
     component: 'Select',
     componentProps: {
       style: {
-        width: '100%'
+        width: '214px'
       },
       options: [
         {

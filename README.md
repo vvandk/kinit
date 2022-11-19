@@ -96,6 +96,14 @@ github地址：https://github.com/vvandk/kinit   👩‍👦‍👦
 
 - [x] 手机验证码登录功能
 
+- [x] 简单适配手机端：
+
+  1. 工作台招呼语一行显示，多余显示省略号
+  2. 查询框宽度统一，需手动调整（强迫症建议）
+  3. 分页符更新，电脑端与手机端分页功能不同
+  4. 表格工具栏更新，手机端取消文字显示
+  5. 表格操作按钮多的时候自动叠起
+
 ## TODO
 
 - [ ] 考虑支持多机部署方案，如果接口使用多机，那么用户是否支持统一认证
@@ -308,6 +316,12 @@ pnpm run build:pro
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/3.png)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/4.png)
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/6.png)
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/5.png)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/7.png)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/8.png)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/9.png)

@@ -14,6 +14,9 @@ import { useIcon } from '@/hooks/web/useIcon'
 import { ref, PropType } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import draggable from 'vuedraggable'
+import { useAppStore } from '@/store/modules/app'
+
+const appStore = useAppStore()
 
 const emit = defineEmits(['getList', 'update:tableSize'])
 
@@ -57,16 +60,20 @@ const handleCheckChange = () => {
   }
 }
 handleCheckChange()
+
+const mobile = appStore.getMobile
 </script>
 
 <template>
   <ElRow :gutter="10">
     <ElCol :span="1.5">
-      <ElButton link :icon="refresh" @click="handleClickRefresh">刷新数据</ElButton>
+      <ElButton link :icon="refresh" @click="handleClickRefresh">{{
+        mobile ? '' : '刷新数据'
+      }}</ElButton>
     </ElCol>
     <ElCol :span="1.5" class="pt-4px">
       <ElDropdown trigger="click" @command="handleCommand">
-        <ElButton link :icon="spacing">密度调整</ElButton>
+        <ElButton link :icon="spacing">{{ mobile ? '' : '密度调整' }}</ElButton>
         <template #dropdown>
           <ElDropdownMenu>
             <ElDropdownItem command="default">默认</ElDropdownItem>
@@ -104,7 +111,7 @@ handleCheckChange()
           </draggable>
         </ElScrollbar>
         <template #reference>
-          <ElButton link :icon="settings">字段设置</ElButton>
+          <ElButton link :icon="settings">{{ mobile ? '' : '字段设置' }}</ElButton>
         </template>
       </ElPopover>
     </ElCol>

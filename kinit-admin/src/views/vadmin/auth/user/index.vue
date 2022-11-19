@@ -16,7 +16,17 @@ import Write from './components/Write.vue'
 import Import from './components/Import.vue'
 import Password from './components/Password.vue'
 import { Dialog } from '@/components/Dialog'
-import { ElButton, ElMessage, ElSwitch, ElRow, ElCol } from 'element-plus'
+import {
+  ElButton,
+  ElMessage,
+  ElSwitch,
+  ElRow,
+  ElCol,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
+  ElIcon
+} from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { selectDictLabel, DictDetail } from '@/utils/dict'
 import { useDictStore } from '@/store/modules/dict'
@@ -24,6 +34,9 @@ import { useAuthStoreWithOut } from '@/store/modules/auth'
 import { useRouter } from 'vue-router'
 import { RightToolbar } from '@/components/RightToolbar'
 import { Search } from '@/components/Search'
+import { useAppStore } from '@/store/modules/app'
+
+const appStore = useAppStore()
 
 const { t } = useI18n()
 
@@ -171,6 +184,21 @@ const sendPasswordToSMS = async () => {
     return ElMessage.warning('请先选择数据')
   }
 }
+
+const mobile = appStore.getMobile
+
+// 下拉菜单处理事件
+const handleCommand = (command: string) => {
+  if (command === 'a') {
+    importList()
+  } else if (command === 'b') {
+    exportQueryList()
+  } else if (command === 'c') {
+    sendPasswordToSMS()
+  } else if (command === 'd') {
+    delDatas(null, true)
+  }
+}
 </script>
 
 <template>
@@ -182,17 +210,43 @@ const sendPasswordToSMS = async () => {
         <ElCol :span="1.5" v-hasPermi="['auth.user.create']">
           <ElButton type="primary" @click="AddAction">新增用户</ElButton>
         </ElCol>
-        <ElCol :span="1.5" v-hasPermi="['auth.user.import']">
+        <ElCol :span="1.5" v-hasPermi="['auth.user.import']" v-if="!mobile">
           <ElButton @click="importList">批量导入用户</ElButton>
         </ElCol>
-        <ElCol :span="1.5" v-hasPermi="['auth.user.export']">
+        <ElCol :span="1.5" v-hasPermi="['auth.user.export']" v-if="!mobile">
           <ElButton @click="exportQueryList">导出筛选用户</ElButton>
         </ElCol>
-        <ElCol :span="1.5" v-hasPermi="['auth.user.reset']">
+        <ElCol :span="1.5" v-hasPermi="['auth.user.reset']" v-if="!mobile">
           <ElButton @click="sendPasswordToSMS">重置密码通知短信</ElButton>
         </ElCol>
-        <ElCol :span="1.5" v-hasPermi="['auth.user.delete']">
+        <ElCol :span="1.5" v-hasPermi="['auth.user.delete']" v-if="!mobile">
           <ElButton type="danger" @click="delDatas(null, true)">批量删除</ElButton>
+        </ElCol>
+        <ElCol :span="1.5" v-if="mobile">
+          <ElDropdown trigger="click" @command="handleCommand">
+            <ElButton>
+              更多
+              <el-icon class="el-icon--right">
+                <Icon icon="mdi:keyboard-arrow-down" />
+              </el-icon>
+            </ElButton>
+            <template #dropdown>
+              <ElDropdownMenu>
+                <ElDropdownItem command="a" v-hasPermi="['auth.user.import']"
+                  >批量导入用户</ElDropdownItem
+                >
+                <ElDropdownItem command="b" v-hasPermi="['auth.user.export']"
+                  >导出筛选用户</ElDropdownItem
+                >
+                <ElDropdownItem command="c" v-hasPermi="['auth.user.reset']"
+                  >重置密码通知短信</ElDropdownItem
+                >
+                <ElDropdownItem command="d" v-hasPermi="['auth.user.delete']"
+                  >批量删除</ElDropdownItem
+                >
+              </ElDropdownMenu>
+            </template>
+          </ElDropdown>
         </ElCol>
       </ElRow>
       <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
@@ -272,3 +326,12 @@ const sendPasswordToSMS = async () => {
     </Dialog>
   </ContentWrap>
 </template>
+
+<style scoped>
+.el-dropdown-link {
+  cursor: pointer;
+  color: var(--el-color-primary);
+  display: flex;
+  align-items: center;
+}
+</style>

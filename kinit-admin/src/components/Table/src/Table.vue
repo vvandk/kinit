@@ -7,6 +7,10 @@ import { getSlot } from '@/utils/tsxHelper'
 import type { TableProps } from './types'
 import { set } from 'lodash-es'
 import { TableColumn, TableSlotDefault, Pagination, TableSetPropsType } from '../../../types/table'
+import { useAppStore } from '@/store/modules/app'
+
+const appStore = useAppStore()
+const mobile = appStore.getMobile
 
 export default defineComponent({
   name: 'Table',
@@ -112,7 +116,9 @@ export default defineComponent({
           small: false,
           background: false,
           pagerCount: 7,
-          layout: 'sizes, prev, pager, next, jumper, ->, total',
+          layout: mobile
+            ? 'prev, pager, next, ->, total'
+            : 'sizes, prev, pager, next, jumper, ->, total',
           limits: [10, 20, 30, 40, 50, 100],
           disabled: false,
           hideOnSinglePage: false,

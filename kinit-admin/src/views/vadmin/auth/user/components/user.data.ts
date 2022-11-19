@@ -39,7 +39,7 @@ export const columns = reactive<TableColumn[]>([
   },
   {
     field: 'last_login',
-    label: '最近一次登录时间',
+    label: '最近登录时间',
     show: true
   },
   {
@@ -62,7 +62,12 @@ export const schema = reactive<FormSchema[]>([
     colProps: {
       span: 12
     },
-    component: 'Input'
+    component: 'Input',
+    componentProps: {
+      style: {
+        width: '100%'
+      }
+    }
   },
   {
     field: 'telephone',
@@ -70,7 +75,12 @@ export const schema = reactive<FormSchema[]>([
     colProps: {
       span: 12
     },
-    component: 'Input'
+    component: 'Input',
+    componentProps: {
+      style: {
+        width: '100%'
+      }
+    }
   },
   {
     field: 'nickname',
@@ -78,7 +88,12 @@ export const schema = reactive<FormSchema[]>([
     colProps: {
       span: 12
     },
-    component: 'Input'
+    component: 'Input',
+    componentProps: {
+      style: {
+        width: '100%'
+      }
+    }
   },
   {
     field: 'gender',
@@ -156,7 +171,10 @@ export const searchSchema = reactive<FormSchema[]>([
     label: '姓名',
     component: 'Input',
     componentProps: {
-      clearable: false
+      clearable: false,
+      style: {
+        width: '214px'
+      }
     }
   },
   {
@@ -164,7 +182,10 @@ export const searchSchema = reactive<FormSchema[]>([
     label: '手机号',
     component: 'Input',
     componentProps: {
-      clearable: false
+      clearable: false,
+      style: {
+        width: '214px'
+      }
     }
   },
   {
@@ -173,7 +194,7 @@ export const searchSchema = reactive<FormSchema[]>([
     component: 'Select',
     componentProps: {
       style: {
-        width: '100%'
+        width: '214px'
       },
       options: [
         {

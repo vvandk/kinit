@@ -8,7 +8,7 @@ import { useForm } from '@/hooks/web/useForm'
 import { findIndex } from '@/utils'
 import { cloneDeep } from 'lodash-es'
 import { set } from 'lodash-es'
-import { FormSchema } from '@/types/form'
+import { FormSchema, FormSetPropsType } from '@/types/form'
 
 const { t } = useI18n()
 
