@@ -17,9 +17,11 @@ class LoginParams(Paging):
     """
     列表分页
     """
-    def __init__(self, ip: str = None, telephone: str = None, status: bool = None, page: int = 1, limit: int = 10):
+    def __init__(self, ip: str = None, address: str = None, telephone: str = None, status: bool = None, page: int = 1,
+                 limit: int = 10):
         super(LoginParams, self).__init__(page, limit)
         self.ip = ("like", ip)
         self.telephone = ("like", telephone)
+        self.address = ("like", address)
         self.status = status
         self.order = "desc"

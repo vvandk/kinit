@@ -98,6 +98,8 @@ EVENTS = [
 """
 # 默认密码，"0" 默认为手机号后六位
 DEFAULT_PASSWORD = "0"
+# 是否开启保存登录日志
+LOGIN_LOG_RECORD = True
 # 是否开启保存每次请求日志到本地
 REQUEST_LOG_RECORD = True
 # 是否开启每次操作日志记录到MongoDB数据库

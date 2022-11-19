@@ -115,6 +115,17 @@ export const searchSchema = reactive<FormSchema[]>([
     }
   },
   {
+    field: 'address',
+    label: '登陆地点',
+    component: 'Input',
+    componentProps: {
+      clearable: false,
+      style: {
+        width: '214px'
+      }
+    }
+  },
+  {
     field: 'status',
     label: '登录状态',
     component: 'Select',

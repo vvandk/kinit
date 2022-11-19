@@ -17,19 +17,19 @@
 
 Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
+- 👭后端采用 Python 语言现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + [SQLAlchem](https://www.sqlalchemy.org/) 异步操作 [MySQL](https://www.mysql.com/) 数据库。
 - 🧑‍🤝‍🧑前端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)，等主流技术开发。
-- 👭后端采用 Python 语言以及现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 框架。
 - 👫权限认证使用[（哈希）密码和 JWT Bearer 令牌的 OAuth2](https://fastapi.tiangolo.com/zh/tutorial/security/oauth2-jwt/)，支持多终端认证系统。
-- 👬支持加载动态权限菜单，多方式轻松权限控制。
+- 👬支持加载动态权限菜单，多方式轻松权限控制，按钮级别权限控制。
+- 👬已加入常见的`Redis`、`MYSQL`、`MongoDB`数据库异步操作。
 - 开箱即用的中后台解决方案，可以用来作为新项目的启动模版，也可用于学习参考。并且时刻关注着最新技术动向，尽可能的第一时间更新。
+- 与 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 前端框架时刻保持同步更新。
 
-## 💏特别鸣谢
-
-[ELADMIN](https://eladmin.vip/demo)：项目基于 Spring Boot 2.1.0 、 Jpa、 Spring Security、redis、Vue的前后端分离的后台管理系统。
-
-[django-vue-admin](https://gitee.com/liqianglog/django-vue-admin)：基于RBAC模型的权限控制的一整套基础开发平台，前后端分离，后端采用 django+django-rest-framework，前端采用 vue+ElementUI。
+## 特别鸣谢
 
 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin)：一套基于vue3、element-plus、typescript4、vite3的后台集成方案
+
+[django-vue-admin](https://gitee.com/liqianglog/django-vue-admin)：基于RBAC模型的权限控制的一整套基础开发平台，前后端分离，后端采用 django+django-rest-framework，前端采用 vue+ElementUI。
 
 [Ant Design Pro](https://preview.pro.ant.design/dashboard/analysis)：开箱即用的中台前端/设计解决方案
 
@@ -47,16 +47,16 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 ## 在线体验
 
-👩‍👧‍👦演示地址：http://kinit.ktianc.top/
+演示地址：http://kinit.ktianc.top/
 
 - 账号：15020221010
 - 密码：kinit2022
 
 ## 源码地址
 
-gitee地址(主推)：https://gitee.com/ktianc/kinit   👩‍👦‍👦
+gitee地址(主推)：https://gitee.com/ktianc/kinit
 
-github地址：https://github.com/vvandk/kinit   👩‍👦‍👦
+github地址：https://github.com/vvandk/kinit
 
 ## 内置功能
 
@@ -103,6 +103,8 @@ github地址：https://github.com/vvandk/kinit   👩‍👦‍👦
   3. 分页符更新，电脑端与手机端分页功能不同
   4. 表格工具栏更新，手机端取消文字显示
   5. 表格操作按钮多的时候自动叠起
+
+- [x] 已加入常见的`Redis`、`MYSQL`、`MongoDB`数据库异步操作。
 
 ## TODO
 

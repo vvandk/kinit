@@ -199,6 +199,11 @@ const handleCommand = (command: string) => {
     delDatas(null, true)
   }
 }
+
+// 表格排序
+const tableSortChange = async (data: any) => {
+  console.log(data)
+}
 </script>
 
 <template>
@@ -264,6 +269,7 @@ const handleCommand = (command: string) => {
         total: tableObject.count
       }"
       @register="register"
+      @sort-change="tableSortChange"
     >
       <template #action="{ row }">
         <ElButton

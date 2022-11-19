@@ -6,6 +6,8 @@
 # @IDE            : PyCharm
 # @desc           : 登录记录模型
 import json
+
+from application.settings import LOGIN_LOG_RECORD
 from utils.ip_manage import IPManage
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.db_base import BaseModel
@@ -35,11 +37,13 @@ class VadminLoginRecord(BaseModel):
     request = Column(TEXT, comment="请求信息")
 
     @classmethod
-    async def create_login_record(cls, db: AsyncSession, telephone: str, status: bool, req: Request, resp: dict):
+    async def create_login_record(cls, db: AsyncSession, telephone: str, status: bool, req: Request, resp: dict) -> None:
         """
         创建登录记录
         @return:
         """
+        if not LOGIN_LOG_RECORD:
+            return None
         header = {}
         for k, v in req.headers.items():
             header[k] = v
