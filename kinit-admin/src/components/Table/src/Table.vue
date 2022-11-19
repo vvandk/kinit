@@ -274,7 +274,11 @@ export default defineComponent({
           data={unref(getProps).data}
           onSelection-change={selectionChange}
           {...unref(getBindValue)}
-          header-row-style="color: #000;background-color: #000;"
+          header-cell-style={
+            appStore.getIsDark
+              ? { color: '#CFD3DC', 'background-color': '#000' }
+              : { color: '#000', 'background-color': '#f5f7fa' }
+          }
         >
           {{
             default: () => renderTableColumn(),
