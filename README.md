@@ -8,10 +8,12 @@
 
 ## [关于]
 
-<div align="center"><h3 align="center">Kinit 是一套开箱即用的中后台解决方案，可以作为新项目的启动模版。</h3></div>
-<div align="center"><h3 align="center">前后端分离架构，开箱即用，紧随前沿技术</h3></div>
+<div align="center"><h3 align="center">Kinit 是一套开箱即用的中后台解决方案，可以作为新项目的启动模版！</h3></div>
+<div align="center"><h3 align="center">前后端分离架构，开箱即用，紧随前沿技术！</h3></div>
 
 <div align="center"><h3 align="center">既然已经决定了，那就要努力把它做好！</h3></div>
+
+<div align="center"><h3 align="center">文采不够，技术来凑！</h3></div>
 
 ## 介绍
 
