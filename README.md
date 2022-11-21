@@ -11,17 +11,17 @@
 <div align="center"><h3 align="center">Kinit 是一套开箱即用的中后台解决方案，可以作为新项目的启动模版。</h3></div>
 <div align="center"><h3 align="center">前后端分离架构，开箱即用，紧随前沿技术</h3></div>
 
-<div align="center"><h3 align="center">因为热爱，所以拥抱未来！</h3></div>
+<div align="center"><h3 align="center">既然已经决定了，那就要努力把它做好！</h3></div>
 
 ## 介绍
 
 Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
-- 👭后端采用 Python 语言现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + [SQLAlchemy](https://www.sqlalchemy.org/) 异步操作 [MySQL](https://www.mysql.com/) 数据库。
-- 🧑‍🤝‍🧑前端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)，等主流技术开发。
-- 👫权限认证使用[（哈希）密码和 JWT Bearer 令牌的 OAuth2](https://fastapi.tiangolo.com/zh/tutorial/security/oauth2-jwt/)，支持多终端认证系统。
-- 👬支持加载动态权限菜单，多方式轻松权限控制，按钮级别权限控制。
-- 👬已加入常见的`Redis`、`MYSQL`、`MongoDB`数据库异步操作。
+- 后端采用 Python 语言现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + [SQLAlchemy](https://www.sqlalchemy.org/) 异步操作 [MySQL](https://www.mysql.com/) 数据库。
+- 前端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)，等主流技术开发。
+- 权限认证使用[（哈希）密码和 JWT Bearer 令牌的 OAuth2](https://fastapi.tiangolo.com/zh/tutorial/security/oauth2-jwt/)，支持多终端认证系统。
+- 支持加载动态权限菜单，多方式轻松权限控制，按钮级别权限控制。
+- 已加入常见的`Redis`、`MYSQL`、`MongoDB`数据库异步操作。
 - 开箱即用的中后台解决方案，可以用来作为新项目的启动模版，也可用于学习参考。并且时刻关注着最新技术动向，尽可能的第一时间更新。
 - 与 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 前端框架时刻保持同步更新。
 
@@ -30,6 +30,8 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin)：一套基于vue3、element-plus、typescript4、vite3的后台集成方案
 
 [django-vue-admin](https://gitee.com/liqianglog/django-vue-admin)：基于RBAC模型的权限控制的一整套基础开发平台，前后端分离，后端采用 django+django-rest-framework，前端采用 vue+ElementUI。
+
+[RuoYi 若依官方网站](http://www.ruoyi.vip/)：RuoYi 是一个后台管理系统，基于经典技术组合（Spring Boot、Apache Shiro、MyBatis、Thymeleaf）主要目的让开发者注重专注业务，降低技术难度，从而节省人力成本，缩短项目周期，提高软件安全质量。
 
 [Ant Design Pro](https://preview.pro.ant.design/dashboard/analysis)：开箱即用的中台前端/设计解决方案
 
@@ -60,19 +62,19 @@ github地址：https://github.com/vvandk/kinit
 
 ## 内置功能
 
-- [x] 👨‍⚕️菜单管理：配置系统菜单，操作权限，按钮权限标识、后端接口权限等。
+- [x] 菜单管理：配置系统菜单，操作权限，按钮权限标识、后端接口权限等。
 
-- [x] 👩‍⚕️角色管理：角色菜单权限分配。
+- [x] 角色管理：角色菜单权限分配。
 
-- [x] 👨‍🎓用户管理：用户是系统操作者，该功能主要完成系统用户配置。
+- [x] 用户管理：用户是系统操作者，该功能主要完成系统用户配置。
 
-- [x] 🏡个人主页：配置用户个人信息，密码修改等。
+- [x] 个人主页：配置用户个人信息，密码修改等。
 
-- [x] 📚字典管理：对系统中经常使用的一些较为固定的数据进行维护。
+- [x] 字典管理：对系统中经常使用的一些较为固定的数据进行维护。
 
-- [x] 📁文件上传：对接阿里云OSS与本地存储。
+- [x] 文件上传：对接阿里云OSS与本地存储。
 
-- [x] 🔒登录认证：目前支持用户使用手机号+密码方式登录。
+- [x] 登录认证：目前支持用户使用手机号+密码方式登录。
 
   说明：新建用户密码默认为手机号后六位；
 
@@ -84,13 +86,13 @@ github地址：https://github.com/vvandk/kinit
 
 - [x] 用户分布：接入高德地图显示各地区用户分布情况
 
-- [x] 🗓️登录日志：用户登录日志记录和查询。
+- [x] 登录日志：用户登录日志记录和查询。
 
-- [x] 🗓️操作日志：系统用户每次操作功能时的详细记录。
+- [x] 操作日志：系统用户每次操作功能时的详细记录。
 
-- [ ] **🗓️异常日志：获取并展示接口异常日志**
+- [ ] **异常日志：获取并展示接口异常日志**
 
-- [x] 🧾接口文档：提供自动生成的交互式 API 文档，与 ReDoc 文档
+- [x] 接口文档：提供自动生成的交互式 API 文档，与 ReDoc 文档
 
 - [x] 导入导出：灵活支持数据导入导出功能
 
