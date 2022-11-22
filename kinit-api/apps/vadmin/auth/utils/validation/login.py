@@ -45,7 +45,7 @@ class LoginValidation:
     async def __call__(self, data: LoginForm, db: AsyncSession, request: Request) -> LoginResult:
         self.result = LoginResult()
         options = [models.VadminUser.roles, "roles.menus"]
-        user = await crud.UserDal(db).get_data(telephone=data.telephone, return_none=True, options=options)
+        user = await crud.UserDal(db).get_data(telephone=data.telephone, v_return_none=True, options=options)
         if not user:
             self.result.msg = "该手机号不存在！"
             return self.result

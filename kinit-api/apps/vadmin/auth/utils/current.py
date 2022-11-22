@@ -33,7 +33,7 @@ async def login_auth(telephone: str, db: AsyncSession):
 
     如果令牌无效，立即返回一个 HTTP 错误。
     """
-    return await crud.UserDal(db).get_data(telephone=telephone, return_none=True)
+    return await crud.UserDal(db).get_data(telephone=telephone, v_return_none=True)
 
 
 @AuthValidation
@@ -46,5 +46,5 @@ async def full_admin(telephone: str, db: AsyncSession):
     如果令牌无效，立即返回一个 HTTP 错误。
     """
     options = [models.VadminUser.roles, "roles.menus"]
-    return await crud.UserDal(db).get_data(telephone=telephone, return_none=True, options=options)
+    return await crud.UserDal(db).get_data(telephone=telephone, v_return_none=True, options=options)
 

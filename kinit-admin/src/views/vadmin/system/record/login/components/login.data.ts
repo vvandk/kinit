@@ -79,7 +79,8 @@ export const columns = reactive<TableColumn[]>([
     field: 'create_datetime',
     label: '创建时间',
     show: true,
-    span: 24
+    span: 24,
+    sortable: true
   },
   {
     field: 'action',

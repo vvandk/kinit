@@ -30,11 +30,16 @@ class MongoManage(DatabaseManage):
     async def create_data(self, collection: str, data: dict) -> InsertOneResult:
         return await self.db[collection].insert_one(data)
 
-    async def get_datas(self, collection: str, page: int = 1, limit: int = 10, schema: BaseModel = None, **kwargs):
+    async def get_datas(self, collection: str, schema: BaseModel = None, **kwargs):
         """
         使用 find() 要查询的一组文档。 find() 没有I / O，也不需要 await 表达式。它只是创建一个 AsyncIOMotorCursor 实例
         当您调用 to_list() 或为循环执行异步时 (async for) ，查询实际上是在服务器上执行的。
         """
+        page = kwargs.pop("page", 1)
+        limit = kwargs.pop("limit", 10)
+        order = kwargs.pop("v_order", None)
+        order_field = kwargs.pop("v_order_field", None)
+
         params = self.filter_condition(**kwargs)
         cursor = self.db[collection].find(params)
 

@@ -9,15 +9,15 @@
 """
 类依赖项-官方文档：https://fastapi.tiangolo.com/zh/tutorial/dependencies/classes-as-dependencies/
 """
+from fastapi import Depends
+from core.dependencies import Paging, QueryParams
 
-from core.dependencies import Paging
 
-
-class DictDetailParams(Paging):
+class DictDetailParams(QueryParams):
     """
     列表分页
     """
-    def __init__(self, dict_type_id: int = None, label: str = None, page: int = 1, limit: int = 10):
-        super(DictDetailParams, self).__init__(page, limit)
+    def __init__(self, dict_type_id: int = None, label: str = None, params: Paging = Depends()):
+        super().__init__(params)
         self.dict_type_id = dict_type_id
         self.label = ("like", label)

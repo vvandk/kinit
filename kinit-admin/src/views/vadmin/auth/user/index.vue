@@ -62,8 +62,8 @@ const { register, elTableRef, tableObject, methods } = useTable({
     data: 'data',
     count: 'count'
   },
-  props: {
-    columns
+  defaultParams: {
+    is_active: true
   }
 })
 
@@ -199,16 +199,16 @@ const handleCommand = (command: string) => {
     delDatas(null, true)
   }
 }
-
-// 表格排序
-const tableSortChange = async (data: any) => {
-  console.log(data)
-}
 </script>
 
 <template>
   <ContentWrap>
-    <Search :schema="searchSchema" @search="setSearchParams" @reset="setSearchParams" />
+    <Search
+      :model="{ is_active: true }"
+      :schema="searchSchema"
+      @search="setSearchParams"
+      @reset="setSearchParams"
+    />
 
     <div class="mb-8px flex justify-between">
       <ElRow :gutter="10">
@@ -262,6 +262,7 @@ const tableSortChange = async (data: any) => {
       v-model:page="tableObject.page"
       :data="tableObject.tableData"
       :loading="tableObject.loading"
+      :columns="columns"
       :selection="true"
       :size="tableSize"
       :border="true"
@@ -269,7 +270,6 @@ const tableSortChange = async (data: any) => {
         total: tableObject.count
       }"
       @register="register"
-      @sort-change="tableSortChange"
     >
       <template #action="{ row }">
         <ElButton

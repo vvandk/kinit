@@ -14,7 +14,7 @@
 # selectinload 官方文档：
 # https://www.osgeo.cn/sqlalchemy/orm/loading_relationships.html?highlight=selectinload#sqlalchemy.orm.selectinload
 import datetime
-from typing import List, Union
+from typing import List
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func, delete, update, or_
@@ -24,7 +24,6 @@ from sqlalchemy.orm import selectinload
 from starlette import status
 from core.logger import logger
 from sqlalchemy.sql.selectable import Select
-from pydantic import BaseModel
 
 
 class DalBase:
@@ -44,11 +43,11 @@ class DalBase:
         @param options: 指示应使用select在预加载中加载给定的属性。
         @param schema: 指定使用的序列化对象
         @param kwargs: 关键词参数,
-        @param kwargs: order，排序，默认正序，为 desc 是倒叙
-        @param kwargs: return_none，是否返回空 None，否认 抛出异常，默认抛出异常
+        @param kwargs: v_order，排序，默认正序，为 desc 是倒叙
+        @param kwargs: v_return_none，是否返回空 None，否认 抛出异常，默认抛出异常
         """
-        order = kwargs.get("order", None)
-        return_none = kwargs.get("return_none", False)
+        order = kwargs.pop("v_order", None)
+        return_none = kwargs.pop("v_return_none", False)
         keys_exist = False
         if keys:
             for key, value in keys.items():
@@ -60,7 +59,7 @@ class DalBase:
         kwargs_exist = False
         if kwargs:
             for key, value in kwargs.items():
-                if key != "order" and key != "return_none" and value and getattr(self.model, key, None):
+                if value and getattr(self.model, key, None):
                     kwargs_exist = True
                     break
         sql = select(self.model).where(self.model.delete_datetime.is_(None))
@@ -68,7 +67,7 @@ class DalBase:
             if data_id:
                 sql = sql.where(self.model.id == data_id)
             sql = self.add_filter_condition(sql, keys, options, **kwargs)
-        if order and order == "desc":
+        if order and (order == "desc" or order == "descending"):
             sql = sql.order_by(self.model.create_datetime.desc())
         queryset = await self.db.execute(sql)
         data = queryset.scalars().first()
@@ -90,23 +89,23 @@ class DalBase:
         @param keys: 外键字段查询
         @param options: 指示应使用select在预加载中加载给定的属性。
         @param schema: 指定使用的序列化对象
-        @param kwargs: order，排序，默认正序，为 desc 是倒叙
-        @param kwargs: order_field，排序字段
-        @param kwargs: return_objs，是否返回对象
-        @param kwargs: start_sql，初始 sql
+        @param kwargs: v_order，排序，默认正序，为 desc 是倒叙
+        @param kwargs: v_order_field，排序字段
+        @param kwargs: v_return_objs，是否返回对象
+        @param kwargs: v_start_sql，初始 sql
         """
-        order = kwargs.get("order", None)
-        order_field = kwargs.get("order_field", None)
-        return_objs = kwargs.get("return_objs", False)
-        start_sql = kwargs.get("start_sql", None)
+        order = kwargs.pop("v_order", None)
+        order_field = kwargs.pop("v_order_field", None)
+        return_objs = kwargs.pop("v_return_objs", False)
+        start_sql = kwargs.pop("v_start_sql", None)
         if not isinstance(start_sql, Select):
             start_sql = select(self.model).where(self.model.delete_datetime.is_(None))
         sql = self.add_filter_condition(start_sql, keys, options, **kwargs)
-        if order_field and order == "desc":
+        if order_field and (order == "desc" or order == "descending"):
             sql = sql.order_by(getattr(self.model, order_field).desc(), self.model.id.desc())
         elif order_field:
             sql = sql.order_by(getattr(self.model, order_field), self.model.id)
-        elif order == "desc":
+        elif order == "desc" or order == "descending":
             sql = sql.order_by(self.model.id.desc())
         if limit != 0:
             sql = sql.offset((page - 1) * limit).limit(limit)

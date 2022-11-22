@@ -19,6 +19,7 @@ class Settings(BaseModel):
     config_key: str
     config_value: Optional[str] = None
     remark: Optional[str] = None
+    disabled: Optional[bool] = None
     tab_id: int
 
 

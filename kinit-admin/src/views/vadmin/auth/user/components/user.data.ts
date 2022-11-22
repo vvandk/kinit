@@ -206,7 +206,6 @@ export const searchSchema = reactive<FormSchema[]>([
           value: false
         }
       ]
-    },
-    value: true
+    }
   }
 ])

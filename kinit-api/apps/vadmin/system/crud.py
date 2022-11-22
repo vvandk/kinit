@@ -30,7 +30,7 @@ class DictTypeDal(DalBase):
         data = {}
         for dict_type in dict_types:
             dict_data = await DictTypeDal(self.db).\
-                get_data(dict_type=dict_type, return_none=True, options=[self.model.details])
+                get_data(dict_type=dict_type, v_return_none=True, options=[self.model.details])
             if not dict_data:
                 data[dict_type] = []
                 continue
@@ -60,10 +60,11 @@ class SettingsDal(DalBase):
         """
         获取系统配置标签下的信息
         """
-        datas = await self.get_datas(limit=0, tab_id=tab_id, return_objs=True)
+        datas = await self.get_datas(limit=0, tab_id=tab_id, v_return_objs=True)
         result = {}
         for data in datas:
-            result[data.config_key] = data.config_value
+            if not data.disabled:
+                result[data.config_key] = data.config_value
         return result
 
     async def update_datas(self, datas: dict):
@@ -97,12 +98,13 @@ class SettingsTabDal(DalBase):
         model = models.VadminSystemSettingsTab
         options = [model.settings]
         datas = await self.get_datas(limit=0, options=options, classify=("in", classify), disabled=False,
-                                     return_objs=True, hidden=hidden)
+                                     v_return_objs=True, hidden=hidden)
         result = {}
         for tab in datas:
             tabs = {}
             for item in tab.settings:
-                tabs[item.config_key] = item.config_value
+                if not item.disabled:
+                    tabs[item.config_key] = item.config_value
             result[tab.tab_name] = tabs
         return result
 

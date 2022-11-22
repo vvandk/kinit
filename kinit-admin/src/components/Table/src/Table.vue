@@ -10,7 +10,6 @@ import { TableColumn, TableSlotDefault, Pagination, TableSetPropsType } from '..
 import { useAppStore } from '@/store/modules/app'
 
 const appStore = useAppStore()
-const mobile = appStore.getMobile
 
 export default defineComponent({
   name: 'Table',
@@ -116,10 +115,10 @@ export default defineComponent({
           small: false,
           background: false,
           pagerCount: 7,
-          layout: mobile
+          layout: appStore.getMobile
             ? 'prev, pager, next, ->, total'
             : 'sizes, prev, pager, next, jumper, ->, total',
-          limits: [10, 20, 30, 40, 50, 100],
+          pageSizes: [10, 20, 30, 40, 50, 100],
           disabled: false,
           hideOnSinglePage: false,
           total: 10

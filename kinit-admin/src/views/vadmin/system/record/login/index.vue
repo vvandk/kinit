@@ -17,8 +17,9 @@ const { register, elTableRef, tableObject, methods } = useTable({
     data: 'data',
     count: 'count'
   },
-  props: {
-    columns
+  defaultParams: {
+    v_order: 'descending',
+    v_order_field: 'create_datetime'
   }
 })
 
@@ -31,9 +32,7 @@ const view = (row: any) => {
   dialogVisible.value = true
 }
 
-const { getList, setSearchParams } = methods
-
-getList()
+const { getList, setSearchParams, setOrderParams } = methods
 
 const tableSize = ref('default')
 
@@ -51,6 +50,8 @@ watch(
     deep: true
   }
 )
+
+getList()
 </script>
 
 <template>
@@ -65,6 +66,8 @@ watch(
     <Table
       v-model:limit="tableObject.limit"
       v-model:page="tableObject.page"
+      :defaultSort="{ prop: 'create_datetime', order: 'descending' }"
+      :columns="columns"
       :data="tableObject.tableData"
       :loading="tableObject.loading"
       :selection="false"
@@ -74,6 +77,7 @@ watch(
         total: tableObject.count
       }"
       @register="register"
+      @sort-change="setOrderParams"
     >
       <template #action="{ row }">
         <ElButton type="primary" link size="small" @click="view(row)"> 详情 </ElButton>

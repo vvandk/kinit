@@ -13,7 +13,7 @@ const prefixCls = getPrefixCls('app')
 
 const appStore = useAppStore()
 
-// 手动添加mate标签
+// 添加mate标签
 const addMeta = (name: string, content: string) => {
   const meta = document.createElement('meta')
   meta.content = content
@@ -34,10 +34,6 @@ const setSystemConfig = async () => {
       res.data.web_basic.web_desc ||
         'Kinit 是一套开箱即用的中后台解决方案，可以作为新项目的启动模版。'
     )
-    // 接入百度统计
-    if (res.data.web_baidu.web_baidu) {
-      eval(res.data.web_baidu.web_baidu)
-    }
   }
 }
 

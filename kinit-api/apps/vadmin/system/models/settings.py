@@ -6,9 +6,8 @@
 # @IDE            : PyCharm
 # @desc           : 系统字典模型
 from sqlalchemy.orm import relationship
-
 from db.db_base import BaseModel
-from sqlalchemy import Column, String, TEXT, Integer, ForeignKey
+from sqlalchemy import Column, String, TEXT, Integer, ForeignKey, Boolean
 
 
 class VadminSystemSettings(BaseModel):
@@ -19,6 +18,7 @@ class VadminSystemSettings(BaseModel):
     config_key = Column(String(255), index=True, nullable=False, unique=True, comment="配置表键")
     config_value = Column(TEXT, comment="配置表内容")
     remark = Column(String(255), comment="备注信息")
+    disabled = Column(Boolean, default=False, comment="是否禁用")
 
     tab_id = Column(Integer, ForeignKey("vadmin_system_settings_tab.id", ondelete='CASCADE'), comment="关联tab标签")
     tab = relationship("VadminSystemSettingsTab", foreign_keys=tab_id, back_populates="settings")

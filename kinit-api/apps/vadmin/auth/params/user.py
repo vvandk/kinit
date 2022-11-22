@@ -9,16 +9,19 @@
 """
 类依赖项-官方文档：https://fastapi.tiangolo.com/zh/tutorial/dependencies/classes-as-dependencies/
 """
+from fastapi import Depends
+from core.dependencies import Paging, QueryParams
 
-from core.dependencies import Paging
 
-
-class UserParams(Paging):
+class UserParams(QueryParams):
     """
     列表分页
     """
-    def __init__(self, name: str = None, telephone: str = None, is_active: bool = None, page: int = 1, limit: int = 10):
-        super(UserParams, self).__init__(page, limit)
+
+    def __init__(self, name: str = None, telephone: str = None, is_active: bool = None, params: Paging = Depends()):
+        super().__init__(params)
         self.name = ("like", name)
         self.telephone = ("like", telephone)
         self.is_active = is_active
+
+

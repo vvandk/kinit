@@ -5,7 +5,6 @@ import { get } from 'lodash-es'
 import type { TableProps } from '@/components/Table/src/types'
 import { useI18n } from '@/hooks/web/useI18n'
 import { TableSetPropsType } from '@/types/table'
-import { columns } from 'element-plus/es/components/table-v2/src/common'
 
 const { t } = useI18n()
 
@@ -23,6 +22,8 @@ interface UseTableConfig<T = any> {
     data: string
     count?: string
   }
+  // 默认传递的参数
+  defaultParams?: Recordable
   props?: TableProps
 }
 
@@ -36,6 +37,12 @@ interface TableObject<T = any> {
   currentRow: Nullable<T>
 }
 
+type TableOrderChange = {
+  column: Recordable
+  prop: string
+  order: string | null
+}
+
 export const useTable = <T = any>(config?: UseTableConfig<T>) => {
   const tableObject = reactive<TableObject<T>>({
     // 页数
@@ -47,7 +54,9 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
     // 表格数据
     tableData: [],
     // AxiosConfig 配置
-    params: {},
+    params: {
+      ...(config?.defaultParams || {})
+    },
     // 加载中
     loading: true,
     // 当前行的数据
@@ -136,6 +145,15 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
     getSelections: async () => {
       const table = await getTable()
       return (table?.selections || []) as T[]
+    },
+    // 设置表格排序
+    setOrderParams: (data: TableOrderChange) => {
+      tableObject.page = 1
+      tableObject.params = Object.assign(tableObject.params, {
+        v_order: data.order,
+        v_order_field: data.prop
+      })
+      methods.getList()
     },
     // 与Search组件结合
     setSearchParams: (data: Recordable) => {

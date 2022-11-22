@@ -35,9 +35,6 @@ const { register, elTableRef, tableObject, methods } = useTable({
   delListApi: delMenuListApi,
   response: {
     data: 'data'
-  },
-  props: {
-    columns
   }
 })
 
@@ -149,6 +146,7 @@ watch(
       :data="tableObject.tableData"
       :loading="tableObject.loading"
       :selection="false"
+      :columns="columns"
       :border="true"
       :size="tableSize"
       row-key="id"

@@ -16,9 +16,6 @@ const { register, elTableRef, tableObject, methods } = useTable({
   response: {
     data: 'data',
     count: 'count'
-  },
-  props: {
-    columns
   }
 })
 
@@ -65,6 +62,7 @@ watch(
     <Table
       v-model:limit="tableObject.limit"
       v-model:page="tableObject.page"
+      :columns="columns"
       :data="tableObject.tableData"
       :loading="tableObject.loading"
       :selection="false"

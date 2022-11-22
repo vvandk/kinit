@@ -54,9 +54,6 @@ const { register, elTableRef, tableObject, methods } = useTable({
   response: {
     data: 'data',
     count: 'count'
-  },
-  props: {
-    columns
   }
 })
 tableObject.params = { dict_type_id: dictType }
@@ -164,6 +161,7 @@ watch(
       v-model:page="tableObject.page"
       :data="tableObject.tableData"
       :loading="tableObject.loading"
+      :columns="columns"
       :selection="false"
       :pagination="{
         total: tableObject.count

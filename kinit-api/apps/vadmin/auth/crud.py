@@ -45,7 +45,7 @@ class UserDal(DalBase):
         """
         创建用户
         """
-        unique = await self.get_data(telephone=data.telephone, return_none=True)
+        unique = await self.get_data(telephone=data.telephone, v_return_none=True)
         if unique:
             raise ValueError("手机号已存在！")
         password = data.telephone[5:12] if settings.DEFAULT_PASSWORD == "0" else settings.DEFAULT_PASSWORD
@@ -96,7 +96,7 @@ class UserDal(DalBase):
         """
         导出用户查询列表为excel
         """
-        datas = await self.get_datas(**params.dict(), return_objs=True)
+        datas = await self.get_datas(**params.dict(), v_return_objs=True)
         # 获取表头
         row = list(map(lambda i: i.get("label"), header))
         rows = []
@@ -126,7 +126,7 @@ class UserDal(DalBase):
         补全表头数据选项
         """
         # 角色选择项
-        roles = await RoleDal(self.db).get_datas(limit=0, return_objs=True, disabled=False, is_admin=False)
+        roles = await RoleDal(self.db).get_datas(limit=0, v_return_objs=True, disabled=False, is_admin=False)
         role_options = self.import_headers[4]
         assert isinstance(role_options, dict)
         role_options["options"] = [{"label": role.name, "value": role.id} for role in roles]
@@ -178,7 +178,7 @@ class UserDal(DalBase):
         初始化所选用户密码并发送通知短信
         将用户密码改为系统默认密码，并将初始化密码状态改为false
         """
-        users = await self.get_datas(limit=0, id=("in", ids), return_objs=True)
+        users = await self.get_datas(limit=0, id=("in", ids), v_return_objs=True)
         result = []
         for user in users:
             # 重置密码
