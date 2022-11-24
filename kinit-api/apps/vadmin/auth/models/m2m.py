@@ -6,6 +6,10 @@
 # @IDE            : PyCharm
 # @desc           : 关联中间表
 
+"""
+Table 操作博客：http://www.ttlsa.com/python/sqlalchemy-concise-guide/
+"""
+
 from db.db_base import Model
 from sqlalchemy import Column, Table, Integer, ForeignKey, INT
 

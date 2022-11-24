@@ -19,79 +19,90 @@ from starlette.staticfiles import StaticFiles  # 依赖安装：pip install aiof
 import importlib
 from core.logger import logger
 from core.exception import register_exception
-
-"""
-其他配置：
-docs_url：配置交互文档的路由地址，如果禁用则为None，默认为 /docs
-redoc_url： 配置 Redoc 文档的路由地址，如果禁用则为None，默认为 /redoc
-openapi_url：配置接口文件json数据文件路由地址，如果禁用则为None，默认为/openapi.json
-"""
-app = FastAPI(
-    title="KInit",
-    description="本项目基于Fastapi与Vue3+Typescript+Vite3+element-plus的基础项目 前端基于vue-element-plus-admin框架开发",
-    version="1.0.0"
-)
+import typer
+from scripts.initialize.initialize import InitializeData
+import asyncio
 
 
-def import_module(modules: list, desc: str):
-    for module in modules:
-        if not module:
-            continue
-        try:
-            # 动态导入模块
-            module_pag = importlib.import_module(module[0:module.rindex(".")])
-            getattr(module_pag, module[module.rindex(".") + 1:])(app)
-        except ModuleNotFoundError:
-            logger.error(f"AttributeError：导入{desc}失败，未找到该模块：{module}")
-        except AttributeError:
-            logger.error(f"ModuleNotFoundError：导入{desc}失败，未找到该模块下的方法：{module}")
+shell_app = typer.Typer()
 
 
-"""
-添加中间件
-"""
-import_module(settings.MIDDLEWARES, "中间件")
+def create_app():
+    """
+    启动项目
 
-"""
-添加全局事件
-"""
-import_module(settings.EVENTS, "全局事件")
+    docs_url：配置交互文档的路由地址，如果禁用则为None，默认为 /docs
+    redoc_url： 配置 Redoc 文档的路由地址，如果禁用则为None，默认为 /redoc
+    openapi_url：配置接口文件json数据文件路由地址，如果禁用则为None，默认为/openapi.json
+    """
+    app = FastAPI(
+        title="KInit",
+        description="本项目基于Fastapi与Vue3+Typescript+Vite3+element-plus的基础项目 前端基于vue-element-plus-admin框架开发",
+        version="1.0.0"
+    )
 
-"""
-全局异常捕捉处理
-"""
-register_exception(app)
+    def import_module(modules: list, desc: str):
+        for module in modules:
+            if not module:
+                continue
+            try:
+                # 动态导入模块
+                module_pag = importlib.import_module(module[0:module.rindex(".")])
+                getattr(module_pag, module[module.rindex(".") + 1:])(app)
+            except ModuleNotFoundError:
+                logger.error(f"AttributeError：导入{desc}失败，未找到该模块：{module}")
+            except AttributeError:
+                logger.error(f"ModuleNotFoundError：导入{desc}失败，未找到该模块下的方法：{module}")
 
-"""
-跨域解决
-"""
-if settings.CORS_ORIGIN_ENABLE:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.ALLOW_ORIGINS,
-        allow_credentials=settings.ALLOW_CREDENTIALS,
-        allow_methods=settings.ALLOW_METHODS,
-        allow_headers=settings.ALLOW_HEADERS)
+    import_module(settings.MIDDLEWARES, "中间件")
+    import_module(settings.EVENTS, "全局事件")
+    # 全局异常捕捉处理
+    register_exception(app)
+    # 跨域解决
+    if settings.CORS_ORIGIN_ENABLE:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=settings.ALLOW_ORIGINS,
+            allow_credentials=settings.ALLOW_CREDENTIALS,
+            allow_methods=settings.ALLOW_METHODS,
+            allow_headers=settings.ALLOW_HEADERS)
+    # 挂在静态目录
+    if settings.STATIC_ENABLE:
+        app.mount(settings.STATIC_URL, app=StaticFiles(directory=settings.STATIC_ROOT))
+    if settings.TEMP_ENABLE:
+        app.mount(settings.TEMP_URL, app=StaticFiles(directory=settings.TEMP_DIR))
+    # 引入应用中的路由
+    for url in urls.urlpatterns:
+        app.include_router(url["ApiRouter"], prefix=url["prefix"], tags=url["tags"])
+    return app
 
-"""
-挂在静态目录
-"""
-if settings.STATIC_ENABLE:
-    app.mount(settings.STATIC_URL, app=StaticFiles(directory=settings.STATIC_ROOT))
-if settings.TEMP_ENABLE:
-    app.mount(settings.TEMP_URL, app=StaticFiles(directory=settings.TEMP_DIR))
 
-"""
-引入应用中的路由
-"""
-for url in urls.urlpatterns:
-    app.include_router(url["ApiRouter"], prefix=url["prefix"], tags=url["tags"])
+@shell_app.command()
+def run():
+    """
+    启动项目
+    """
+    uvicorn.run(app='main:create_app', host="0.0.0.0", port=9000)
+
+
+@shell_app.command()
+def init():
+    """
+    初始化数据
+    """
+    print("开始初始化数据")
+    data = InitializeData()
+    asyncio.run(data.run())
+
+
+@shell_app.command()
+def migrate():
+    """
+    将模型迁移到数据库，更新数据库表结构
+    """
+    print("开始更新数据库表")
+    InitializeData().migrate_model()
+
 
 if __name__ == '__main__':
-    """
-    # 启动项目
-    # reload：自动重载项目
-    # debug：调试
-    # workers：启动几个进程
-    """
-    uvicorn.run(app='main:app', host="0.0.0.0", port=9000)
+    shell_app()

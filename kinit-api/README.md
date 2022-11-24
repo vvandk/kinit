@@ -37,9 +37,9 @@ SQLAlchemy-Utils：https://sqlalchemy-utils.readthedocs.io/en/latest/
 
 ## 开发环境
 
-开发语言：Python 3.8
+开发语言：Python 3.10
 
-开发框架：Fastapi 0.73.0
+开发框架：Fastapi 0.87.0
 
 ## 使用
 
@@ -54,15 +54,22 @@ pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 1. 阿里源： https://mirrors.aliyun.com/pypi/simple/
 ```
 
+### 数据初始化
+
+```shell
+# 项目根目录下执行，需提前创建好数据库
+# 会自动将模型迁移到数据库，并生成初始化数据
+python main.py init
+```
+
 ### 运行启动
 
+```shell
+# 直接运行main文件
+python main.py run
 ```
-# 命令行运行(开发模式)
-uvicorn main:app --host=127.0.0.1 --port=9000 --reload
 
-# 或者直接运行main文件
-python main.py
-```
+## 其他
 
 在线文档地址(在配置文件里面设置路径或者关闭)
 
@@ -86,19 +93,10 @@ git commit -m "clear cached"
 
 执行数据库迁移命令（终端执行）
 
-```python
-# 初次生成迁移文件
-alembic revision -m "生成迁移文件"
+```shell
+# 执行命令：
 
-# 通过该命令可以将模型迁移到数据库
-alembic upgrade head
-
-# 如果有更新，则可以使用这个命令再次生成迁移文件，初次也可以使用
-alembic revision --autogenerate -m "update"
-# --autogenerate：自动将当前模型的修改，生成迁移脚本。
-
-# 通过该命令可以将模型迁移到数据库
-alembic upgrade head
+python main.py migrate
 ```
 
 生成迁移文件后，会在alembic迁移目录中的version目录中多个迁移文件
