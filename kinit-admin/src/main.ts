@@ -28,6 +28,8 @@ import { setupRouter } from './router'
 // 权限
 import { setupPermission } from './directives'
 
+import DataVVue3 from '@kjgl77/datav-vue3'
+
 import { createApp } from 'vue'
 
 import App from './App.vue'
@@ -48,6 +50,8 @@ const setupAll = async () => {
   setupRouter(app)
 
   setupPermission(app)
+
+  app.use(DataVVue3)
 
   app.mount('#app')
 }
