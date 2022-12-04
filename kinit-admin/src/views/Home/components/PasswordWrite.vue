@@ -7,6 +7,7 @@ import { postCurrentUserResetPassword } from '@/api/vadmin/auth/user'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
 import { ElMessage } from 'element-plus'
+import { FormSchema } from '@/types/form'
 
 const { required } = useValidator()
 
@@ -46,7 +47,7 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'password_two',
-    label: '再次输入新密码',
+    label: '确认密码',
     component: 'InputPassword',
     colProps: {
       span: 24

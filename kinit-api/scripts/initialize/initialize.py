@@ -5,6 +5,8 @@
 # @File           : initialize.py
 # @IDE            : PyCharm
 # @desc           : 简要说明
+
+from enum import Enum
 from core.database import db_getter
 from utils.excel.excel_manage import ExcelManage
 from application.settings import BASE_DIR, VERSION
@@ -13,6 +15,11 @@ from apps.vadmin.auth import models as auth_models
 from apps.vadmin.system import models as system_models
 from sqlalchemy.sql.schema import Table
 import subprocess
+
+
+class Environment(str, Enum):
+    dev = "dev"
+    pro = "pro"
 
 
 class InitializeData:
@@ -36,13 +43,13 @@ class InitializeData:
         self.__get_sheet_data()
 
     @classmethod
-    def migrate_model(cls):
+    def migrate_model(cls, env: Environment = Environment.pro):
         """
         模型迁移映射到数据库
         """
-        subprocess.check_call(f'alembic revision --autogenerate -m "{VERSION}"', cwd=BASE_DIR)
-        subprocess.check_call('alembic upgrade head', cwd=BASE_DIR)
-        print(f"{VERSION} 数据库表迁移完成")
+        subprocess.check_call(f'alembic --name {env.value} revision --autogenerate -m "{VERSION}"', cwd=BASE_DIR)
+        subprocess.check_call(f'alembic --name {env.value} upgrade head', cwd=BASE_DIR)
+        print(f"环境：{env}  {VERSION} 数据库表迁移完成")
 
     def __serializer_data(self):
         """
@@ -132,11 +139,11 @@ class InitializeData:
         """
         await self.__generate_data("vadmin_system_dict_details", system_models.VadminDictDetails)
 
-    async def run(self):
+    async def run(self, env: Environment = Environment.pro):
         """
         执行初始化工作
         """
-        self.migrate_model()
+        self.migrate_model(env)
         await self.generate_menu()
         await self.generate_role()
         await self.generate_user()
@@ -145,4 +152,4 @@ class InitializeData:
         await self.generate_dict_type()
         await self.generate_system_config()
         await self.generate_dict_details()
-        print(f"{VERSION} 数据已初始化完成")
+        print(f"环境：{env} {VERSION} 数据已初始化完成")

@@ -16,9 +16,11 @@ from sqlalchemy import select
 from core.crud import DalBase
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.validator import vali_telephone
+from utils.aliyun_oss import AliyunOSS, BucketConf
 from utils.aliyun_sms import AliyunSMS
 from utils.excel.import_manage import ImportManage, FieldType
 from utils.excel.write_xlsx import WriteXlsx
+from utils.file_manage import FileManage
 from .params import UserParams
 from utils.tools import test_password
 from . import models, schemas
@@ -26,6 +28,7 @@ from application import settings
 from utils.excel.excel_manage import ExcelManage
 from apps.vadmin.system import crud as vadminSystemCRUD
 import copy
+from utils import status
 
 
 class UserDal(DalBase):
@@ -47,15 +50,13 @@ class UserDal(DalBase):
         """
         unique = await self.get_data(telephone=data.telephone, v_return_none=True)
         if unique:
-            raise ValueError("手机号已存在！")
+            raise CustomException("手机号已存在！", code=status.HTTP_ERROR)
         password = data.telephone[5:12] if settings.DEFAULT_PASSWORD == "0" else settings.DEFAULT_PASSWORD
         data.password = self.model.get_password_hash(password)
         obj = self.model(**data.dict(exclude={'role_ids'}))
         for data_id in data.role_ids:
             obj.roles.append(await RoleDal(db=self.db).get_data(data_id=data_id))
-        self.db.add(obj)
-        await self.db.flush()
-        await self.db.refresh(obj)
+        await self.flush(obj)
         if options:
             obj = await self.get_data(obj.id, options=options)
         if return_obj:
@@ -75,21 +76,23 @@ class UserDal(DalBase):
             raise CustomException(msg=result, code=400)
         user.password = self.model.get_password_hash(data.password)
         user.is_reset_password = True
-        self.db.add(user)
-        await self.db.flush()
-        await self.db.refresh(user)
+        await self.flush(user)
         return True
 
     async def update_current_info(self, user: models.VadminUser, data: schemas.UserUpdate):
         """
         更新当前用户信息
         """
+        if data.telephone != user.telephone:
+            unique = await self.get_data(telephone=data.telephone, v_return_none=True)
+            if unique:
+                raise CustomException("手机号已存在！", code=status.HTTP_ERROR)
+            else:
+                user.telephone = data.telephone
         user.name = data.name
         user.nickname = data.nickname
         user.gender = data.gender
-        self.db.add(user)
-        await self.db.flush()
-        await self.db.refresh(user)
+        await self.flush(user)
         return self.out_dict(user)
 
     async def export_query_list(self, header: list, params: UserParams):
@@ -207,6 +210,18 @@ class UserDal(DalBase):
                 user["send_sms_msg"] = e.msg
         return result
 
+    async def update_current_avatar(self, user: models.VadminUser, file: UploadFile):
+        """
+        更新当前用户头像
+        """
+        manage = FileManage(file, "avatar")
+        result = await AliyunOSS(BucketConf(**settings.ALIYUN_OSS)).upload_image(manage.path, file)
+        if not result:
+            raise CustomException(msg="上传失败", code=status.HTTP_ERROR)
+        user.avatar = result
+        await self.flush(user)
+        return result
+
 
 class RoleDal(DalBase):
 
@@ -218,9 +233,7 @@ class RoleDal(DalBase):
         obj = self.model(**data.dict(exclude={'menu_ids'}))
         for data_id in data.menu_ids:
             obj.menus.append(await MenuDal(db=self.db).get_data(data_id=data_id))
-        self.db.add(obj)
-        await self.db.flush()
-        await self.db.refresh(obj)
+        await self.flush(obj)
         if options:
             obj = await self.get_data(obj.id, options=options)
         if return_obj:

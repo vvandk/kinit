@@ -20,7 +20,8 @@
 Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
 - 后端采用 Python 语言现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + [SQLAlchemy](https://www.sqlalchemy.org/) 异步操作 [MySQL](https://www.mysql.com/) 数据库。
-- 前端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)，等主流技术开发。
+- PC端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)等主流技术开发。
+- 移动端采用 [uni-app](https://uniapp.dcloud.net.cn/component/)，[Vue2](https://v2.cn.vuejs.org/v2/guide/)，[uView 2](https://www.uviewui.com/components/intro.html)为主要技术开发
 - 新加入 [Typer](https://typer.tiangolo.com/) 命令行应用，简单化数据初始化，数据表模型迁移。
 - 权限认证使用[（哈希）密码和 JWT Bearer 令牌的 OAuth2](https://fastapi.tiangolo.com/zh/tutorial/security/oauth2-jwt/)，支持多终端认证系统。
 - 支持加载动态权限菜单，多方式轻松权限控制，按钮级别权限控制。
@@ -32,15 +33,15 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin)：一套基于vue3、element-plus、typescript4、vite3的后台集成方案
 
-[django-vue-admin](https://gitee.com/liqianglog/django-vue-admin)：基于RBAC模型的权限控制的一整套基础开发平台，前后端分离，后端采用 django+django-rest-framework，前端采用 vue+ElementUI。
-
 [RuoYi 若依官方网站](http://www.ruoyi.vip/)：RuoYi 是一个后台管理系统，基于经典技术组合（Spring Boot、Apache Shiro、MyBatis、Thymeleaf）主要目的让开发者注重专注业务，降低技术难度，从而节省人力成本，缩短项目周期，提高软件安全质量。
+
+[django-vue-admin](https://gitee.com/liqianglog/django-vue-admin)：基于RBAC模型的权限控制的一整套基础开发平台，前后端分离，后端采用 django+django-rest-framework，前端采用 vue+ElementUI。
 
 [Ant Design Pro](https://preview.pro.ant.design/dashboard/analysis)：开箱即用的中台前端/设计解决方案
 
 [Gin-Vue-Admin](https://demo.gin-vue-admin.com)：基于vite+vue3+gin搭建的开发基础平台（支持TS,JS混用），集成jwt鉴权，权限管理，动态路由，显隐可控组件，分页封装，多点登录拦截，资源权限，上传下载，代码生成器，表单生成器等开发必备功能。
 
-[Vben Admin (vvbin.cn)](https://vvbin.cn/next)：Vue Vben Admin 是一个免费开源的中后台模版。使用了最新的`vue3`,`vite2`,`TypeScript`等主流技术开发，开箱即用的中后台前端解决方案，也可用于学习参考。
+[Vben Admin](https://doc.vvbin.cn/guide/introduction.html)：Vue Vben Admin 是一个免费开源的中后台模版。使用了最新的`vue3`,`vite2`,`TypeScript`等主流技术开发，开箱即用的中后台前端解决方案，也可用于学习参考。
 
 [中华人民共和国行政区划 (github.com)](https://github.com/modood/Administrative-divisions-of-China)：省级（省份）、 地级（城市）、 县级（区县）、 乡级（乡镇街道）、 村级（村委会居委会） ，中国省市区镇村二级三级四级五级联动地址数据。
 
@@ -48,11 +49,20 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 [小诺开源技术 (xiaonuo.vip)](https://www.xiaonuo.vip/)：国内首个国密前后端分离快速开发平台
 
-[my-web:](https://gitee.com/newgateway/my-web)：MyWeb 是一个企业级中后台前端/设计解决方案的的项目工程模板，它可以帮助你快速搭建企业级中后台产品原型
+[my-web](https://gitee.com/newgateway/my-web)：MyWeb 是一个企业级中后台前端/设计解决方案的的项目工程模板，它可以帮助你快速搭建企业级中后台产品原型
 
 ## 在线体验
 
-演示地址：http://kinit.ktianc.top/
+PC端演示地址：http://admin.kinit.top
+
+移动端演示地址：http://h5.kinit.top
+
+微信小程序端演示：
+
+- 搜索：kinit
+- 扫码：
+
+<img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/gh_5566dcf85bf0_860.jpg" alt="image-20221010214526082" style="zoom:33%;" />
 
 - 账号：15020221010
 - 密码：kinit2022
@@ -63,7 +73,7 @@ gitee地址(主推)：https://gitee.com/ktianc/kinit
 
 github地址：https://github.com/vvandk/kinit
 
-## 内置功能
+## PC端内置功能
 
 - [x] 菜单管理：配置系统菜单，操作权限，按钮权限标识、后端接口权限等。
 
@@ -77,7 +87,7 @@ github地址：https://github.com/vvandk/kinit
 
 - [x] 文件上传：对接阿里云OSS与本地存储。
 
-- [x] 登录认证：目前支持用户使用手机号+密码方式登录。
+- [x] 登录认证：目前支持用户使用手机号+密码方式或者手机验证码登录。
 
   说明：新建用户密码默认为手机号后六位；
 
@@ -99,8 +109,6 @@ github地址：https://github.com/vvandk/kinit
 
 - [x] 导入导出：灵活支持数据导入导出功能
 
-- [x] 手机验证码登录功能
-
 - [x] 简单适配手机端：
 
   1. 工作台招呼语一行显示，多余显示省略号
@@ -109,9 +117,21 @@ github地址：https://github.com/vvandk/kinit
   4. 表格工具栏更新，手机端取消文字显示
   5. 表格操作按钮多的时候自动叠起
 
-- [x] 已加入常见的`Redis`、`MYSQL`、`MongoDB`数据库异步操作。
+- [x] 已加入常见的`Redis`、`MySQL`、`MongoDB`数据库异步操作。
 
 - [x] 命令行操作：新加入 `Typer` 命令行应用，简单化数据初始化，数据表模型迁移。
+
+## 移动端内置功能
+
+- [x] 登录认证：目前支持用户使用手机号+密码方式登录。
+
+  说明：新建用户密码默认为手机号后六位；
+
+  说明：用户在第一次登录时，必须修改当前用户密码。
+
+- [x] 导航栏：首页、我的、工作台
+
+- [x] 我的基础功能：编辑资料、头像修改、密码修改、常见问题、关于我们等
 
 ## TODO
 
@@ -123,8 +143,15 @@ github地址：https://github.com/vvandk/kinit
 
 ##  前序准备
 
-- [FastAPI](https://fastapi.tiangolo.com/zh/) - 熟悉后台接口 Web 框架
+### 后端技术
+
+- [Python3](https://www.python.org/downloads/windows/)：熟悉 python3 基础语法
+- [FastAPI](https://fastapi.tiangolo.com/zh/) - 熟悉后台接口 Web 框架.
 - [Typer](https://typer.tiangolo.com/) - 熟悉命令行工具的使用
+- [MySQL](https://www.mysql.com/) 和 [MongoDB](https://www.mongodb.com/) - 熟悉数据存储数据库
+
+### PC端
+
 - [node](https://gitee.com/link?target=http%3A%2F%2Fnodejs.org%2F) 和 [git](https://gitee.com/link?target=https%3A%2F%2Fgit-scm.com%2F) - 项目开发环境
 - [Vite](https://gitee.com/link?target=https%3A%2F%2Fvitejs.dev%2F) - 熟悉 vite 特性
 - [Vue3](https://gitee.com/link?target=https%3A%2F%2Fv3.vuejs.org%2F) - 熟悉 Vue 基础语法
@@ -134,14 +161,25 @@ github地址：https://github.com/vvandk/kinit
 - [Element-Plus](https://gitee.com/link?target=https%3A%2F%2Felement-plus.org%2F) - element-plus 基本使用
 - [Mock.js](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fnuysoft%2FMock) - mockjs 基本语法
 
+### 移动端
+
+- [uni-app](https://uniapp.dcloud.net.cn/component/) - 熟悉 uni-app 基本语法
+- [Vue2](https://v2.cn.vuejs.org/v2/guide/) - 熟悉 Vue 基础语法
+- [uView UI 2](https://www.uviewui.com/components/intro.html)：uView UI 组件的基本使用
+
 ### 依赖包
 
-#### 前端
+#### PC端
 
 - [vue3-json-viewer](https://gitee.com/isfive/vue3-json-viewer)：简单易用的json内容展示组件,适配vue3和vite。
-- [vue3-slide-verify](https://github.com/monoplasty/vue3-slide-verify)：滑块验证码插件 vue3 + typescript
+- [vue3-slide-verify](https://github.com/monoplasty/vue3-slide-verify)：滑块验证码插件 vue3 + typescript。
 - [SortableJS/vue.draggable.next](https://github.com/SortableJS/vue.draggable.next)：Vue 组件 （Vue.js 3.0） 允许拖放和与视图模型数组同步。
 - [高德地图API (amap.com)](https://lbs.amap.com/api/jsapi-v2/guide/webcli/map-vue1)：地图 JSAPI 2.0 是高德开放平台免费提供的第四代 Web 地图渲染引擎， 以 WebGL 为主要绘图手段，本着“更轻、更快、更易用”的服务原则，广泛采用了各种前沿技术，交互体验、视觉体验大幅提升，同时提供了众多新增能力和特性。
+
+#### 移动端
+
+- [uni-read-pages](https://github.com/SilurianYang/uni-read-pages) ：自动读取 `pages.json` 所有配置。
+- [uni-simple-router](https://hhyang.cn/v2/start/quickstart.html) ：在uni-app中使用vue-router的方式进行跳转路由，路由拦截。
 
 #### 后端
 
@@ -169,11 +207,11 @@ Redis (推荐使用最新稳定版)
 
 1. 安装依赖
 
-```
-cd kinit-api
-
-pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
-```
+   ```
+   cd kinit-api
+   
+   pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+   ```
 
 2. 修改项目数据库配置信息
 
@@ -235,23 +273,32 @@ pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 
    ```python
    # mysql+pymysql://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
-   sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
+   [dev]
+   # 开发环境
+   version_locations = %(here)s/alembic/versions_dev
+   sqlalchemy.url = sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
+   
+   
+   [pro]
+   # 生产环境
+   version_locations = %(here)s/alembic/versions_pro
+   sqlalchemy.url = sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
    ```
 
 3. 创建数据库
 
-```shell
-mysql> create database kinit;             # 创建数据库
-mysql> use kinit;                         # 使用已创建的数据库 
-mysql> set names utf8;                    # 设置编码
-```
+   ```
+   mysql> create database kinit;             # 创建数据库
+   mysql> use kinit;                         # 使用已创建的数据库 
+   mysql> set names utf8;                    # 设置编码
+   ```
 
 4. 初始化数据库数据
 
-```shell
-# 进入项目根目录下执行
-python3 main.py init
-```
+   ```
+   # 进入项目根目录下执行
+   python3 main.py init
+   ```
 
 5. 修改项目基本配置信息
 
@@ -272,12 +319,12 @@ python3 main.py init
 
 6. 启动
 
-```shell
-# 进入项目根目录下执行
-python3 main.py run
-```
+   ```
+   # 进入项目根目录下执行
+   python3 main.py run
+   ```
 
-### 前端
+### PC端
 
 1. 安装依赖
 
@@ -349,7 +396,7 @@ pnpm run build:pro
 
 [MIT](https://gitee.com/kailong110120130/vue-element-plus-admin/blob/master/LICENSE)
 
-## 演示图
+## PC端演示图
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/1.png)
 
@@ -357,12 +404,28 @@ pnpm run build:pro
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/3.png)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/6.png)
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/6.jpg)
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/5.png)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/7.png)
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/7.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/8.png)
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/8.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/9.png)
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/9.jpg)
+
+## 移动端演示图
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077811740.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077826257.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077835024.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077849753.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077860987.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077870240.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077878132.jpg)

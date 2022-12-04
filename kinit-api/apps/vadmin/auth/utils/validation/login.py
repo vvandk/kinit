@@ -19,6 +19,7 @@ class LoginForm(BaseModel):
     telephone: str
     password: str
     method: str = '0'  # 认证方式，0：密码登录，1：短信登录
+    platform: str = '0'  # 登录平台，0：PC端管理系统，1：移动端管理系统
 
     # validators
     _normalize_telephone = validator('telephone', allow_reuse=True)(vali_telephone)

@@ -30,6 +30,8 @@ class LoginRecord(BaseModel):
     city: Optional[str] = None
     county: Optional[str] = None
     operator: Optional[str] = None
+    platform: Optional[str] = None
+    login_method: Optional[str] = None
 
 
 class LoginRecordSimpleOut(LoginRecord):

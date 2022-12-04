@@ -52,6 +52,7 @@ class UserOut(UserSimpleOut):
 
 class UserUpdate(BaseModel):
     name: str
+    telephone: Telephone
     nickname: Optional[str] = None
     gender: Optional[str] = "0"
 

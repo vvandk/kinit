@@ -31,7 +31,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { selectDictLabel, DictDetail } from '@/utils/dict'
 import { useDictStore } from '@/store/modules/dict'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
-import { useRouter } from 'vue-router'
 import { RightToolbar } from '@/components/RightToolbar'
 import { Search } from '@/components/Search'
 import { useAppStore } from '@/store/modules/app'
@@ -40,11 +39,9 @@ const appStore = useAppStore()
 
 const { t } = useI18n()
 
-const { replace } = useRouter()
-
 const authStore = useAuthStoreWithOut()
 
-let genderOptions = ref<DictDetail[]>([])
+const genderOptions = ref<DictDetail[]>([])
 
 const getOptions = async () => {
   const dictStore = useDictStore()
@@ -130,7 +127,6 @@ const save = async () => {
         if (user.id === data.id && user.telephone !== data.telephone) {
           dialogVisible.value = false
           authStore.logout()
-          replace('/login')
           return ElMessage.warning('认证已过期，请您重新登陆！')
         }
       }

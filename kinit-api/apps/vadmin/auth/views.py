@@ -64,16 +64,16 @@ async def post_user_current_update_info(data: schemas.UserUpdate, auth: Auth = D
     return SuccessResponse(await crud.UserDal(auth.db).update_current_info(auth.user, data))
 
 
+@app.post("/user/current/update/avatar/", summary="更新当前用户头像")
+async def post_user_current_update_avatar(file: UploadFile, auth: Auth = Depends(login_auth)):
+    return SuccessResponse(await crud.UserDal(auth.db).update_current_avatar(auth.user, file))
+
+
 @app.get("/user/current/info/", summary="获取当前用户基本信息")
 async def get_user_current_info(auth: Auth = Depends(full_admin)):
-    result = schemas.UserSimpleOut.from_orm(auth.user).dict()
+    result = schemas.UserOut.from_orm(auth.user).dict()
     result["permissions"] = await get_user_permissions(auth.user)
     return SuccessResponse(result)
-
-
-@app.get("/user/current/info/", summary="获取当前用户基本信息")
-async def get_user_current_info(auth: Auth = Depends(login_auth)):
-    return SuccessResponse(schemas.UserSimpleOut.from_orm(auth.user).dict())
 
 
 @app.post("/user/export/query/list/to/excel/", summary="导出用户查询列表为excel")

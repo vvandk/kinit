@@ -15,3 +15,7 @@ export const putSystemSettingsApi = (data: any): Promise<IResponse> => {
 export const getSystemSettingsClassifysApi = (params: any): Promise<IResponse> => {
   return request.get({ url: '/vadmin/system/settings/classifys/', params })
 }
+
+export const getSystemSettingsConfigValueApi = (params: any): Promise<IResponse> => {
+  return request.get({ url: '/vadmin/system/settings/config/value/', params })
+}

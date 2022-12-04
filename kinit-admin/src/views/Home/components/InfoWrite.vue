@@ -7,6 +7,7 @@ import { postCurrentUserUpdateInfo } from '@/api/vadmin/auth/user'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
 import { ElMessage } from 'element-plus'
+import { FormSchema } from '@/types/form'
 
 const { required } = useValidator()
 
@@ -42,6 +43,20 @@ const schema = reactive<FormSchema[]>([
       style: {
         width: '50%'
       }
+    }
+  },
+  {
+    field: 'telephone',
+    label: '手机号',
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      style: {
+        width: '50%'
+      },
+      maxlength: 11
     }
   },
   {

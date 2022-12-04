@@ -8,12 +8,13 @@ export const columns = reactive<TableColumn[]>([
     label: '编号',
     show: true,
     disabled: true,
-    width: '150px',
+    width: '120px',
     span: 24
   },
   {
     field: 'telephone',
     label: '手机号',
+    width: '150px',
     show: true,
     disabled: true,
     span: 24
@@ -21,6 +22,21 @@ export const columns = reactive<TableColumn[]>([
   {
     field: 'status',
     label: '登录状态',
+    width: '100px',
+    show: true,
+    span: 24
+  },
+  {
+    field: 'platform',
+    label: '登陆平台',
+    width: '150px',
+    show: true,
+    span: 24
+  },
+  {
+    field: 'login_method',
+    label: '认证方式',
+    width: '120px',
     show: true,
     span: 24
   },
@@ -29,6 +45,7 @@ export const columns = reactive<TableColumn[]>([
     label: '登陆地址',
     show: true,
     disabled: true,
+    width: '150px',
     span: 24
   },
   {

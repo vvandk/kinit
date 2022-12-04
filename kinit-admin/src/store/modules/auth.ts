@@ -49,6 +49,7 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async login(formData: UserLoginType) {
+      formData.platform = '0'
       const res = await loginApi(formData)
       if (res) {
         wsCache.set(appStore.getToken, `${res.data.token_type} ${res.data.access_token}`)
@@ -64,11 +65,13 @@ export const useAuthStore = defineStore('auth', {
       this.isUser = false
       tagsViewStore.delAllViews()
       resetRouter()
+      window.location.href = '/login'
     },
     updateUser(data: UserState) {
       this.user.gender = data.gender
       this.user.name = data.name
       this.user.nickname = data.nickname
+      this.user.telephone = data.telephone
       wsCache.set(appStore.getUserInfo, this.user)
     },
     async getUserInfo() {

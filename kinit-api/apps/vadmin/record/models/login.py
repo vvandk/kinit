@@ -8,6 +8,7 @@
 import json
 
 from application.settings import LOGIN_LOG_RECORD
+from apps.vadmin.auth.utils.validation import LoginForm
 from utils.ip_manage import IPManage
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.db_base import BaseModel
@@ -22,6 +23,8 @@ class VadminLoginRecord(BaseModel):
 
     telephone = Column(String(50), index=True, nullable=False, comment="手机号")
     status = Column(Boolean, default=True, comment="是否登录成功")
+    platform = Column(String(8), comment="登陆平台")
+    login_method = Column(String(8), comment="认证方式")
     ip = Column(String(50), comment="登陆地址")
     address = Column(String(255), comment="登陆地点")
     country = Column(String(255), comment="国家")
@@ -37,7 +40,7 @@ class VadminLoginRecord(BaseModel):
     request = Column(TEXT, comment="请求信息")
 
     @classmethod
-    async def create_login_record(cls, db: AsyncSession, telephone: str, status: bool, req: Request, resp: dict) -> None:
+    async def create_login_record(cls, db: AsyncSession, data: LoginForm, status: bool, req: Request, resp: dict):
         """
         创建登录记录
         @return:
@@ -54,7 +57,8 @@ class VadminLoginRecord(BaseModel):
         ip = IPManage(req.client.host)
         location = await ip.parse()
         params = json.dumps({"body": body, "headers": header})
-        obj = VadminLoginRecord(**location.dict(), telephone=telephone, status=status, browser=browser,
-                                system=system, response=json.dumps(resp), request=params)
+        obj = VadminLoginRecord(**location.dict(), telephone=data.telephone, status=status, browser=browser,
+                                system=system, response=json.dumps(resp), request=params, platform=data.platform,
+                                login_method=data.method)
         db.add(obj)
         await db.flush()

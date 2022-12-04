@@ -47,6 +47,37 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
       title: '404',
       noTagsView: true
     }
+  },
+  {
+    path: '/docs',
+    name: 'Docs',
+    meta: {
+      hidden: true,
+      title: '在线文档',
+      noTagsView: true
+    },
+    children: [
+      {
+        path: 'privacy',
+        name: 'Privacy',
+        component: () => import('@/views/vadmin/system/docs/privacy.vue'),
+        meta: {
+          hidden: true,
+          title: '隐私政策',
+          noTagsView: true
+        }
+      },
+      {
+        path: 'agreement',
+        name: 'Agreement',
+        component: () => import('@/views/vadmin/system/docs/agreement.vue'),
+        meta: {
+          hidden: true,
+          title: '用户协议',
+          noTagsView: true
+        }
+      }
+    ]
   }
 ]
 
@@ -61,7 +92,15 @@ const router = createRouter({
 })
 
 export const resetRouter = (): void => {
-  const resetWhiteNameList = ['Login', 'NoFind', 'Root', 'ResetPassword']
+  const resetWhiteNameList = [
+    'Login',
+    'NoFind',
+    'Root',
+    'ResetPassword',
+    'Docs',
+    'Privacy',
+    'Agreement'
+  ]
   router.getRoutes().forEach((route) => {
     // 切记 name 不能重复
     const { name } = route

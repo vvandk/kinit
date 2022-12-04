@@ -51,6 +51,10 @@ const user = authStore.getUser
             <span class="pl-10px">{{ selectDictLabel(genderOptions, user.gender as string) }}</span>
           </div>
           <div class="leading-relaxed">
+            <span class="pl-10px w-80px inline-block">角色:</span>
+            <span class="pl-10px">{{ user.roles?.map((item) => item.name).join(',') }}</span>
+          </div>
+          <div class="leading-relaxed">
             <span class="pl-10px w-80px inline-block">创建时间:</span>
             <span class="pl-10px">{{ user.create_datetime }}</span>
           </div>

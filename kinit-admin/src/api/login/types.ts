@@ -2,6 +2,7 @@ export type UserLoginType = {
   telephone: string
   password: string
   method: string
+  platform?: string
 }
 
 export type UserType = {

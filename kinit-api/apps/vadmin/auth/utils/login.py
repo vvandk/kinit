@@ -45,9 +45,8 @@ async def login_for_access_token(request: Request, data: LoginForm, manage: Logi
         return ErrorResponse(msg="请使用正确的登录方式")
     if not result.status:
         resp = {"message": result.msg}
-        telephone = data.telephone
         await VadminLoginRecord.\
-            create_login_record(db, telephone, result.status, request, resp)
+            create_login_record(db, data, result.status, request, resp)
         return ErrorResponse(msg=result.msg)
 
     user = result.user
@@ -58,7 +57,7 @@ async def login_for_access_token(request: Request, data: LoginForm, manage: Logi
         "token_type": "bearer",
         "is_reset_password": user.is_reset_password
     }
-    await VadminLoginRecord.create_login_record(db, user.telephone, result.status, request, resp)
+    await VadminLoginRecord.create_login_record(db, data, result.status, request, resp)
     return SuccessResponse(resp)
 
 

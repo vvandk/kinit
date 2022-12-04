@@ -23,7 +23,6 @@ const loginOut = () => {
   })
     .then(() => {
       authStore.logout()
-      replace('/login')
     })
     .catch(() => {})
 }

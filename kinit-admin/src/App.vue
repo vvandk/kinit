@@ -26,7 +26,7 @@ const setSystemConfig = async () => {
   const res = await getSystemSettingsClassifysApi({ classify: 'web' })
   if (res) {
     appStore.setTitle(res.data.web_basic.web_title || import.meta.env.VITE_APP_TITLE)
-    appStore.setLogoImage(res.data.web_basic.web_logo || '/static/system/logo.png')
+    appStore.setLogoImage(res.data.web_basic.web_logo || '/media/system/logo.png')
     appStore.setFooterContent(res.data.web_basic.web_copyright || 'Copyright ©2022-present K')
     appStore.setIcpNumber(res.data.web_basic.web_icp_number || '')
     addMeta(

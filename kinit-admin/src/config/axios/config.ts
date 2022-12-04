@@ -1,5 +1,6 @@
 const config: {
   result_code: number | string
+  unauthorized_code: number | string
   default_headers: AxiosHeaders
   request_timeout: number
 } = {
@@ -7,6 +8,10 @@ const config: {
    * 接口成功返回状态码
    */
   result_code: 200,
+  /**
+   * 接口TOKEN失效，返回状态码
+   */
+  unauthorized_code: 401,
 
   /**
    * 接口请求超时时间

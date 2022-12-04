@@ -11,13 +11,13 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 
 """安全警告: 不要在生产中打开调试运行!"""
-DEBUG = True
+DEBUG = False
 
 """是否开启演示功能：取消所有POST,DELETE,PUT操作权限"""
-DEMO = False
+DEMO = True
 """演示功能白名单"""
 DEMO_WHITE_LIST_PATH = [
     "/auth/login/",
@@ -70,7 +70,7 @@ STATIC_ROOT：静态文件目录绝对路径
 官方文档：https://fastapi.tiangolo.com/tutorial/static-files/
 """
 STATIC_ENABLE = True
-STATIC_URL = "/static"
+STATIC_URL = "/media"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 

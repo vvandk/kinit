@@ -1,16 +1,15 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStore } from '@/store/modules/app'
-
+import { useAuthStore } from '@/store/modules/auth'
 import qs from 'qs'
-
 import { config } from './config'
-
 import { ElMessage } from 'element-plus'
 
-const { result_code, request_timeout } = config
+const { result_code, unauthorized_code, request_timeout } = config
 
 const appStore = useAppStore()
+const authStore = useAuthStore()
 const { wsCache } = useCache()
 
 // 创建axios实例
@@ -64,6 +63,10 @@ service.interceptors.response.use(
       return response
     } else if (response.data.code === result_code) {
       return response.data
+    } else if (response.data.code === unauthorized_code) {
+      // 请重新登录
+      ElMessage.error(response.data.message)
+      authStore.logout()
     } else {
       ElMessage.error(response.data.message)
     }

@@ -38,17 +38,17 @@ class AuthValidation:
         if not settings.OAUTH_ENABLE:
             return Auth(db=db)
         if not token:
-            raise CustomException(msg="请先登录！", code=status.HTTP_ERROR)
+            raise CustomException(msg="请您先登录！", code=status.HTTP_ERROR)
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
             telephone: str = payload.get("sub")
             if telephone is None:
-                raise CustomException(msg="无效 Token！", code=status.HTTP_403_FORBIDDEN)
+                raise CustomException(msg="认证已过期，请您重新登陆", code=status.HTTP_401_UNAUTHORIZED)
         except JWTError:
-            raise CustomException(msg="无效 Token！", code=status.HTTP_403_FORBIDDEN)
+            raise CustomException(msg="认证已过期，请您重新登陆", code=status.HTTP_401_UNAUTHORIZED)
         user = await self.func(telephone, db)
         if user is None:
-            raise CustomException(msg="用户不存在！", code=status.HTTP_404_NOT_FOUND)
+            raise CustomException(msg="认证已过期，请您重新登陆", code=status.HTTP_401_UNAUTHORIZED)
         elif not user.is_active:
             raise CustomException(msg="用户已被冻结！", code=status.HTTP_403_FORBIDDEN)
         elif user.is_cancel:

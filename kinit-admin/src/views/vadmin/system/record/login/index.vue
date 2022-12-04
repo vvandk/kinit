@@ -10,6 +10,8 @@ import { RightToolbar } from '@/components/RightToolbar'
 import { Dialog } from '@/components/Dialog'
 import Detail from './components/Detail.vue'
 import { Search } from '@/components/Search'
+import { selectDictLabel, DictDetail } from '@/utils/dict'
+import { useDictStore } from '@/store/modules/dict'
 
 const { register, elTableRef, tableObject, methods } = useTable({
   getListApi: getRecordLoginListApi,
@@ -25,6 +27,17 @@ const { register, elTableRef, tableObject, methods } = useTable({
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
+const platformOptions = ref<DictDetail[]>([])
+const loginMethodOptions = ref<DictDetail[]>([])
+
+const getOptions = async () => {
+  const dictStore = useDictStore()
+  const dictOptions = await dictStore.getDictObj(['sys_vadmin_platform', 'sys_vadmin_login_method'])
+  platformOptions.value = dictOptions.sys_vadmin_platform
+  loginMethodOptions.value = dictOptions.sys_vadmin_login_method
+}
+
+getOptions()
 
 const view = (row: any) => {
   dialogTitle.value = '登录详情'
@@ -85,6 +98,14 @@ getList()
 
       <template #status="{ row }">
         <ElSwitch :value="row.status" size="small" disabled />
+      </template>
+
+      <template #platform="{ row }">
+        {{ selectDictLabel(platformOptions, row.platform) }}
+      </template>
+
+      <template #login_method="{ row }">
+        {{ selectDictLabel(loginMethodOptions, row.login_method) }}
       </template>
     </Table>
 

@@ -151,3 +151,8 @@ async def put_settings_tabs_values(datas: dict = Body(...), auth: Auth = Depends
 @app.get("/settings/classifys/", summary="获取系统配置分类下的所有显示标签信息")
 async def get_settings_classifys(classify: str, db: AsyncSession = Depends(db_getter)):
     return SuccessResponse(await crud.SettingsTabDal(db).get_classify_tab_values([classify]))
+
+
+@app.get("/settings/config/value/", summary="根据config_key获取到指定value")
+async def get_settings_config_value(config_key: str, db: AsyncSession = Depends(db_getter)):
+    return SuccessResponse((await crud.SettingsDal(db).get_data(config_key=config_key)).config_value)

@@ -8,6 +8,7 @@
 """
 FastApi 更新文档：https://github.com/tiangolo/fastapi/releases
 FastApi Github：https://github.com/tiangolo/fastapi
+Typer 官方文档：https://typer.tiangolo.com/
 """
 
 from fastapi import FastAPI
@@ -20,7 +21,7 @@ import importlib
 from core.logger import logger
 from core.exception import register_exception
 import typer
-from scripts.initialize.initialize import InitializeData
+from scripts.initialize.initialize import InitializeData, Environment
 import asyncio
 
 
@@ -86,22 +87,26 @@ def run():
 
 
 @shell_app.command()
-def init():
+def init(env: Environment = Environment.pro):
     """
     初始化数据
+
+    @params name: 数据库环境
     """
     print("开始初始化数据")
     data = InitializeData()
-    asyncio.run(data.run())
+    asyncio.run(data.run(env))
 
 
 @shell_app.command()
-def migrate():
+def migrate(env: Environment = Environment.pro):
     """
     将模型迁移到数据库，更新数据库表结构
+
+    @params name: 数据库环境
     """
     print("开始更新数据库表")
-    InitializeData().migrate_model()
+    InitializeData().migrate_model(env)
 
 
 if __name__ == '__main__':

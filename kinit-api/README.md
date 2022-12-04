@@ -12,6 +12,10 @@ pydantic 数据模型代码生成器官方文档 （Json -> Pydantic）：https:
 
 SQLAlchemy-Utils：https://sqlalchemy-utils.readthedocs.io/en/latest/
 
+alembic 中文文档：https://hellowac.github.io/alembic_doc/zh/_front_matter.html
+
+Typer 官方文档：https://typer.tiangolo.com/
+
 
 ## 项目结构
 
@@ -94,9 +98,11 @@ git commit -m "clear cached"
 执行数据库迁移命令（终端执行）
 
 ```shell
-# 执行命令：
-
+# 执行命令（生产环境）：
 python main.py migrate
+
+# 执行命令（测试环境）：
+python main.py migrate --env dev
 ```
 
 生成迁移文件后，会在alembic迁移目录中的version目录中多个迁移文件

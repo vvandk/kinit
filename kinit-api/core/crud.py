@@ -129,9 +129,7 @@ class DalBase:
             obj = self.model(**data)
         else:
             obj = self.model(**data.dict())
-        self.db.add(obj)
-        await self.db.flush()
-        await self.db.refresh(obj)
+        await self.flush(obj)
         if options:
             obj = await self.get_data(obj.id, options=options)
         if return_obj:
@@ -148,8 +146,7 @@ class DalBase:
         obj_dict = jsonable_encoder(data)
         for key, value in obj_dict.items():
             setattr(obj, key, value)
-        await self.db.flush()
-        await self.db.refresh(obj)
+        await self.flush(obj)
         if return_obj:
             return obj
         if schema:
@@ -222,6 +219,16 @@ class DalBase:
         else:
             sql = sql.where(attr == value)
         return sql
+
+    async def flush(self, obj=None):
+        """
+        刷新到数据库
+        """
+        if obj:
+            self.db.add(obj)
+        await self.db.flush()
+        if obj:
+            await self.db.refresh(obj)
 
     def out_dict(self, data):
         """
