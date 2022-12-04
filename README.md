@@ -21,6 +21,7 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 - 后端采用 Python 语言现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + [SQLAlchemy](https://www.sqlalchemy.org/) 异步操作 [MySQL](https://www.mysql.com/) 数据库。
 - 前端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)，等主流技术开发。
+- 新加入 [Typer](https://typer.tiangolo.com/) 命令行应用，简单化数据初始化，数据表模型迁移。
 - 权限认证使用[（哈希）密码和 JWT Bearer 令牌的 OAuth2](https://fastapi.tiangolo.com/zh/tutorial/security/oauth2-jwt/)，支持多终端认证系统。
 - 支持加载动态权限菜单，多方式轻松权限控制，按钮级别权限控制。
 - 已加入常见的`Redis`、`MYSQL`、`MongoDB`数据库异步操作。
@@ -110,6 +111,8 @@ github地址：https://github.com/vvandk/kinit
 
 - [x] 已加入常见的`Redis`、`MYSQL`、`MongoDB`数据库异步操作。
 
+- [x] 命令行操作：新加入 `Typer` 命令行应用，简单化数据初始化，数据表模型迁移。
+
 ## TODO
 
 - [ ] 考虑支持多机部署方案，如果接口使用多机，那么用户是否支持统一认证
@@ -121,6 +124,7 @@ github地址：https://github.com/vvandk/kinit
 ##  前序准备
 
 - [FastAPI](https://fastapi.tiangolo.com/zh/) - 熟悉后台接口 Web 框架
+- [Typer](https://typer.tiangolo.com/) - 熟悉命令行工具的使用
 - [node](https://gitee.com/link?target=http%3A%2F%2Fnodejs.org%2F) 和 [git](https://gitee.com/link?target=https%3A%2F%2Fgit-scm.com%2F) - 项目开发环境
 - [Vite](https://gitee.com/link?target=https%3A%2F%2Fvitejs.dev%2F) - 熟悉 vite 特性
 - [Vue3](https://gitee.com/link?target=https%3A%2F%2Fv3.vuejs.org%2F) - 熟悉 Vue 基础语法
@@ -154,9 +158,11 @@ git clone https://gitee.com/ktianc/kinit.git
 ### 准备工作
 
 ```
-Python >= 3.8.0 (推荐3.8+版本)
-nodejs >= 14.0 (推荐最新)
+Python >= 3.10.0
+nodejs >= 14.0 (推荐使用最新稳定版)
 Mysql >= 8.0
+MongoDB (推荐使用最新稳定版)
+Redis (推荐使用最新稳定版)
 ```
 
 ### 后端
@@ -169,31 +175,64 @@ cd kinit-api
 pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 ```
 
-2. 修改数据库信息
+2. 修改项目数据库配置信息
 
-   在 `application/settings.py` 文件中配置数据库信息，用于项目连接
+   在 `application/config` 目录中
 
-   - mysql数据库版本建议：8.0
-   - mysql数据库字符集：utf8mb4
-   
+   - development.py：开发环境
+
+   - production.py：生产环境
+
    ```python
    """
-   数据库配置项
+   Mysql 数据库配置项
    连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
    数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
    """
-   if DEBUG:
-       # 测试库
-       SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
-       SQLALCHEMY_DATABASE_TYPE = "mysql"
-   else:
-       # 正式库
-       SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@127.0.0.1:3306/kinit"
-       SQLALCHEMY_DATABASE_TYPE = "mysql"
+   SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称"
+   SQLALCHEMY_DATABASE_TYPE = "mysql"
+   
+   
+   """
+   Redis 数据库配置
+   """
+   REDIS_DB_ENABLE = True
+   REDIS_DB_URL = "redis://:密码@地址:端口/数据库"
+   
+   """
+   MongoDB 数据库配置
+   """
+   MONGO_DB_ENABLE = True
+   MONGO_DB_NAME = "数据库名称"
+   MONGO_DB_URL = f"mongodb://用户名:密码@地址:端口/?authSource={MONGO_DB_NAME}"
+   
+   """
+   阿里云对象存储OSS配置
+   阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
+   yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
+    *  [accessKeyId] {String}：通过阿里云控制台创建的AccessKey。
+    *  [accessKeySecret] {String}：通过阿里云控制台创建的AccessSecret。
+    *  [bucket] {String}：通过控制台或PutBucket创建的bucket。
+    *  [endpoint] {String}：bucket所在的区域， 默认oss-cn-hangzhou。
+   """
+   ALIYUN_OSS = {
+       "accessKeyId": "accessKeyId",
+       "accessKeySecret": "accessKeySecret",
+       "endpoint": "endpoint",
+       "bucket": "bucket",
+       "baseUrl": "baseUrl"
+   }
+   
+   """
+   获取IP地址归属地
+   文档：https://user.ip138.com/ip/doc
+   """
+   IP_PARSE_ENABLE = True
+   IP_PARSE_TOKEN = "IP_PARSE_TOKEN"
    ```
-   
+
    并在`alembic.ini`文件中配置数据库信息，用于数据库映射
-   
+
    ```python
    # mysql+pymysql://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
    sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
@@ -207,39 +246,35 @@ mysql> use kinit;                         # 使用已创建的数据库
 mysql> set names utf8;                    # 设置编码
 ```
 
-4. 映射数据库
+4. 初始化数据库数据
 
 ```shell
-# 初次生成映射文件
-alembic revision -m "生成映射文件"
-
-# 通过该命令可以将模型映射到数据库
-alembic upgrade head
-
-# 如果有更新，则可以使用这个命令再次生成映射文件，初次也可以使用
-alembic revision --autogenerate -m "update"
-# --autogenerate：自动将当前模型的修改，生成映射脚本。
-
-# 通过该命令可以将模型映射到数据库
-alembic upgrade head
+# 进入项目根目录下执行
+python3 main.py init
 ```
 
-5. 导入数据库数据
+5. 修改项目基本配置信息
 
-导入数据库数据前，请先保存映射后数据库中`alembic_version`表中的`version_num`数据
+   修改数据库表 - vadmin_system_settings 中的关键信息
 
-导入完成后，将此数据替换到导入后的对应字段
+   ```python
+   # 阿里云短信配置
+   sms_access_key
+   sms_access_key_secret
+   sms_sign_name_1
+   sms_template_code_1
+   sms_sign_name_2
+   sms_template_code_2
+   
+   # 高德地图配置
+   map_key
+   ```
+
+6. 启动
 
 ```shell
-# 数据库文件地址：kinit-api/static/kinit.sql
-# 导入命令
-mysql> source kinit-api/static/kinit.sql  # 导入备份数据库
-```
-
-5. 启动
-
-```
-python3 main.py
+# 进入项目根目录下执行
+python3 main.py run
 ```
 
 ### 前端

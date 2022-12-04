@@ -29,20 +29,37 @@ class ExcelManage:
         self.sheet = None
         self.wb = None
 
-    def open_sheet(self, file: str, sheet_name: str = None, read_only: bool = False, data_only: bool = False) -> None:
+    def open_workbook(self, file: str, read_only: bool = False, data_only: bool = False) -> None:
         """
         初始化 excel 文件
+
         @param file: 文件名称或者对象
-        @param sheet_name: 表单名称，为空则默认第一个
         @param read_only: 是否只读，优化读取速度
         @param data_only: 是否加载文件对象
         """
         # 加载excel文件，获取表单
         self.wb = load_workbook(file, read_only=read_only, data_only=data_only)
+
+    def open_sheet(self, sheet_name: str = None, **kwargs) -> None:
+        """
+        初始化 excel 文件
+
+        @param sheet_name: 表单名称，为空则默认第一个
+        """
+        # 加载excel文件，获取表单
+        if not self.wb:
+            self.open_workbook(kwargs.get("file"), kwargs.get("read_only", False), kwargs.get("data_only", False))
         if sheet_name:
             self.sheet = self.wb[sheet_name]
         else:
             self.sheet = self.wb.active
+
+    def get_sheets(self) -> list:
+        """
+        读取所有工作区名称
+        @return: 一维数组
+        """
+        return self.wb.sheetnames
 
     def create_excel(self, sheet_name: str = None) -> None:
         """
@@ -72,7 +89,7 @@ class ExcelManage:
                 result.append(_row)
         return result
 
-    def get_header(self, row: int = 1, col: int = 1, asterisk: bool = False) -> list:
+    def get_header(self, row: int = 1, col: int = None, asterisk: bool = False) -> list:
         """
         读取指定表单的表头（第一行数据）
 
