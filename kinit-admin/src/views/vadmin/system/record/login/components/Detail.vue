@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { PropType } from 'vue'
+import { PropType, ref } from 'vue'
 import { Descriptions } from '@/components/Descriptions'
 import { ElSwitch } from 'element-plus'
 // json内容展示组件
 import { JsonViewer } from 'vue3-json-viewer'
 import 'vue3-json-viewer/dist/index.css'
 import { DescriptionsSchema } from '@/types/descriptions'
+import { DictDetail, selectDictLabel } from '@/utils/dict'
+import { useDictStore } from '@/store/modules/dict'
 
 defineProps({
   currentRow: {
@@ -17,6 +19,18 @@ defineProps({
     default: () => []
   }
 })
+
+const platformOptions = ref<DictDetail[]>([])
+const loginMethodOptions = ref<DictDetail[]>([])
+
+const getOptions = async () => {
+  const dictStore = useDictStore()
+  const dictOptions = await dictStore.getDictObj(['sys_vadmin_platform', 'sys_vadmin_login_method'])
+  platformOptions.value = dictOptions.sys_vadmin_platform
+  loginMethodOptions.value = dictOptions.sys_vadmin_login_method
+}
+
+getOptions()
 </script>
 
 <template>
@@ -31,6 +45,14 @@ defineProps({
 
     <template #request="{ row }">
       <JsonViewer :value="JSON.parse(row.request)" copyable boxed sort />
+    </template>
+
+    <template #platform="{ row }">
+      {{ selectDictLabel(platformOptions, row.platform) }}
+    </template>
+
+    <template #login_method="{ row }">
+      {{ selectDictLabel(loginMethodOptions, row.login_method) }}
     </template>
   </Descriptions>
 </template>

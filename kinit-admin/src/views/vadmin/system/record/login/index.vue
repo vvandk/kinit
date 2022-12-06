@@ -12,6 +12,7 @@ import Detail from './components/Detail.vue'
 import { Search } from '@/components/Search'
 import { selectDictLabel, DictDetail } from '@/utils/dict'
 import { useDictStore } from '@/store/modules/dict'
+import { FormSetPropsType } from '@/types/form'
 
 const { register, elTableRef, tableObject, methods } = useTable({
   getListApi: getRecordLoginListApi,
@@ -29,12 +30,18 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const platformOptions = ref<DictDetail[]>([])
 const loginMethodOptions = ref<DictDetail[]>([])
+const searchSetSchemaList = ref([] as FormSetPropsType[])
 
 const getOptions = async () => {
   const dictStore = useDictStore()
   const dictOptions = await dictStore.getDictObj(['sys_vadmin_platform', 'sys_vadmin_login_method'])
   platformOptions.value = dictOptions.sys_vadmin_platform
   loginMethodOptions.value = dictOptions.sys_vadmin_login_method
+  searchSetSchemaList.value.push({
+    field: 'platform',
+    path: 'componentProps.options',
+    value: dictOptions.sys_vadmin_platform
+  })
 }
 
 getOptions()
@@ -69,7 +76,12 @@ getList()
 
 <template>
   <ContentWrap>
-    <Search :schema="searchSchema" @search="setSearchParams" @reset="setSearchParams" />
+    <Search
+      :schema="searchSchema"
+      :setSchemaList="searchSetSchemaList"
+      @search="setSearchParams"
+      @reset="setSearchParams"
+    />
 
     <div class="mb-8px flex justify-between">
       <ElRow />

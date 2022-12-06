@@ -28,7 +28,7 @@ export const columns = reactive<TableColumn[]>([
   },
   {
     field: 'platform',
-    label: '登陆平台',
+    label: '登录平台',
     width: '150px',
     show: true,
     span: 24
@@ -42,7 +42,7 @@ export const columns = reactive<TableColumn[]>([
   },
   {
     field: 'ip',
-    label: '登陆地址',
+    label: '登录地址',
     show: true,
     disabled: true,
     width: '150px',
@@ -50,7 +50,7 @@ export const columns = reactive<TableColumn[]>([
   },
   {
     field: 'address',
-    label: '登陆地点',
+    label: '登录地点',
     show: true,
     span: 24
   },
@@ -101,10 +101,10 @@ export const columns = reactive<TableColumn[]>([
   },
   {
     field: 'action',
-    width: '150px',
     label: '操作',
     show: true,
-    disabled: true,
+    disabled: false,
+    width: '100px',
     span: 24
   }
 ])
@@ -122,8 +122,19 @@ export const searchSchema = reactive<FormSchema[]>([
     }
   },
   {
+    field: 'platform',
+    label: '登录平台',
+    component: 'Select',
+    componentProps: {
+      style: {
+        width: '214px'
+      },
+      options: []
+    }
+  },
+  {
     field: 'ip',
-    label: '登陆地址',
+    label: '登录地址',
     component: 'Input',
     componentProps: {
       clearable: false,
@@ -134,7 +145,7 @@ export const searchSchema = reactive<FormSchema[]>([
   },
   {
     field: 'address',
-    label: '登陆地点',
+    label: '登录地点',
     component: 'Input',
     componentProps: {
       clearable: false,
@@ -153,11 +164,11 @@ export const searchSchema = reactive<FormSchema[]>([
       },
       options: [
         {
-          label: '登陆成功',
+          label: '登录成功',
           value: true
         },
         {
-          label: '登陆失败',
+          label: '登录失败',
           value: false
         }
       ]

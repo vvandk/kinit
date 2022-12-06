@@ -416,16 +416,15 @@ pnpm run build:pro
 
 ## 移动端演示图
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077811740.jpg)
-
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077826257.jpg)
-
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077835024.jpg)
-
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077849753.jpg)
-
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077860987.jpg)
-
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077870240.jpg)
-
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077878132.jpg)
+<table>
+    <tr>
+        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077811740.jpg"/></td>
+        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077826257.jpg"/></td>
+		<td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077835024.jpg"/></td>
+    </tr>
+	<tr>
+        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077849753.jpg"/></td>
+        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077860987.jpg"/></td>
+		<td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077870240.jpg"/></td>
+    </tr>
+</table>
