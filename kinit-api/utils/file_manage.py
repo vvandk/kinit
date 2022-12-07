@@ -8,7 +8,7 @@
 import datetime
 import os
 import shutil
-from application.settings import TEMP_DIR, STATIC_ROOT, BASE_DIR
+from application.settings import TEMP_DIR, STATIC_ROOT, BASE_DIR, STATIC_DIR, STATIC_URL
 from fastapi import UploadFile
 import sys
 from core.exception import CustomException
@@ -33,7 +33,7 @@ class FileManage:
         self.path = f"{path}/{full_date}/{filename}{os.path.splitext(file.filename)[-1]}"
         self.file = file
 
-    async def save_image_local(self, accept: list = None):
+    async def save_image_local(self, accept: list = None) -> dict:
         """
         保存图片文件到本地
         """
@@ -43,22 +43,25 @@ class FileManage:
             raise CustomException(f"上传图片必须是 {'/'.join(accept)} 格式!", status.HTTP_ERROR)
         return await self.save_local()
 
-    async def save_local(self):
+    async def save_local(self) -> dict:
         """
         保存文件到本地
         """
         path = self.path
         if sys.platform == "win32":
             path = self.path.replace("/", "\\")
-        filename = os.path.join(STATIC_ROOT, path)
-        if not os.path.exists(os.path.dirname(filename)):
-            os.mkdir(os.path.dirname(filename))
-        with open(filename, "wb") as f:
+        save_path = os.path.join(STATIC_ROOT, path)
+        if not os.path.exists(os.path.dirname(save_path)):
+            os.mkdir(os.path.dirname(save_path))
+        with open(save_path, "wb") as f:
             f.write(await self.file.read())
-        return f"/static/{self.path}"
+        return {
+            "local_path": f"{STATIC_DIR}/{self.path}",
+            "remote_path": f"{STATIC_URL}/{self.path}"
+        }
 
     @staticmethod
-    async def save_tmp_file(file: UploadFile):
+    async def save_tmp_file(file: UploadFile) -> str:
         """
         保存临时文件
         """
@@ -72,13 +75,13 @@ class FileManage:
         return filename
 
     @staticmethod
-    def copy(src: str, dst: str):
+    def copy(src: str, dst: str) -> None:
         """
         复制文件
         根目录为项目根目录，传过来的文件路径均为相对路径
 
         @param src: 原始文件
-        @param dst: 目标路径
+        @param dst: 目标路径。绝对路径
         """
         if src[0] == "/":
             src = src.lstrip("/")
@@ -86,7 +89,6 @@ class FileManage:
             src = src.replace("/", "\\")
             dst = dst.replace("/", "\\")
         src = os.path.join(BASE_DIR, src)
-        dst = os.path.join(BASE_DIR, dst)
         if not os.path.exists(os.path.dirname(dst)):
             os.mkdir(os.path.dirname(dst))
         shutil.copyfile(src, dst)

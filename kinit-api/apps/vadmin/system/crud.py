@@ -9,9 +9,12 @@
 # sqlalchemy 查询操作：https://segmentfault.com/a/1190000016767008
 # sqlalchemy 关联查询：https://www.jianshu.com/p/dfad7c08c57a
 # sqlalchemy 关联查询详细：https://blog.csdn.net/u012324798/article/details/103940527
+import os
 from typing import List, Union
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from application.settings import STATIC_ROOT
 from utils.file_manage import FileManage
 from . import models, schemas
 from core.crud import DalBase
@@ -75,14 +78,21 @@ class SettingsDal(DalBase):
         """
         for key, value in datas.items():
             if key == "web_ico":
+                continue
+            elif key == "web_ico_local_path":
                 if not value:
                     continue
                 ico = await self.get_data(config_key="web_ico", tab_id=1)
-                if ico.config_value == value:
+                web_ico = datas.get("web_ico")
+                if ico.config_value == web_ico:
                     continue
                 # 将上传的ico路径替换到static/system/favicon.ico文件
-                FileManage.copy(value, "static/system/favicon.ico")
-            await self.db.execute(update(self.model).where(self.model.config_key == key).values(config_value=value))
+                FileManage.copy(value, os.path.join(STATIC_ROOT, "system/favicon.ico"))
+                sql = update(self.model).where(self.model.config_key == "web_ico").values(config_value=web_ico)
+                await self.db.execute(sql)
+            else:
+                sql = update(self.model).where(self.model.config_key == key).values(config_value=value)
+                await self.db.execute(sql)
 
 
 class SettingsTabDal(DalBase):

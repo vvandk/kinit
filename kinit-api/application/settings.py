@@ -11,13 +11,13 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.4.0"
+VERSION = "1.4.2"
 
 """安全警告: 不要在生产中打开调试运行!"""
-DEBUG = False
+DEBUG = True
 
 """是否开启演示功能：取消所有POST,DELETE,PUT操作权限"""
-DEMO = True
+DEMO = False
 """演示功能白名单"""
 DEMO_WHITE_LIST_PATH = [
     "/auth/login/",
@@ -71,7 +71,8 @@ STATIC_ROOT：静态文件目录绝对路径
 """
 STATIC_ENABLE = True
 STATIC_URL = "/media"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_DIR = "static"
+STATIC_ROOT = os.path.join(BASE_DIR, STATIC_DIR)
 
 
 """

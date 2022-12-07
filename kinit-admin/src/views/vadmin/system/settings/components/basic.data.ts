@@ -45,6 +45,16 @@ export const schema = reactive<FormSchema[]>([
     }
   },
   {
+    field: 'web_ico_local_path',
+    label: 'ICO 图标服务器文件地址',
+    colProps: {
+      span: 24
+    },
+    ifshow: () => {
+      return false
+    }
+  },
+  {
     field: 'web_icp_number',
     label: '备案号',
     colProps: {

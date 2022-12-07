@@ -49,12 +49,13 @@ const { setValues, setValue } = methods
 
 // 上传成功的钩子函数
 const handleICOUploadSuccess: UploadProps['onSuccess'] = (response) => {
-  setValue('web_ico', response.data)
+  setValue('web_ico', response.data.remote_path)
+  setValue('web_ico_local_path', response.data.local_path)
 }
 
 // 上传成功的钩子函数
 const handleLogoUploadSuccess: UploadProps['onSuccess'] = (response) => {
-  setValue('web_logo', response.data)
+  setValue('web_logo', response.data.remote_path)
 }
 
 let formData = ref({} as Recordable)
