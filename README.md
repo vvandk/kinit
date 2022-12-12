@@ -53,9 +53,9 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 ## 在线体验
 
-PC端演示地址：http://admin.kinit.top
+PC端演示地址：http://kinit.ktianc.top
 
-移动端演示地址：http://h5.kinit.top
+移动端演示地址：http://h5.ktianc.top
 
 微信小程序端演示：
 
