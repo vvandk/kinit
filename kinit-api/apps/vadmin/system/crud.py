@@ -10,7 +10,7 @@
 # sqlalchemy 关联查询：https://www.jianshu.com/p/dfad7c08c57a
 # sqlalchemy 关联查询详细：https://blog.csdn.net/u012324798/article/details/103940527
 import os
-from typing import List, Union
+from typing import List
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from application.settings import STATIC_ROOT
@@ -99,7 +99,7 @@ class SettingsTabDal(DalBase):
     def __init__(self, db: AsyncSession):
         super(SettingsTabDal, self).__init__(db, models.VadminSystemSettingsTab, schemas.SettingsTabSimpleOut)
 
-    async def get_classify_tab_values(self, classify: List[str], hidden: Union[bool, None] = False):
+    async def get_classify_tab_values(self, classify: List[str], hidden: bool | None = False):
         """
         获取系统配置分类下的所有显示标签信息
         """

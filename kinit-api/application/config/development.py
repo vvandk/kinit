@@ -49,5 +49,5 @@ ALIYUN_OSS = {
 获取IP地址归属地
 文档：https://user.ip138.com/ip/doc
 """
-IP_PARSE_ENABLE = True
+IP_PARSE_ENABLE = False
 IP_PARSE_TOKEN = "IP_PARSE_TOKEN"

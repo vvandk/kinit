@@ -8,10 +8,10 @@
 
 import datetime
 import re
-from typing import List, Union
+from typing import List
 
 
-def test_password(password: str) -> Union[str, bool]:
+def test_password(password: str) -> str | bool:
     """
     检测密码强度
     """
@@ -32,7 +32,7 @@ def test_password(password: str) -> Union[str, bool]:
                 return '至少含数字/字母/字符2种组合，请重新输入。'
 
 
-def list_dict_find(options: List[dict], key: str, value: any) -> Union[dict, None]:
+def list_dict_find(options: List[dict], key: str, value: any) -> dict | None:
     """
     字典列表查找
     """

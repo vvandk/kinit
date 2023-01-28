@@ -11,7 +11,6 @@
 """
 from fastapi import Depends
 from core.dependencies import Paging, QueryParams
-from typing import Union
 
 
 class UserParams(QueryParams):
@@ -19,7 +18,7 @@ class UserParams(QueryParams):
     列表分页
     """
 
-    def __init__(self, name: str = None, telephone: str = None, is_active: Union[bool, str] = None,
+    def __init__(self, name: str = None, telephone: str = None, is_active: bool | str = None,
                  params: Paging = Depends()):
         super().__init__(params)
         self.name = ("like", name)

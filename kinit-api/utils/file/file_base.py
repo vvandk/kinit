@@ -12,7 +12,6 @@ import uuid
 from fastapi import UploadFile
 from core.exception import CustomException
 from utils import status
-from typing import Union
 
 
 class FileBase:
@@ -52,7 +51,7 @@ class FileBase:
         return True
 
     @classmethod
-    def get_file_type(cls, content_type: str) -> Union[str, None]:
+    def get_file_type(cls, content_type: str) -> str | None:
         """
         获取文件类型
 
