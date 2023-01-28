@@ -235,34 +235,42 @@
 				uni.showLoading({
 					title: '图片生成中...',
 				})
-				// 将图片写入画布
-				const ctx = uni.createCanvasContext('myCanvas')
-				ctx.drawImage(_this.imageSrc, 0, 0, IMG_REAL_W, IMG_REAL_H)
-				ctx.draw(true, () => {
-					// 获取画布要裁剪的位置和宽度   均为百分比 * 画布中图片的宽度    保证了在微信小程序中裁剪的图片模糊  位置不对的问题 canvasT = (_this.cutT / _this.cropperH) * (_this.imageH / pixelRatio)
-					var canvasW = ((_this.cropperW - _this.cutL - _this.cutR) / _this.cropperW) * IMG_REAL_W
-					var canvasH = ((_this.cropperH - _this.cutT - _this.cutB) / _this.cropperH) * IMG_REAL_H
-					var canvasL = (_this.cutL / _this.cropperW) * IMG_REAL_W
-					var canvasT = (_this.cutT / _this.cropperH) * IMG_REAL_H
-					uni.canvasToTempFilePath({
-						x: canvasL,
-						y: canvasT,
-						width: canvasW,
-						height: canvasH,
-						destWidth: canvasW,
-						destHeight: canvasH,
-						quality: 0.5,
-						canvasId: 'myCanvas',
-						success: function (res) {
-							uni.hideLoading()
-							postCurrentUserUploadAvatar(res.tempFilePath).then(response => {
-								store.commit('SET_AVATAR', response.data)
-								uni.showToast({ title: "修改成功", icon: 'success' })
-								uni.navigateBack()
+				uni.getImageInfo({
+					src: _this.imageSrc,
+					success: function (image) {
+						// 将图片写入画布
+						const ctx = uni.createCanvasContext('myCanvas')
+						ctx.drawImage(image.path, 0, 0, IMG_REAL_W, IMG_REAL_H)
+						ctx.draw(true, () => {
+							// 获取画布要裁剪的位置和宽度   均为百分比 * 画布中图片的宽度    保证了在微信小程序中裁剪的图片模糊  位置不对的问题 canvasT = (_this.cutT / _this.cropperH) * (_this.imageH / pixelRatio)
+							var canvasW = ((_this.cropperW - _this.cutL - _this.cutR) / _this.cropperW) * IMG_REAL_W
+							var canvasH = ((_this.cropperH - _this.cutT - _this.cutB) / _this.cropperH) * IMG_REAL_H
+							var canvasL = (_this.cutL / _this.cropperW) * IMG_REAL_W
+							var canvasT = (_this.cutT / _this.cropperH) * IMG_REAL_H
+							uni.canvasToTempFilePath({
+								x: canvasL,
+								y: canvasT,
+								width: canvasW,
+								height: canvasH,
+								destWidth: canvasW,
+								destHeight: canvasH,
+								quality: 0.5,
+								canvasId: 'myCanvas',
+								success: function (res) {
+									uni.hideLoading()
+									postCurrentUserUploadAvatar(res.tempFilePath).then(response => {
+										store.commit('SET_AVATAR', response.data)
+										uni.showToast({ title: "修改成功", icon: 'success' })
+										uni.navigateBack()
+									})
+								}
 							})
-						}
-					})
-				})
+						})
+					},
+					fail: function (err) {
+						uni.hideLoading()
+					}
+				});
 			},
 			// 设置大小的时候触发的touchStart事件
 			dragStart(e) {

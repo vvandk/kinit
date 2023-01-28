@@ -12,8 +12,9 @@ from pydantic import BaseModel
 import oss2  # 安装依赖库：pip install oss2
 from oss2.models import PutObjectResult
 from core.logger import logger
-from utils.compress.cpressJPG import compress_jpg_png
-from utils.file_manage import FileManage
+from utils.file.compress.cpressJPG import compress_jpg_png
+from utils.file.file_manage import FileManage
+from utils.file.file_base import FileBase
 
 
 class BucketConf(BaseModel):
@@ -24,7 +25,7 @@ class BucketConf(BaseModel):
     baseUrl: str
 
 
-class AliyunOSS:
+class AliyunOSS(FileBase):
     """
     阿里云对象存储
 
@@ -53,6 +54,7 @@ class AliyunOSS:
         @param compress: 是否压缩该文件
         @return: 上传后的文件oss链接
         """
+        path = self.generate_path(path, file.filename)
         if compress:
             # 压缩图片
             file_path = await FileManage.save_tmp_file(file)
@@ -70,20 +72,19 @@ class AliyunOSS:
             return ""
         return self.baseUrl + path
 
-    def upload_local_file(self, path: str, filename: str) -> str:
+    async def upload_file(self, path: str, file: UploadFile) -> str:
         """
-        上传本地文件
+        上传文件
 
         @param path: path由包含文件后缀，不包含Bucket名称组成的Object完整路径，例如abc/efg/123.jpg。
-        @param filename: 本地文件路径
+        @param file: 文件对象
         @return: 上传后的文件oss链接
         """
-        with open(filename, "rb") as f:
-            result = self.bucket.put_object(path, f.read())
+        path = self.generate_path(path, file.filename)
+        file_data = await file.read()
+        result = self.bucket.put_object(path, file_data)
         assert isinstance(result, PutObjectResult)
         if result.status != 200:
-            logger.error(f"本地文件上传到OSS失败，状态码：{result.status}")
-            print("本地文件上传路径", path)
-            print(f"本地文件上传到OSS失败，状态码：{result.status}")
+            logger.error(f"文件上传到OSS失败，状态码：{result.status}")
             return ""
         return self.baseUrl + path

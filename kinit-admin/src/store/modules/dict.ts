@@ -10,10 +10,6 @@ export const useDictStore = defineStore('dict', {
   state: (): DictState => ({
     dictObj: {}
   }),
-  persist: {
-    // 开启持久化存储
-    enabled: true
-  },
   getters: {},
   actions: {
     async getDictObj(dictTypes: string[]) {

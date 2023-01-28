@@ -1,10 +1,9 @@
 import { EChartsOption } from 'echarts'
-import { EChartsOption as EChartsWordOption } from 'echarts-wordcloud'
 import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
 
-export const lineOptions: EChartsOption = {
+export const lineOptions = {
   title: {
     text: t('analysis.monthlySales'),
     left: 'center'
@@ -185,7 +184,7 @@ export const radarOption: EChartsOption = {
   ]
 }
 
-export const wordOptions: EChartsWordOption = {
+export const wordOptions = {
   series: [
     {
       type: 'wordCloud',

@@ -47,7 +47,7 @@ const { wsCache } = useCache()
 
 // 根据浏览器当前主题设置系统主题色
 const setDefaultTheme = () => {
-  if (wsCache.get('isDark')) {
+  if (wsCache.get('isDark') !== null) {
     appStore.setIsDark(wsCache.get('isDark'))
     return
   }
@@ -68,7 +68,7 @@ setDefaultTheme()
 @prefix-cls: ~'@{namespace}-app';
 
 .size {
-  width: 100%;
+  width: 100% !important;
   height: 100%;
 }
 

@@ -10,7 +10,7 @@ from fastapi import UploadFile
 from core.exception import CustomException
 from utils import status
 from .excel_manage import ExcelManage
-from utils.file_manage import FileManage
+from utils.file.file_manage import FileManage
 from .write_xlsx import WriteXlsx
 from ..tools import list_dict_find
 from enum import Enum

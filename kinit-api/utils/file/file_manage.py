@@ -8,29 +8,19 @@
 import datetime
 import os
 import shutil
-from application.settings import TEMP_DIR, STATIC_ROOT, BASE_DIR, STATIC_DIR, STATIC_URL
+from application.settings import TEMP_DIR, STATIC_ROOT, BASE_DIR, STATIC_URL, STATIC_DIR
 from fastapi import UploadFile
 import sys
-from core.exception import CustomException
-from utils import status
-import uuid
+from utils.file.file_base import FileBase
 
 
-class FileManage:
+class FileManage(FileBase):
     """
     上传文件管理
     """
 
-    image_accept = ["image/png", "image/jpeg", "image/gif", "image/x-icon"]
-
     def __init__(self, file: UploadFile, path: str):
-        if path[0] == "/":
-            path = path[1:]
-        if path[-1] == "/":
-            path = path[:-1]
-        full_date = datetime.datetime.now().date()
-        filename = str(int(datetime.datetime.now().timestamp())) + str(uuid.uuid4())[:8]
-        self.path = f"{path}/{full_date}/{filename}{os.path.splitext(file.filename)[-1]}"
+        self.path = self.generate_path(path, file.filename)
         self.file = file
 
     async def save_image_local(self, accept: list = None) -> dict:
@@ -38,9 +28,8 @@ class FileManage:
         保存图片文件到本地
         """
         if accept is None:
-            accept = self.image_accept
-        if self.file.content_type not in accept:
-            raise CustomException(f"上传图片必须是 {'/'.join(accept)} 格式!", status.HTTP_ERROR)
+            accept = self.IMAGE_ACCEPT
+        await self.validate_file(self.file, max_size=5, mime_types=accept)
         return await self.save_local()
 
     async def save_local(self) -> dict:
@@ -61,7 +50,7 @@ class FileManage:
         }
 
     @staticmethod
-    async def save_tmp_file(file: UploadFile) -> str:
+    async def save_tmp_file(file: UploadFile):
         """
         保存临时文件
         """
@@ -75,7 +64,7 @@ class FileManage:
         return filename
 
     @staticmethod
-    def copy(src: str, dst: str) -> None:
+    def copy(src: str, dst: str):
         """
         复制文件
         根目录为项目根目录，传过来的文件路径均为相对路径
@@ -95,4 +84,7 @@ class FileManage:
 
 
 if __name__ == '__main__':
-    print()
+    # src = r"D:\ktianc\private\vv-reserve\reserve-api\static\system\2022-12-07\16703958210ab33912.ico"
+    # dst = r"D:\ktianc\private\vv-reserve\reserve-api\static\system\favicon.ico"
+    # shutil.copyfile(src, dst)
+    pass

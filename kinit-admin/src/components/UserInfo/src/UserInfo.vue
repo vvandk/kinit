@@ -13,7 +13,7 @@ const { t } = useI18n()
 
 const authStore = useAuthStoreWithOut()
 
-const { replace, push } = useRouter()
+const { push } = useRouter()
 
 const loginOut = () => {
   ElMessageBox.confirm(t('common.loginOutMessage'), t('common.reminder'), {

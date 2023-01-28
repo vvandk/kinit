@@ -35,10 +35,6 @@ export const useAuthStore = defineStore('auth', {
       isUser: false
     }
   },
-  persist: {
-    // 开启持久化存储
-    enabled: true
-  },
   getters: {
     getUser(): UserState {
       return this.user

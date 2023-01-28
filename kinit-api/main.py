@@ -23,12 +23,13 @@ from core.exception import register_exception
 import typer
 from scripts.initialize.initialize import InitializeData, Environment
 import asyncio
+from scripts.create_app.main import CreateApp
 
 
 shell_app = typer.Typer()
 
 
-def create_app():
+def init_app():
     """
     启动项目
 
@@ -83,7 +84,7 @@ def run():
     """
     启动项目
     """
-    uvicorn.run(app='main:create_app', host="0.0.0.0", port=9000)
+    uvicorn.run(app='main:init_app', host="0.0.0.0", port=9000)
 
 
 @shell_app.command()
@@ -107,6 +108,18 @@ def migrate(env: Environment = Environment.pro):
     """
     print("开始更新数据库表")
     InitializeData().migrate_model(env)
+
+
+@shell_app.command()
+def create_app(path: str):
+    """
+    自动创建初始化 APP 结构
+
+    @params path: app 路径，根目录为apps，填写apps后面路径即可，例子：vadmin/auth
+    """
+    print(f"开始创建并初始化 {path} APP")
+    app = CreateApp(path)
+    app.run()
 
 
 if __name__ == '__main__':

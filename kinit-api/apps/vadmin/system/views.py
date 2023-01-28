@@ -6,17 +6,17 @@
 # @desc           : 主要接口文件
 
 # UploadFile 库依赖：pip install python-multipart
-from typing import Optional, List
-from fastapi import APIRouter, Depends, Query, Body, UploadFile, Request, Form
+from typing import List
+from fastapi import APIRouter, Depends, Body, UploadFile, Request, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 from application.settings import ALIYUN_OSS
 from core.database import db_getter
-from utils.aliyun_oss import AliyunOSS, BucketConf
+from utils.file.aliyun_oss import AliyunOSS, BucketConf
 from utils.aliyun_sms import AliyunSMS
-from utils.file_manage import FileManage
+from utils.file.file_manage import FileManage
 from utils.response import SuccessResponse, ErrorResponse
-from . import schemas, crud, models
-from core.dependencies import Paging, IdList
+from . import schemas, crud
+from core.dependencies import IdList
 from apps.vadmin.auth.utils.current import login_auth, Auth
 from .params import DictTypeParams, DictDetailParams
 
@@ -107,8 +107,7 @@ async def get_dict_detail(data_id: int, auth: Auth = Depends(login_auth)):
 ###########################################################
 @app.post("/upload/image/to/oss/", summary="上传图片到阿里云OSS")
 async def upload_image_to_oss(file: UploadFile, path: str = Form(...)):
-    manage = FileManage(file, path)
-    result = await AliyunOSS(BucketConf(**ALIYUN_OSS)).upload_image(manage.path, file)
+    result = await AliyunOSS(BucketConf(**ALIYUN_OSS)).upload_image(path, file)
     if not result:
         return ErrorResponse(msg="上传失败")
     return SuccessResponse(result)

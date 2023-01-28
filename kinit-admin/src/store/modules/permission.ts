@@ -18,10 +18,6 @@ export const usePermissionStore = defineStore('permission', {
     isAddRouters: false,
     menuTabRouters: []
   }),
-  persist: {
-    // 开启持久化存储
-    enabled: true
-  },
   getters: {
     getRouters(): AppRouteRecordRaw[] {
       return this.routers

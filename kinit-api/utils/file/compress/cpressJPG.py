@@ -1,5 +1,5 @@
 from PIL import Image, ExifTags  # 安装依赖包：pip3 install pillow
-from utils.compress import dynamic_quality
+from utils.file.compress import dynamic_quality
 import os
 import time
 

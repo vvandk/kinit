@@ -7,7 +7,6 @@
 # @desc           : 增删改查
 
 from typing import List
-
 from aioredis import Redis
 from fastapi import UploadFile
 from core.exception import CustomException
@@ -16,11 +15,11 @@ from sqlalchemy import select
 from core.crud import DalBase
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.validator import vali_telephone
-from utils.aliyun_oss import AliyunOSS, BucketConf
+from utils.file.aliyun_oss import AliyunOSS, BucketConf
+from utils.file.file_manage import FileManage
 from utils.aliyun_sms import AliyunSMS
 from utils.excel.import_manage import ImportManage, FieldType
 from utils.excel.write_xlsx import WriteXlsx
-from utils.file_manage import FileManage
 from .params import UserParams
 from utils.tools import test_password
 from . import models, schemas
@@ -214,8 +213,10 @@ class UserDal(DalBase):
         """
         更新当前用户头像
         """
-        manage = FileManage(file, "avatar")
-        result = await AliyunOSS(BucketConf(**settings.ALIYUN_OSS)).upload_image(manage.path, file)
+        test = await FileManage.save_tmp_file(file)
+        print(test)
+        await file.seek(0)
+        result = await AliyunOSS(BucketConf(**settings.ALIYUN_OSS)).upload_image("avatar", file)
         if not result:
             raise CustomException(msg="上传失败", code=status.HTTP_ERROR)
         user.avatar = result

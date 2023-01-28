@@ -13,9 +13,8 @@ import os
 from typing import List, Union
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from application.settings import STATIC_ROOT
-from utils.file_manage import FileManage
+from utils.file.file_manage import FileManage
 from . import models, schemas
 from core.crud import DalBase
 
