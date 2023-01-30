@@ -39,7 +39,7 @@ def init_app():
     """
     app = FastAPI(
         title="KInit",
-        description="本项目基于Fastapi与Vue3+Typescript+Vite3+element-plus的基础项目 前端基于vue-element-plus-admin框架开发",
+        description="本项目基于Fastapi与Vue3+Typescript+Vite+element-plus的基础项目 前端基于vue-element-plus-admin框架开发",
         version="1.0.0"
     )
 
