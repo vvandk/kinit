@@ -137,7 +137,7 @@ const signIn = async () => {
             // 重置密码
             push({ path: '/reset/password' })
           } else {
-            // 是否使用动态路由
+            // 获取动态路由
             getMenu()
           }
         } else {

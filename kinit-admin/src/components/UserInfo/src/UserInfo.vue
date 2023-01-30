@@ -4,6 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
+import avatar from '@/assets/imgs/avatar.jpg'
 
 const { getPrefixCls } = useDesign()
 
@@ -46,7 +47,7 @@ const user = authStore.getUser
   <ElDropdown :class="prefixCls" trigger="click">
     <div class="flex items-center">
       <img
-        src="@/assets/imgs/avatar.jpg"
+        :src="user.avatar ? user.avatar : avatar"
         alt=""
         class="w-[calc(var(--logo-height)-25px)] rounded-[50%]"
       />

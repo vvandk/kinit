@@ -11,13 +11,13 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.4.3"
+VERSION = "1.5.0"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = True
 
 """是否开启演示功能：取消所有POST,DELETE,PUT操作权限"""
-DEMO = False
+DEMO = not DEBUG
 """演示功能白名单"""
 DEMO_WHITE_LIST_PATH = [
     "/auth/login/",
@@ -105,7 +105,7 @@ EVENTS = [
 # 默认密码，"0" 默认为手机号后六位
 DEFAULT_PASSWORD = "0"
 # 是否开启保存登录日志
-LOGIN_LOG_RECORD = True
+LOGIN_LOG_RECORD = not DEBUG
 # 是否开启保存每次请求日志到本地
 REQUEST_LOG_RECORD = True
 # 是否开启每次操作日志记录到MongoDB数据库

@@ -1,15 +1,12 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
+import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 import { useCache } from '@/hooks/web/useCache'
-import { useAppStore } from '@/store/modules/app'
-import { useAuthStore } from '@/store/modules/auth'
 import qs from 'qs'
 import { config } from './config'
 import { ElMessage } from 'element-plus'
+import { useAuthStore } from '@/store/modules/auth'
 
-const { result_code, unauthorized_code, request_timeout } = config
+const { result_code, unauthorized_code, request_timeout, token } = config
 
-const appStore = useAppStore()
-const authStore = useAuthStore()
 const { wsCache } = useCache()
 
 // 创建axios实例
@@ -21,10 +18,10 @@ const service: AxiosInstance = axios.create({
 
 // request拦截器
 service.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
-    const token = wsCache.get(appStore.getToken)
-    if (token !== '') {
-      ;(config.headers as any)['Authorization'] = token // 让每个请求携带自定义token 请根据实际情况自行修改
+  (config: InternalAxiosRequestConfig) => {
+    const _token = wsCache.get(token)
+    if (_token !== '') {
+      ;(config.headers as any)['Authorization'] = _token // 让每个请求携带自定义token 请根据实际情况自行修改
     }
     if (
       config.method === 'post' &&
@@ -66,6 +63,7 @@ service.interceptors.response.use(
     } else if (response.data.code === unauthorized_code) {
       // 请重新登录
       ElMessage.error(response.data.message)
+      const authStore = useAuthStore()
       authStore.logout()
     } else {
       ElMessage.error(response.data.message)
@@ -75,11 +73,11 @@ service.interceptors.response.use(
     console.log('err' + error)
     let { message } = error
     if (message == 'Network Error') {
-      message = '后端接口连接异常'
+      message = '系统接口连接异常'
     } else if (message.includes('timeout')) {
       message = '系统接口请求超时'
     } else if (message.includes('Request failed with status code')) {
-      message = '系统接口' + message.substr(message.length - 3) + '异常'
+      message = '系统接口状态码异常'
     }
     ElMessage.error(message)
     return Promise.reject(error)

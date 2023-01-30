@@ -3,16 +3,16 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useCache } from '@/hooks/web/useCache'
 import { intersection } from 'lodash-es'
 import { isArray } from '@/utils/is'
-import { useAppStoreWithOut } from '@/store/modules/app'
+import { useAuthStoreWithOut } from '@/store/modules/auth'
 
 const { t } = useI18n()
 const { wsCache } = useCache()
-const appStore = useAppStoreWithOut()
+const authStore = useAuthStoreWithOut()
 
 // 全部权限
 const all_permission = ['*.*.*']
 const hasPermission = (value: string | string[]): boolean => {
-  const permissions = wsCache.get(appStore.getUserInfo).permissions as string[]
+  const permissions = wsCache.get(authStore.getUserInfo).permissions as string[]
   if (!value) {
     throw new Error(t('permission.hasPermission'))
   }

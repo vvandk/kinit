@@ -1,5 +1,4 @@
 import router from './router'
-import { useAppStoreWithOut } from '@/store/modules/app'
 import { useCache } from '@/hooks/web/useCache'
 import type { RouteRecordRaw } from 'vue-router'
 import { useTitle } from '@/hooks/web/useTitle'
@@ -11,7 +10,6 @@ import { useAuthStoreWithOut } from '@/store/modules/auth'
 
 const permissionStore = usePermissionStoreWithOut()
 
-const appStore = useAppStoreWithOut()
 const authStore = useAuthStoreWithOut()
 
 const { wsCache } = useCache()
@@ -25,14 +23,14 @@ const whiteList = ['/login', '/docs/privacy', '/docs/agreement'] // 不重定向
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
-  if (wsCache.get(appStore.getUserInfo)) {
+  if (wsCache.get(authStore.getUserInfo)) {
     if (to.path === '/login') {
       next({ path: '/' })
     } else if (to.path === '/reset/password') {
       next()
     } else {
       if (!authStore.getIsUser) {
-        await authStore.getUserInfo()
+        await authStore.getUserInfoAction()
       }
       if (permissionStore.getIsAddRouters) {
         next()

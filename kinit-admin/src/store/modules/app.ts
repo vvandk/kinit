@@ -27,7 +27,6 @@ interface AppState {
   pageLoading: boolean
   layout: LayoutType
   title: string
-  userInfo: string
   isDark: boolean
   currentSize: ElementPlusSize
   sizeMap: ElementPlusSize[]
@@ -38,14 +37,11 @@ interface AppState {
   logoImage: string
   footerContent: string
   icpNumber: string
-  token: string
 }
 
 export const useAppStore = defineStore('app', {
   state: (): AppState => {
     return {
-      userInfo: 'userInfo', // 登录信息存储字段-建议每个项目换一个字段，避免与其他项目冲突
-      token: 'Token', // 存储Token字段
       sizeMap: ['default', 'large', 'small'],
       mobile: false, // 是否是移动端
       title: import.meta.env.VITE_APP_TITLE, // 标题
@@ -163,12 +159,6 @@ export const useAppStore = defineStore('app', {
     },
     getTitle(): string {
       return this.title
-    },
-    getUserInfo(): string {
-      return this.userInfo
-    },
-    getToken(): string {
-      return this.token
     },
     getIsDark(): boolean {
       return this.isDark

@@ -6,6 +6,7 @@ import { ref, reactive } from 'vue'
 import { CountTo } from '@/components/CountTo'
 import { formatTime } from '@/utils'
 import { Highlight } from '@/components/Highlight'
+import { useAuthStoreWithOut } from '@/store/modules/auth'
 import {
   getCountApi,
   getProjectApi,
@@ -21,7 +22,7 @@ import type {
   Shortcuts
 } from '@/api/dashboard/workplace/types'
 import { useCache } from '@/hooks/web/useCache'
-import { useAppStoreWithOut } from '@/store/modules/app'
+import avatar from '@/assets/imgs/avatar.jpg'
 
 const { wsCache } = useCache()
 
@@ -96,9 +97,9 @@ getAllApi()
 
 const { t } = useI18n()
 
-const appStore = useAppStoreWithOut()
+const authStore = useAuthStoreWithOut()
 
-const user = wsCache.get(appStore.getUserInfo)
+const user = wsCache.get(authStore.getUserInfo)
 </script>
 
 <template>
@@ -109,7 +110,7 @@ const user = wsCache.get(appStore.getUserInfo)
           <ElCol :xl="12" :lg="12" :md="12" :sm="24" :xs="24">
             <div class="flex items-center">
               <img
-                src="@/assets/imgs/avatar.jpg"
+                :src="user.avatar ? user.avatar : avatar"
                 alt=""
                 class="w-70px h-70px rounded-[50%] mr-20px"
               />

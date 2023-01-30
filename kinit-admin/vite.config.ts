@@ -9,7 +9,6 @@ import EslintPlugin from 'vite-plugin-eslint'
 import PurgeIcons from 'vite-plugin-purge-icons'
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite"
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-import DefineOptions from "unplugin-vue-define-options/vite"
 import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
 import { ViteEjsPlugin } from "vite-plugin-ejs"
 
@@ -60,18 +59,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         svgoOptions: true
       }),
       PurgeIcons(),
-      // viteMockServe({
-      //   ignore: /^\_/,
-      //   mockPath: 'mock',
-      //   localEnabled: !isBuild,
-      //   prodEnabled: isBuild,
-      //   injectCode: `
-      //     import { setupProdMockServer } from '../mock/_createProductionServer'
-
-      //     setupProdMockServer()
-      //     `
-      // }),
-      DefineOptions(),
       ViteEjsPlugin({
         title: env.VITE_APP_TITLE
       })
@@ -102,7 +89,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       minify: 'terser',
       outDir: env.VITE_OUT_DIR || 'dist',
       sourcemap: env.VITE_SOURCEMAP === 'true' ? 'inline' : false,
-      // brotliSize: false,
       terserOptions: {
         compress: {
           drop_debugger: env.VITE_DROP_DEBUGGER === 'true',

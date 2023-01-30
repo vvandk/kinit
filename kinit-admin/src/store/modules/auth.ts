@@ -2,15 +2,15 @@ import { defineStore } from 'pinia'
 import { store } from '../index'
 import { UserLoginType } from '@/api/login/types'
 import { loginApi } from '@/api/login'
-import { useAppStore } from '@/store/modules/app'
 import { useCache } from '@/hooks/web/useCache'
 import { getCurrentUserInfo } from '@/api/vadmin/auth/user'
 import { resetRouter } from '@/router'
+import { config } from '@/config/axios/config'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 
-const appStore = useAppStore()
+const { token } = config
+
 const { wsCache } = useCache()
-const tagsViewStore = useTagsViewStore()
 
 export interface UserState {
   id?: number
@@ -24,6 +24,7 @@ export interface UserState {
 }
 
 export interface AuthState {
+  userInfo: string
   user: UserState
   isUser: boolean
 }
@@ -31,6 +32,7 @@ export interface AuthState {
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => {
     return {
+      userInfo: 'userInfo', // 登录信息存储字段-建议每个项目换一个字段，避免与其他项目冲突
       user: {},
       isUser: false
     }
@@ -41,6 +43,9 @@ export const useAuthStore = defineStore('auth', {
     },
     getIsUser(): boolean {
       return this.isUser
+    },
+    getUserInfo(): string {
+      return this.userInfo
     }
   },
   actions: {
@@ -48,10 +53,9 @@ export const useAuthStore = defineStore('auth', {
       formData.platform = '0'
       const res = await loginApi(formData)
       if (res) {
-        wsCache.set(appStore.getToken, `${res.data.token_type} ${res.data.access_token}`)
+        wsCache.set(token, `${res.data.token_type} ${res.data.access_token}`)
         // 存储用户信息
-        const auth = useAuthStore()
-        await auth.getUserInfo()
+        await this.getUserInfoAction()
       }
       return res
     },
@@ -59,6 +63,7 @@ export const useAuthStore = defineStore('auth', {
       wsCache.clear()
       this.user = {}
       this.isUser = false
+      const tagsViewStore = useTagsViewStore()
       tagsViewStore.delAllViews()
       resetRouter()
       window.location.href = '/login'
@@ -68,11 +73,11 @@ export const useAuthStore = defineStore('auth', {
       this.user.name = data.name
       this.user.nickname = data.nickname
       this.user.telephone = data.telephone
-      wsCache.set(appStore.getUserInfo, this.user)
+      wsCache.set(this.userInfo, this.user)
     },
-    async getUserInfo() {
+    async getUserInfoAction() {
       const res = await getCurrentUserInfo()
-      wsCache.set(appStore.getUserInfo, res.data)
+      wsCache.set(this.userInfo, res.data)
       this.isUser = true
       this.user = res.data
     }
