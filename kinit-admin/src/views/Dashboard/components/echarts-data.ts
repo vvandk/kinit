@@ -3,10 +3,17 @@ import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
 
-export const lineOptions = {
+export const lineOptions: EChartsOption = {
   title: {
     text: t('analysis.monthlySales'),
     left: 'center'
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross'
+    },
+    padding: [5, 10]
   },
   xAxis: {
     data: [
@@ -34,13 +41,6 @@ export const lineOptions = {
     bottom: 20,
     top: 80,
     containLabel: true
-  },
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      type: 'cross'
-    },
-    padding: [5, 10]
   },
   yAxis: {
     axisTick: {
