@@ -17,7 +17,10 @@ import { Dialog } from '@/components/Dialog'
 import { useI18n } from '@/hooks/web/useI18n'
 import { RightToolbar } from '@/components/RightToolbar'
 import { Search } from '@/components/Search'
+import { useCache } from '@/hooks/web/useCache'
+import { useRouter } from 'vue-router'
 
+const { wsCache } = useCache()
 const { t } = useI18n()
 
 const { register, elTableRef, tableObject, methods } = useTable({
@@ -36,7 +39,7 @@ const loading = ref(false)
 const defaultCheckedKeys = ref([])
 
 // 添加事件
-const AddAction = () => {
+const addAction = () => {
   dialogTitle.value = t('exampleDemo.add')
   tableObject.currentRow = null
   dialogVisible.value = true
@@ -50,7 +53,6 @@ const updateAction = async (row: any) => {
   dialogTitle.value = '编辑'
   tableObject.currentRow = res.data
   defaultCheckedKeys.value = res.data.menus.map((item: any) => item.id)
-  console.log(defaultCheckedKeys.value)
   dialogVisible.value = true
   actionType.value = 'edit'
 }
@@ -103,9 +105,13 @@ watch(tableSize, (val) => {
   tableSize.value = val
 })
 
+const route = useRouter()
+const cacheTableHeadersKey = route.currentRoute.value.fullPath
+
 watch(
   columns,
-  async () => {
+  async (val) => {
+    wsCache.set(cacheTableHeadersKey, JSON.stringify(val))
     await nextTick()
     elTableRef.value?.doLayout()
   },
@@ -122,10 +128,15 @@ watch(
     <div class="mb-8px flex justify-between">
       <ElRow :gutter="10">
         <ElCol :span="1.5" v-hasPermi="['auth.role.create']">
-          <ElButton type="primary" @click="AddAction">新增角色</ElButton>
+          <ElButton type="primary" @click="addAction">新增角色</ElButton>
         </ElCol>
       </ElRow>
-      <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
+      <RightToolbar
+        @get-list="getList"
+        v-model:table-size="tableSize"
+        v-model:columns="columns"
+        :cache-table-headers-key="cacheTableHeadersKey"
+      />
     </div>
 
     <Table

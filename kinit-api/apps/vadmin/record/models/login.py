@@ -57,8 +57,16 @@ class VadminLoginRecord(BaseModel):
         ip = IPManage(req.client.host)
         location = await ip.parse()
         params = json.dumps({"body": body, "headers": header})
-        obj = VadminLoginRecord(**location.dict(), telephone=data.telephone, status=status, browser=browser,
-                                system=system, response=json.dumps(resp), request=params, platform=data.platform,
-                                login_method=data.method)
+        obj = VadminLoginRecord(
+            **location.dict(),
+            telephone=data.telephone,
+            status=status,
+            browser=browser,
+            system=system,
+            response=json.dumps(resp),
+            request=params,
+            platform=data.platform,
+            login_method=data.method
+        )
         db.add(obj)
         await db.flush()

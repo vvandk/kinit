@@ -30,8 +30,8 @@ class DictTypeDal(DalBase):
         """
         data = {}
         for dict_type in dict_types:
-            dict_data = await DictTypeDal(self.db).\
-                get_data(dict_type=dict_type, v_return_none=True, options=[self.model.details])
+            dict_data = await DictTypeDal(self.db)\
+                .get_data(dict_type=dict_type, v_return_none=True, v_options=[self.model.details])
             if not dict_data:
                 data[dict_type] = []
                 continue
@@ -105,8 +105,14 @@ class SettingsTabDal(DalBase):
         """
         model = models.VadminSystemSettingsTab
         options = [model.settings]
-        datas = await self.get_datas(limit=0, options=options, classify=("in", classify), disabled=False,
-                                     v_return_objs=True, hidden=hidden)
+        datas = await self.get_datas(
+            limit=0,
+            v_options=options,
+            classify=("in", classify),
+            disabled=False,
+            hidden=hidden,
+            v_return_objs=True
+        )
         result = {}
         for tab in datas:
             tabs = {}
@@ -115,4 +121,3 @@ class SettingsTabDal(DalBase):
                     tabs[item.config_key] = item.config_value
             result[tab.tab_name] = tabs
         return result
-

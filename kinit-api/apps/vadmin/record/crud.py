@@ -69,5 +69,6 @@ class LoginRecordDal(DalBase):
 
 
 class SMSSendRecordDal(DalBase):
+
     def __init__(self, db: AsyncSession):
         super(SMSSendRecordDal, self).__init__(db, models.VadminSMSSendRecord, schemas.SMSSendRecordSimpleOut)

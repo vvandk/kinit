@@ -17,7 +17,10 @@ import Write from './components/Write.vue'
 import { columns } from './components/menu.data'
 import { useDictStore } from '@/store/modules/dict'
 import { selectDictLabel, DictDetail } from '@/utils/dict'
+import { useCache } from '@/hooks/web/useCache'
+import { useRouter } from 'vue-router'
 
+const { wsCache } = useCache()
 const { t } = useI18n()
 
 let menuTypeOptions = ref<DictDetail[]>([])
@@ -117,9 +120,13 @@ watch(tableSize, (val) => {
   tableSize.value = val
 })
 
+const route = useRouter()
+const cacheTableHeadersKey = route.currentRoute.value.fullPath
+
 watch(
   columns,
-  async () => {
+  async (val) => {
+    wsCache.set(cacheTableHeadersKey, JSON.stringify(val))
     await nextTick()
     elTableRef.value?.doLayout()
   },
@@ -139,7 +146,12 @@ watch(
           >
         </ElCol>
       </ElRow>
-      <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
+      <RightToolbar
+        @get-list="getList"
+        v-model:table-size="tableSize"
+        v-model:columns="columns"
+        :cache-table-headers-key="cacheTableHeadersKey"
+      />
     </div>
 
     <Table

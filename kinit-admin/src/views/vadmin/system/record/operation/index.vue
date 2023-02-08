@@ -10,6 +10,10 @@ import { RightToolbar } from '@/components/RightToolbar'
 import { Dialog } from '@/components/Dialog'
 import Detail from './components/Detail.vue'
 import { Search } from '@/components/Search'
+import { useCache } from '@/hooks/web/useCache'
+import { useRouter } from 'vue-router'
+
+const { wsCache } = useCache()
 
 const { register, elTableRef, tableObject, methods } = useTable({
   getListApi: getRecordOperationListApi,
@@ -38,9 +42,13 @@ watch(tableSize, (val) => {
   tableSize.value = val
 })
 
+const route = useRouter()
+const cacheTableHeadersKey = route.currentRoute.value.fullPath
+
 watch(
   columns,
-  async () => {
+  async (val) => {
+    wsCache.set(cacheTableHeadersKey, JSON.stringify(val))
     await nextTick()
     elTableRef.value?.doLayout()
   },
@@ -56,7 +64,12 @@ watch(
 
     <div class="mb-8px flex justify-between">
       <ElRow />
-      <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
+      <RightToolbar
+        @get-list="getList"
+        v-model:table-size="tableSize"
+        v-model:columns="columns"
+        :cache-table-headers-key="cacheTableHeadersKey"
+      />
     </div>
 
     <Table

@@ -6,7 +6,7 @@
 # @IDE            : PyCharm
 # @desc           : 增删改查
 
-from typing import List
+from typing import List, Any
 from aioredis import Redis
 from fastapi import UploadFile
 from core.exception import CustomException
@@ -42,7 +42,13 @@ class UserDal(DalBase):
     def __init__(self, db: AsyncSession):
         super(UserDal, self).__init__(db, models.VadminUser, schemas.UserSimpleOut)
 
-    async def create_data(self, data: schemas.UserIn, return_obj: bool = False, options: list = None, schema=None):
+    async def create_data(
+            self,
+            data: schemas.UserIn,
+            v_options: list = None,
+            v_return_obj: bool = False,
+            v_schema: Any = None
+    ):
         """
         创建用户
         """
@@ -55,12 +61,12 @@ class UserDal(DalBase):
         for data_id in data.role_ids:
             obj.roles.append(await RoleDal(db=self.db).get_data(data_id=data_id))
         await self.flush(obj)
-        if options:
-            obj = await self.get_data(obj.id, options=options)
-        if return_obj:
+        if v_options:
+            obj = await self.get_data(obj.id, v_options=v_options)
+        if v_return_obj:
             return obj
-        if schema:
-            return schema.from_orm(obj).dict()
+        if v_schema:
+            return v_schema.from_orm(obj).dict()
         return self.out_dict(obj)
 
     async def reset_current_password(self, user: models.VadminUser, data: schemas.ResetPwd):
@@ -225,24 +231,36 @@ class RoleDal(DalBase):
     def __init__(self, db: AsyncSession):
         super(RoleDal, self).__init__(db, models.VadminRole, schemas.RoleSimpleOut)
 
-    async def create_data(self, data: schemas.RoleIn, return_obj: bool = False, options: list = None, schema=None):
+    async def create_data(
+            self,
+            data: schemas.RoleIn,
+            v_options: list = None,
+            v_return_obj: bool = False,
+            v_schema: Any = None
+    ):
         """创建数据"""
         obj = self.model(**data.dict(exclude={'menu_ids'}))
         for data_id in data.menu_ids:
-            obj.menus.append(await MenuDal(db=self.db).get_data(data_id=data_id))
+            obj.menus.append(await MenuDal(db=self.db).get_data(data_id))
         await self.flush(obj)
-        if options:
-            obj = await self.get_data(obj.id, options=options)
-        if return_obj:
+        if v_options:
+            obj = await self.get_data(obj.id, v_options=v_options)
+        if v_return_obj:
             return obj
-        if schema:
-            return schema.from_orm(obj).dict()
+        if v_schema:
+            return v_schema.from_orm(obj).dict()
         return self.out_dict(await self.get_data(obj.id))
 
-    async def put_data(self, data_id: int, data: schemas.RoleIn, return_obj: bool = False, options: list = None,
-                       schema=None):
+    async def put_data(
+            self,
+            data_id: int,
+            data: schemas.RoleIn,
+            v_options: list = None,
+            v_return_obj: bool = False,
+            v_schema: Any = None
+    ):
         """更新单个数据"""
-        obj = await self.get_data(data_id, options=[self.model.menus])
+        obj = await self.get_data(data_id, v_options=[self.model.menus])
         obj_dict = jsonable_encoder(data)
         for key, value in obj_dict.items():
             if key == "menu_ids":
@@ -254,14 +272,14 @@ class RoleDal(DalBase):
             setattr(obj, key, value)
         await self.db.flush()
         await self.db.refresh(obj)
-        if return_obj:
+        if v_return_obj:
             return obj
-        if schema:
-            return schema.from_orm(obj).dict()
+        if v_schema:
+            return v_schema.from_orm(obj).dict()
         return self.out_dict(obj)
 
     async def get_role_menu_tree(self, role_id: int):
-        role = await self.get_data(role_id, options=[self.model.menus])
+        role = await self.get_data(role_id, v_options=[self.model.menus])
         return [i.id for i in role.menus]
 
     async def get_select_datas(self):
@@ -283,9 +301,9 @@ class MenuDal(DalBase):
         3：获取菜单树列表，角色添加菜单权限时使用
         """
         if mode == 3:
-            sql = select(self.model).where(self.model.disabled == 0)
+            sql = select(self.model).where(self.model.disabled == 0, self.model.delete_datetime.is_(None))
         else:
-            sql = select(self.model)
+            sql = select(self.model).where(self.model.delete_datetime.is_(None))
         queryset = await self.db.execute(sql)
         datas = queryset.scalars().all()
         roots = filter(lambda i: not i.parent_id, datas)
@@ -310,13 +328,14 @@ class MenuDal(DalBase):
         }
         """
         if any([i.is_admin for i in user.roles]):
-            sql = select(self.model).where(self.model.disabled == 0, self.model.menu_type != "2")
+            sql = select(self.model)\
+                .where(self.model.disabled == 0, self.model.menu_type != "2", self.model.delete_datetime.is_(None))
             queryset = await self.db.execute(sql)
             datas = queryset.scalars().all()
         else:
             datas = set()
             for role in user.roles:
-                role_obj = await RoleDal(self.db).get_data(role.id, options=[models.VadminRole.menus])
+                role_obj = await RoleDal(self.db).get_data(role.id, v_options=[models.VadminRole.menus])
                 for menu in role_obj.menus:
                     # 该路由没有被禁用，并且菜单不是按钮
                     if not menu.disabled and menu.menu_type != "2":

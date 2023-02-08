@@ -162,15 +162,7 @@ export default defineComponent({
           if (v.hidden !== undefined) {
             return !v.hidden
           } else if (v.ifshow !== undefined) {
-            const show = v.ifshow(unref(formModel))
-            if (!show) {
-              if (v.value !== undefined) {
-                formModel.value[v.field] = v.value
-              } else {
-                formModel.value[v.field] = undefined
-              }
-            }
-            return show
+            return v.ifshow(unref(formModel))
           }
           return true
         })

@@ -156,7 +156,8 @@ class ExcelManage:
         @param max_column: 最大列
         """
         for index in range(0, max_column):
-            # 设置单元格对齐方式 Alignment(horizontal=水平对齐模式,vertical=垂直对齐模式,text_rotation=旋转角度,wrap_text=是否自动换行)
+            # 设置单元格对齐方式
+            # Alignment(horizontal=水平对齐模式,vertical=垂直对齐模式,text_rotation=旋转角度,wrap_text=是否自动换行)
             alignment = Alignment(horizontal='center', vertical='center', text_rotation=0, wrap_text=False)
             self.sheet.cell(row=row, column=index+1).alignment = alignment
 

@@ -35,8 +35,12 @@ app = APIRouter()
 
 
 @app.post("/login/", summary="登录")
-async def login_for_access_token(request: Request, data: LoginForm, manage: LoginManage = Depends(),
-                                 db: AsyncSession = Depends(db_getter)):
+async def login_for_access_token(
+        request: Request,
+        data: LoginForm,
+        manage: LoginManage = Depends(),
+        db: AsyncSession = Depends(db_getter)
+):
     if data.method == "0":
         result = await manage.password_login(data, db, request)
     elif data.method == "1":
@@ -45,8 +49,8 @@ async def login_for_access_token(request: Request, data: LoginForm, manage: Logi
         return ErrorResponse(msg="请使用正确的登录方式")
     if not result.status:
         resp = {"message": result.msg}
-        await VadminLoginRecord.\
-            create_login_record(db, data, result.status, request, resp)
+        await VadminLoginRecord\
+            .create_login_record(db, data, result.status, request, resp)
         return ErrorResponse(msg=result.msg)
 
     user = result.user

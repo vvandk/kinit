@@ -10,7 +10,6 @@ import type { UploadProps } from 'element-plus'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStore } from '@/store/modules/app'
 import { propTypes } from '@/utils/propTypes'
-import { config } from '@/config/axios/config'
 
 const props = defineProps({
   tabId: propTypes.number
@@ -80,9 +79,8 @@ const getData = async () => {
 const appStore = useAppStore()
 const { wsCache } = useCache()
 const loading = ref(false)
-const { token } = config
 
-const _token = wsCache.get(token)
+const token = wsCache.get(appStore.getToken)
 
 const save = async () => {
   const formRef = unref(elFormRef)
@@ -122,7 +120,7 @@ getData()
         :on-success="handleLogoUploadSuccess"
         accept="image/jpeg,image/gif,image/png"
         name="file"
-        :headers="{ Authorization: _token }"
+        :headers="{ Authorization: token }"
       >
         <img v-if="form.web_logo" :src="form.web_logo" class="logo-image" />
         <ElIcon v-else class="logo-image-uploader-icon"
@@ -141,7 +139,7 @@ getData()
         :on-success="handleICOUploadSuccess"
         accept="image/x-icon"
         name="file"
-        :headers="{ Authorization: _token }"
+        :headers="{ Authorization: token }"
       >
         <img v-if="form.web_ico" :src="form.web_ico" class="ico-image" />
         <ElIcon v-else class="ico-image-uploader-icon"

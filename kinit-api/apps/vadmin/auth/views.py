@@ -51,7 +51,7 @@ async def get_user(data_id: int, auth: Auth = Depends(login_auth)):
     model = models.VadminUser
     options = [model.roles]
     schema = schemas.UserOut
-    return SuccessResponse(await crud.UserDal(auth.db).get_data(data_id, options, schema))
+    return SuccessResponse(await crud.UserDal(auth.db).get_data(data_id, options, v_schema=schema))
 
 
 @app.post("/user/current/reset/password/", summary="重置当前用户密码")
@@ -77,8 +77,11 @@ async def get_user_current_info(auth: Auth = Depends(full_admin)):
 
 
 @app.post("/user/export/query/list/to/excel/", summary="导出用户查询列表为excel")
-async def post_user_export_query_list(header: list = Body(..., title="表头与对应字段"), params: UserParams = Depends(),
-                                      auth: Auth = Depends(login_auth)):
+async def post_user_export_query_list(
+        header: list = Body(..., title="表头与对应字段"),
+        params: UserParams = Depends(),
+        auth: Auth = Depends(login_auth)
+):
     return SuccessResponse(await crud.UserDal(auth.db).export_query_list(header, params))
 
 
@@ -137,7 +140,7 @@ async def get_role(data_id: int, auth: Auth = Depends(login_auth)):
     model = models.VadminRole
     options = [model.menus]
     schema = schemas.RoleOut
-    return SuccessResponse(await crud.RoleDal(auth.db).get_data(data_id, options, schema))
+    return SuccessResponse(await crud.RoleDal(auth.db).get_data(data_id, options, v_schema=schema))
 
 
 ###########################################################
@@ -181,7 +184,7 @@ async def put_menus(data_id: int, data: schemas.Menu, auth: Auth = Depends(login
 @app.get("/menus/{data_id}/", summary="获取菜单信息")
 async def put_menus(data_id: int, auth: Auth = Depends(login_auth)):
     schema = schemas.MenuSimpleOut
-    return SuccessResponse(await crud.MenuDal(auth.db).get_data(data_id, None, schema))
+    return SuccessResponse(await crud.MenuDal(auth.db).get_data(data_id, None, v_schema=schema))
 
 
 @app.get("/role/menus/tree/{role_id}/", summary="获取菜单列表树信息以及角色菜单权限ID，角色权限使用")

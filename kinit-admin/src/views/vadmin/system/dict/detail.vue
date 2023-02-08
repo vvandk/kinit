@@ -20,9 +20,10 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
 import { Search } from '@/components/Search'
 import { FormSetPropsType } from '@/types/form'
+import { useCache } from '@/hooks/web/useCache'
 
+const { wsCache } = useCache()
 const { currentRoute } = useRouter()
-
 const { t } = useI18n()
 
 let dictType = currentRoute.value.query.dictType
@@ -64,7 +65,7 @@ const actionType = ref('')
 const loading = ref(false)
 
 // 添加事件
-const AddAction = () => {
+const addAction = () => {
   dialogTitle.value = t('exampleDemo.add')
   tableObject.currentRow = null
   dialogVisible.value = true
@@ -126,9 +127,13 @@ const tableSize = ref('default')
 watch(tableSize, (val) => {
   tableSize.value = val
 })
+
+const cacheTableHeadersKey = currentRoute.value.fullPath
+
 watch(
   columns,
-  async () => {
+  async (val) => {
+    wsCache.set(cacheTableHeadersKey, JSON.stringify(val))
     await nextTick()
     elTableRef.value?.doLayout()
   },
@@ -150,10 +155,15 @@ watch(
     <div class="mb-8px flex justify-between">
       <ElRow :gutter="10">
         <ElCol :span="1.5">
-          <ElButton type="primary" @click="AddAction">{{ t('exampleDemo.add') }}</ElButton>
+          <ElButton type="primary" @click="addAction">{{ t('exampleDemo.add') }}</ElButton>
         </ElCol>
       </ElRow>
-      <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
+      <RightToolbar
+        @get-list="getList"
+        v-model:table-size="tableSize"
+        v-model:columns="columns"
+        :cache-table-headers-key="cacheTableHeadersKey"
+      />
     </div>
 
     <Table

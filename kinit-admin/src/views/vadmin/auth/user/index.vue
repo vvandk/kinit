@@ -34,7 +34,10 @@ import { useAuthStoreWithOut } from '@/store/modules/auth'
 import { RightToolbar } from '@/components/RightToolbar'
 import { Search } from '@/components/Search'
 import { useAppStore } from '@/store/modules/app'
+import { useCache } from '@/hooks/web/useCache'
+import { useRouter } from 'vue-router'
 
+const { wsCache } = useCache()
 const appStore = useAppStore()
 
 const { t } = useI18n()
@@ -72,7 +75,7 @@ const loading = ref(false)
 const { getList, setSearchParams, exportQueryList } = methods
 
 // 添加事件
-const AddAction = () => {
+const addAction = () => {
   dialogTitle.value = t('exampleDemo.add')
   tableObject.currentRow = null
   dialogVisible.value = true
@@ -147,9 +150,13 @@ watch(tableSize, (val) => {
   tableSize.value = val
 })
 
+const route = useRouter()
+const cacheTableHeadersKey = route.currentRoute.value.fullPath
+
 watch(
   columns,
-  async () => {
+  async (val) => {
+    wsCache.set(cacheTableHeadersKey, JSON.stringify(val))
     await nextTick()
     elTableRef.value?.doLayout()
   },
@@ -209,7 +216,7 @@ const handleCommand = (command: string) => {
     <div class="mb-8px flex justify-between">
       <ElRow :gutter="10">
         <ElCol :span="1.5" v-hasPermi="['auth.user.create']">
-          <ElButton type="primary" @click="AddAction">新增用户</ElButton>
+          <ElButton type="primary" @click="addAction">新增用户</ElButton>
         </ElCol>
         <ElCol :span="1.5" v-hasPermi="['auth.user.import']" v-if="!mobile">
           <ElButton @click="importList">批量导入用户</ElButton>
@@ -250,7 +257,12 @@ const handleCommand = (command: string) => {
           </ElDropdown>
         </ElCol>
       </ElRow>
-      <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
+      <RightToolbar
+        @get-list="getList"
+        v-model:table-size="tableSize"
+        v-model:columns="columns"
+        :cache-table-headers-key="cacheTableHeadersKey"
+      />
     </div>
 
     <Table

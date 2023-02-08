@@ -39,7 +39,7 @@ class IPManage:
 
     def __init__(self, ip: str):
         self.ip = ip
-        self.url = f"https://api.ip138.com/ip/?ip={ip}&datatype=jsonp&token={IP_PARSE_TOKEN}"
+        self.url = f"http://api.ip138.com/ip/?ip={ip}&datatype=jsonp&token={IP_PARSE_TOKEN}"
 
     async def parse(self):
         """

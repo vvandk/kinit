@@ -13,6 +13,7 @@
 # SQLAlchemy join 内连接
 # selectinload 官方文档：
 # https://www.osgeo.cn/sqlalchemy/orm/loading_relationships.html?highlight=selectinload#sqlalchemy.orm.selectinload
+
 import datetime
 from typing import List
 from fastapi import HTTPException
@@ -24,133 +25,156 @@ from sqlalchemy.orm import selectinload
 from starlette import status
 from core.logger import logger
 from sqlalchemy.sql.selectable import Select
+from typing import Any
 
 
 class DalBase:
 
-    def __init__(self, db: AsyncSession, model, schema, key_models: dict = None):
+    def __init__(self, db: AsyncSession, model: Any, schema: Any, key_models: dict = None):
         self.db = db
         self.model = model
         self.schema = schema
         self.key_models = key_models
 
-    async def get_data(self, data_id: int = None, options: list = None, schema=None, keys: dict = None, **kwargs):
+    async def get_data(
+            self,
+            data_id: int = None,
+            v_options: list = None,
+            v_join_query: dict = None,
+            v_order: str = None,
+            v_return_none: bool = False,
+            v_schema: Any = None,
+            **kwargs
+    ):
         """
         获取单个数据，默认使用 ID 查询，否则使用关键词查询
 
-        @param data_id:
-        @param keys: 外键字段查询，内连接
-        @param options: 指示应使用select在预加载中加载给定的属性。
-        @param schema: 指定使用的序列化对象
-        @param kwargs: 关键词参数,
-        @param kwargs: v_order，排序，默认正序，为 desc 是倒叙
-        @param kwargs: v_return_none，是否返回空 None，否认 抛出异常，默认抛出异常
+        @param data_id: 数据 ID
+        @param v_join_query: 外键字段查询，内连接
+        @param v_options: 指示应使用select在预加载中加载给定的属性。
+        @param v_schema: 指定使用的序列化对象
+        @param v_order: 排序，默认正序，为 desc 是倒叙
+        @param v_return_none: 是否返回空 None，否认 抛出异常，默认抛出异常
+        @param kwargs: 查询参数
         """
-        order = kwargs.pop("v_order", None)
-        return_none = kwargs.pop("v_return_none", False)
-        keys_exist = False
-        if keys:
-            for key, value in keys.items():
-                if value and isinstance(value, dict):
-                    for k, v in value.items():
-                        if v:
-                            keys_exist = True
-                            break
-        kwargs_exist = False
-        if kwargs:
-            for key, value in kwargs.items():
-                if value and getattr(self.model, key, None):
-                    kwargs_exist = True
-                    break
         sql = select(self.model).where(self.model.delete_datetime.is_(None))
-        if data_id or kwargs_exist or keys_exist:
-            if data_id:
-                sql = sql.where(self.model.id == data_id)
-            sql = self.add_filter_condition(sql, keys, options, **kwargs)
-        if order and (order == "desc" or order == "descending"):
+        if data_id:
+            sql = sql.where(self.model.id == data_id)
+        sql = self.add_filter_condition(sql, v_join_query, v_options, **kwargs)
+        if v_order and (v_order == "desc" or v_order == "descending"):
             sql = sql.order_by(self.model.create_datetime.desc())
         queryset = await self.db.execute(sql)
         data = queryset.scalars().first()
-        if not data and return_none:
+        if not data and v_return_none:
             return None
-        if data and schema:
-            return schema.from_orm(data).dict()
+        if data and v_schema:
+            return v_schema.from_orm(data).dict()
         if data:
             return data
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="未找到此数据")
 
-    async def get_datas(self, page: int = 1, limit: int = 10, keys: dict = None, options: list = None, schema=None,
-                        **kwargs):
+    async def get_datas(
+            self,
+            page: int = 1,
+            limit: int = 10,
+            v_join_query: dict = None,
+            v_options: list = None,
+            v_order: str = None,
+            v_order_field: str = None,
+            v_return_objs: bool = False,
+            v_start_sql: Any = None,
+            v_schema: Any = None,
+            **kwargs
+    ):
         """
         获取数据列表
-
         @param page: 页码
         @param limit: 当前页数据量
-        @param keys: 外键字段查询
-        @param options: 指示应使用select在预加载中加载给定的属性。
-        @param schema: 指定使用的序列化对象
-        @param kwargs: v_order，排序，默认正序，为 desc 是倒叙
-        @param kwargs: v_order_field，排序字段
-        @param kwargs: v_return_objs，是否返回对象
-        @param kwargs: v_start_sql，初始 sql
+        @param v_join_query: 外键字段查询
+        @param v_options: 指示应使用select在预加载中加载给定的属性。
+        @param v_schema: 指定使用的序列化对象
+        @param v_order: 排序，默认正序，为 desc 是倒叙
+        @param v_order_field: 排序字段
+        @param v_return_objs: 是否返回对象
+        @param v_start_sql: 初始 sql
+        @param kwargs: 查询参数
         """
-        order = kwargs.pop("v_order", None)
-        order_field = kwargs.pop("v_order_field", None)
-        return_objs = kwargs.pop("v_return_objs", False)
-        start_sql = kwargs.pop("v_start_sql", None)
-        if not isinstance(start_sql, Select):
-            start_sql = select(self.model).where(self.model.delete_datetime.is_(None))
-        sql = self.add_filter_condition(start_sql, keys, options, **kwargs)
-        if order_field and (order == "desc" or order == "descending"):
-            sql = sql.order_by(getattr(self.model, order_field).desc(), self.model.id.desc())
-        elif order_field:
-            sql = sql.order_by(getattr(self.model, order_field), self.model.id)
-        elif order == "desc" or order == "descending":
+        if not isinstance(v_start_sql, Select):
+            v_start_sql = select(self.model).where(self.model.delete_datetime.is_(None))
+        sql = self.add_filter_condition(v_start_sql, v_join_query, v_options, **kwargs)
+        if v_order_field and (v_order == "desc" or v_order == "descending"):
+            sql = sql.order_by(getattr(self.model, v_order_field).desc(), self.model.id.desc())
+        elif v_order_field:
+            sql = sql.order_by(getattr(self.model, v_order_field), self.model.id)
+        elif v_order == "desc" or v_order == "descending":
             sql = sql.order_by(self.model.id.desc())
         if limit != 0:
             sql = sql.offset((page - 1) * limit).limit(limit)
         queryset = await self.db.execute(sql)
-        if return_objs:
+        if v_return_objs:
             return queryset.scalars().all()
-        if schema:
-            return [schema.from_orm(i).dict() for i in queryset.scalars().all()]
+        if v_schema:
+            return [v_schema.from_orm(i).dict() for i in queryset.scalars().all()]
         return [self.out_dict(i) for i in queryset.scalars().all()]
 
-    async def get_count(self, keys: dict = None, **kwargs):
-        """获取数据总数"""
+    async def get_count(self, v_join_query: dict = None, v_options: list = None, **kwargs):
+        """
+        获取数据总数
+        @param v_join_query: 外键字段查询
+        @param v_options: 指示应使用select在预加载中加载给定的属性。
+        @param kwargs: 查询参数
+        """
         sql = select(func.count(self.model.id).label('total')).where(self.model.delete_datetime.is_(None))
-        sql = self.add_filter_condition(sql, keys, **kwargs)
+        sql = self.add_filter_condition(sql, v_join_query, v_options, **kwargs)
         queryset = await self.db.execute(sql)
         return queryset.one()['total']
 
-    async def create_data(self, data, return_obj: bool = False, options: list = None, schema=None):
-        """创建数据"""
+    async def create_data(self, data, v_options: list = None, v_return_obj: bool = False, v_schema: Any = None):
+        """
+        创建数据
+        @param data: 创建数据
+        @param v_options: 指示应使用select在预加载中加载给定的属性。
+        @param v_schema: ，指定使用的序列化对象
+        @param v_return_obj: ，是否返回对象
+        """
         if isinstance(data, dict):
             obj = self.model(**data)
         else:
             obj = self.model(**data.dict())
         await self.flush(obj)
-        if options:
-            obj = await self.get_data(obj.id, options=options)
-        if return_obj:
+        if v_options:
+            obj = await self.get_data(obj.id, v_options=v_options)
+        if v_return_obj:
             return obj
-        if schema:
-            return schema.from_orm(obj).dict()
+        if v_schema:
+            return v_schema.from_orm(obj).dict()
         return self.out_dict(obj)
 
-    async def put_data(self, data_id: int, data, return_obj: bool = False, options: list = None, schema=None):
+    async def put_data(
+            self,
+            data_id: int,
+            data: Any,
+            v_options: list = None,
+            v_return_obj: bool = False,
+            v_schema: Any = None
+    ):
         """
         更新单个数据
+        @param data_id: 修改行数据的 ID
+        @param data: 数据内容
+        @param v_options: 指示应使用select在预加载中加载给定的属性。
+        @param v_return_obj: ，是否返回对象
+        @param v_schema: ，指定使用的序列化对象
         """
-        obj = await self.get_data(data_id, options=options)
+        obj = await self.get_data(data_id, v_options=v_options)
         obj_dict = jsonable_encoder(data)
         for key, value in obj_dict.items():
             setattr(obj, key, value)
         await self.flush(obj)
-        if return_obj:
+        if v_return_obj:
             return obj
-        if schema:
-            return schema.from_orm(obj).dict()
+        if v_schema:
+            return v_schema.from_orm(obj).dict()
         return self.out_dict(obj)
 
     async def delete_datas(self, ids: List[int], soft: bool = False):
@@ -160,67 +184,72 @@ class DalBase:
         @param soft: 是否执行软删除
         """
         if soft:
-            await self.db.execute(update(self.model).where(self.model.id.in_(ids)).
-                                  values(delete_datetime=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+            await self.db.execute(
+                update(self.model)
+                .where(self.model.id.in_(ids))
+                .values(delete_datetime=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            )
         else:
             await self.db.execute(delete(self.model).where(self.model.id.in_(ids)))
 
-    def add_filter_condition(self, sql: select, keys: dict = None, options: list = None, **kwargs) -> select:
+    def add_filter_condition(self, sql: select, v_join_query: dict = None, v_options: list = None, **kwargs) -> select:
         """
         添加过滤条件，以及内连接过滤条件
         @param sql:
-        @param keys: 外键字段查询，内连接
-        @param options: 指示应使用select在预加载中加载给定的属性。
+        @param v_join_query: 外键字段查询，内连接
+        @param v_options: 指示应使用select在预加载中加载给定的属性。
         @param kwargs: 关键词参数
         """
-        if keys and self.key_models:
-            for key, value in keys.items():
-                model = self.key_models.get(key)
-                if model:
-                    sql = sql.join(model)
+        if v_join_query and self.key_models:
+            for key, value in v_join_query.items():
+                foreign_key = self.key_models.get(key)
+                if foreign_key and foreign_key.get("model"):
+                    # 当外键模型在查询模型中存在多个外键时，则需要添加onclause属性
+                    sql = sql.join(foreign_key.get("model"), onclause=foreign_key.get("onclause"))
                     for v_key, v_value in value.items():
                         if v_value is not None and v_value != "":
-                            v_attr = getattr(model, v_key, None)
+                            v_attr = getattr(foreign_key.get("model"), v_key, None)
                             sql = self.filter_condition(sql, v_attr, v_value)
                 else:
                     logger.error(f"外键查询报错：{key}模型不存在，无法进行下一步查询。")
-        elif keys and not self.key_models:
+        elif v_join_query and not self.key_models:
             logger.error(f"外键查询报错：key_models 外键模型无配置项，无法进行下一步查询。")
         for field in kwargs:
             value = kwargs.get(field)
             if value is not None and value != "":
                 attr = getattr(self.model, field, None)
                 sql = self.filter_condition(sql, attr, value)
-        if options:
-            sql = sql.options(*[selectinload(i) for i in options])
+        if v_options:
+            sql = sql.options(*[selectinload(i) for i in v_options])
         return sql
 
     @classmethod
-    def filter_condition(cls, sql, attr, value):
+    def filter_condition(cls, sql: Any, attr: Any, value: Any):
         """
         过滤条件
         """
         if not attr:
             return sql
         if isinstance(value, tuple):
-            if value[0] == "date" and value[1]:
-                # 根据日期查询， 关键函数是：func.time_format和func.date_format
-                sql = sql.where(func.date_format(attr, "%Y-%m-%d") == value[1])
-            elif value[0] == "like" and value[1]:
-                sql = sql.where(attr.like(f"%{value[1]}%"))
-            elif value[0] == "or" and value[1]:
-                sql = sql.where(or_(i for i in value[1]))
-            elif value[0] == "in" and value[1]:
-                sql = sql.where(attr.in_(value[1]))
-            elif value[0] == "between" and value[1]:
-                sql = sql.where(attr.between(value[1][0], value[1][1]))
-            elif value[0] == "month" and value[1]:
-                sql = sql.where(func.date_format(attr, "%Y-%m") == value[1])
+            if value[1]:
+                if value[0] == "date":
+                    # 根据日期查询， 关键函数是：func.time_format和func.date_format
+                    sql = sql.where(func.date_format(attr, "%Y-%m-%d") == value[1])
+                elif value[0] == "like":
+                    sql = sql.where(attr.like(f"%{value[1]}%"))
+                elif value[0] == "or":
+                    sql = sql.where(or_(i for i in value[1]))
+                elif value[0] == "in":
+                    sql = sql.where(attr.in_(value[1]))
+                elif value[0] == "between":
+                    sql = sql.where(attr.between(value[1][0], value[1][1]))
+                elif value[0] == "month":
+                    sql = sql.where(func.date_format(attr, "%Y-%m") == value[1])
         else:
             sql = sql.where(attr == value)
         return sql
 
-    async def flush(self, obj=None):
+    async def flush(self, obj: Any = None):
         """
         刷新到数据库
         """
@@ -230,7 +259,7 @@ class DalBase:
         if obj:
             await self.db.refresh(obj)
 
-    def out_dict(self, data):
+    def out_dict(self, data: Any):
         """
         序列化
         @param data:

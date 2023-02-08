@@ -13,6 +13,10 @@ import { Search } from '@/components/Search'
 import { selectDictLabel, DictDetail } from '@/utils/dict'
 import { useDictStore } from '@/store/modules/dict'
 import { FormSetPropsType } from '@/types/form'
+import { useCache } from '@/hooks/web/useCache'
+import { useRouter } from 'vue-router'
+
+const { wsCache } = useCache()
 
 const { register, elTableRef, tableObject, methods } = useTable({
   getListApi: getRecordLoginListApi,
@@ -60,9 +64,13 @@ watch(tableSize, (val) => {
   tableSize.value = val
 })
 
+const route = useRouter()
+const cacheTableHeadersKey = route.currentRoute.value.fullPath
+
 watch(
   columns,
-  async () => {
+  async (val) => {
+    wsCache.set(cacheTableHeadersKey, JSON.stringify(val))
     await nextTick()
     elTableRef.value?.doLayout()
   },
@@ -85,7 +93,12 @@ getList()
 
     <div class="mb-8px flex justify-between">
       <ElRow />
-      <RightToolbar @get-list="getList" v-model:table-size="tableSize" v-model:columns="columns" />
+      <RightToolbar
+        @get-list="getList"
+        v-model:table-size="tableSize"
+        v-model:columns="columns"
+        :cache-table-headers-key="cacheTableHeadersKey"
+      />
     </div>
 
     <Table

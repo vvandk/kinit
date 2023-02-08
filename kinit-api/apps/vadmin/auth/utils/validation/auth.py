@@ -33,8 +33,12 @@ class AuthValidation:
     def __init__(self, func):
         self.func = func
 
-    async def __call__(self, request: Request, token: str = Depends(settings.oauth2_scheme),
-                       db: AsyncSession = Depends(db_getter)):
+    async def __call__(
+            self,
+            request: Request,
+            token: str = Depends(settings.oauth2_scheme),
+            db: AsyncSession = Depends(db_getter)
+    ):
         if not settings.OAUTH_ENABLE:
             return Auth(db=db)
         if not token:

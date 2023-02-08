@@ -15,7 +15,9 @@ import { ref, PropType } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import draggable from 'vuedraggable'
 import { useAppStore } from '@/store/modules/app'
+import { useCache } from '@/hooks/web/useCache'
 
+const { wsCache } = useCache()
 const appStore = useAppStore()
 
 const emit = defineEmits(['getList', 'update:tableSize'])
@@ -25,7 +27,8 @@ const props = defineProps({
   columns: {
     type: Array as PropType<any[]>,
     default: () => []
-  }
+  },
+  cacheTableHeadersKey: propTypes.string.def('')
 })
 
 const handleClickRefresh = () => {
@@ -43,6 +46,15 @@ const handleCommand = (command: string) => {
 const checkAll = ref(false)
 const columns = ref(props.columns)
 const isIndeterminate = ref(true) // 如果为True，则表示为半选状态
+
+// 获取表头字段默认列表
+if (props.cacheTableHeadersKey) {
+  const cacheTableHeaders = wsCache.get(props.cacheTableHeadersKey)
+  if (cacheTableHeaders) {
+    Object.assign(columns.value, JSON.parse(cacheTableHeaders))
+  }
+}
+
 const handleCheckAllChange = (val: boolean) => {
   columns.value.forEach((item) => {
     if (item.disabled !== true) {
@@ -51,6 +63,7 @@ const handleCheckAllChange = (val: boolean) => {
   })
   isIndeterminate.value = false
 }
+
 const handleCheckChange = () => {
   checkAll.value = columns.value.every((item) => item.show)
   if (checkAll.value) {

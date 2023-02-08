@@ -27,9 +27,9 @@ app = APIRouter()
 #    字典类型管理
 ###########################################################
 @app.get("/dict/types/", summary="获取字典类型列表")
-async def get_dict_types(params: DictTypeParams = Depends(), auth: Auth = Depends(login_auth)):
-    datas = await crud.DictTypeDal(auth.db).get_datas(**params.dict())
-    count = await crud.DictTypeDal(auth.db).get_count(**params.to_count())
+async def get_dict_types(p: DictTypeParams = Depends(), auth: Auth = Depends(login_auth)):
+    datas = await crud.DictTypeDal(auth.db).get_datas(**p.dict())
+    count = await crud.DictTypeDal(auth.db).get_count(**p.to_count())
     return SuccessResponse(datas, count=count)
 
 
@@ -45,16 +45,17 @@ async def delete_dict_types(ids: IdList = Depends(), auth: Auth = Depends(login_
 
 
 @app.post("/dict/types/details/", summary="获取多个字典类型下的字典元素列表")
-async def post_dicts_details(auth: Auth = Depends(login_auth),
-                             dict_types: List[str] = Body(None, title="字典元素列表", description="查询字典元素列表")):
+async def post_dicts_details(
+        auth: Auth = Depends(login_auth),
+        dict_types: List[str] = Body(None, title="字典元素列表", description="查询字典元素列表")
+):
     datas = await crud.DictTypeDal(auth.db).get_dicts_details(dict_types)
     return SuccessResponse(datas)
 
 
 @app.get("/dict/types/options/", summary="获取字典类型选择项")
 async def get_dicts_options(auth: Auth = Depends(login_auth)):
-    datas = await crud.DictTypeDal(auth.db).get_select_datas()
-    return SuccessResponse(datas)
+    return SuccessResponse(await crud.DictTypeDal(auth.db).get_select_datas())
 
 
 @app.put("/dict/types/{data_id}/", summary="更新字典类型")
@@ -65,7 +66,7 @@ async def put_dict_types(data_id: int, data: schemas.DictType, auth: Auth = Depe
 @app.get("/dict/types/{data_id}/", summary="获取字典类型详细")
 async def get_dict_type(data_id: int, auth: Auth = Depends(login_auth)):
     schema = schemas.DictTypeSimpleOut
-    return SuccessResponse(await crud.DictTypeDal(auth.db).get_data(data_id, None, schema))
+    return SuccessResponse(await crud.DictTypeDal(auth.db).get_data(data_id, None, v_schema=schema))
 
 
 ###########################################################
@@ -99,7 +100,7 @@ async def put_dict_details(data_id: int, data: schemas.DictDetails, auth: Auth =
 @app.get("/dict/details/{data_id}/", summary="获取字典元素详情")
 async def get_dict_detail(data_id: int, auth: Auth = Depends(login_auth)):
     schema = schemas.DictDetailsSimpleOut
-    return SuccessResponse(await crud.DictDetailsDal(auth.db).get_data(data_id, None, schema))
+    return SuccessResponse(await crud.DictDetailsDal(auth.db).get_data(data_id, None, v_schema=schema))
 
 
 ###########################################################

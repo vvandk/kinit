@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import Any
 
 
 class DatabaseManage:
@@ -29,7 +30,16 @@ class DatabaseManage:
         pass
 
     @abstractmethod
-    async def get_datas(self, collection: str, page: int = 1, limit: int = 10, schema=None, **kwargs):
+    async def get_datas(
+            self,
+            collection: str,
+            page: int = 1,
+            limit: int = 10,
+            v_schema: Any = None,
+            v_order: str = None,
+            v_order_field: str = None,
+            **kwargs
+    ):
         pass
 
     @abstractmethod
