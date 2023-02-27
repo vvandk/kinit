@@ -1,5 +1,14 @@
 <template>
   <view class="pwd-retrieve-container">
+		<view class="header">
+			<u--text
+				v-if="!isResetPassword"
+				text="第一次进入系统，必须先重置密码。"
+				:size="33"
+				align="center"
+			>
+			</u--text>
+		</view>
     <uni-forms ref="form" :value="form" labelWidth="80px">
       <uni-forms-item name="newPassword" label="新密码">
         <uni-easyinput type="password" v-model="form.password" placeholder="请输入新密码" />
@@ -7,7 +16,7 @@
       <uni-forms-item name="confirmPassword" label="确认密码">
         <uni-easyinput type="password" v-model="form.password_two" placeholder="请确认新密码" />
       </uni-forms-item>
-      <button :loading="btnLoading" type="primary" @click="submit">提交</button>
+			<u-button text="提交" @click="submit" type="primary"></u-button>
     </uni-forms>
   </view>
 </template>
@@ -18,7 +27,6 @@
   export default {
     data() {
       return {
-				btnLoading: false,
         form: {
           password: undefined,
           password_two: undefined
@@ -49,17 +57,30 @@
         }
       }
     },
+		computed: {
+			isResetPassword() {
+				return this.$store.state.auth.isResetPassword
+			}
+		},
     onReady() {
       this.$refs.form.setRules(this.rules)
     },
     methods: {
       submit() {
         this.$refs.form.validate().then(res => {
-					this.btnLoading = true
+					this.$modal.loading("正在提交")
           postCurrentUserResetPassword(this.form).then(response => {
-            this.$modal.msgSuccess("修改成功")
+						this.form = {
+							password: "",
+							password_two: ""
+						}
+            this.$modal.msgSuccess("重置成功")
+						if (!this.isResetPassword) {
+							this.$store.commit('auth/SET_IS_RESET_PASSWORD', true)
+							this.$tab.reLaunch('/pages/index')
+						}
           }).finally(() => {
-						this.btnLoading = false
+						this.$modal.closeLoading()
 					})
         })
       }
@@ -75,5 +96,9 @@
   .pwd-retrieve-container {
     padding-top: 36rpx;
     padding: 15px;
+		
+		.header {
+			padding-bottom: 36rpx;
+		}
   }
 </style>

@@ -10,7 +10,7 @@
       // 初始化应用
       initApp() {
         // 初始化应用配置
-        this.$store.dispatch('InitConfig')
+        this.$store.dispatch('app/InitConfig')
       }
     }
   }

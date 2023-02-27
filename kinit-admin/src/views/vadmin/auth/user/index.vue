@@ -305,6 +305,10 @@ const handleCommand = (command: string) => {
         <ElSwitch :value="row.is_active" disabled />
       </template>
 
+      <template #is_staff="{ row }">
+        <ElSwitch :value="row.is_staff" disabled />
+      </template>
+
       <template #gender="{ row }">
         {{ selectDictLabel(genderOptions, row.gender) }}
       </template>

@@ -18,11 +18,18 @@ from typing import Optional
 class LoginForm(BaseModel):
     telephone: str
     password: str
-    method: str = '0'  # 认证方式，0：密码登录，1：短信登录
+    method: str = '0'  # 认证方式，0：密码登录，1：短信登录，2：微信一键登录
     platform: str = '0'  # 登录平台，0：PC端管理系统，1：移动端管理系统
 
     # validators
     _normalize_telephone = validator('telephone', allow_reuse=True)(vali_telephone)
+
+
+class WXLoginForm(BaseModel):
+    telephone: Optional[str] = None
+    code: str
+    method: str = '2'  # 认证方式，0：密码登录，1：短信登录，2：微信一键登录
+    platform: str = '1'  # 登录平台，0：PC端管理系统，1：移动端管理系统
 
 
 class LoginResult(BaseModel):
@@ -45,8 +52,10 @@ class LoginValidation:
 
     async def __call__(self, data: LoginForm, db: AsyncSession, request: Request) -> LoginResult:
         self.result = LoginResult()
-        options = [models.VadminUser.roles, "roles.menus"]
-        user = await crud.UserDal(db).get_data(telephone=data.telephone, v_return_none=True, v_options=options)
+        if data.platform not in ["0", "1"]:
+            self.result.msg = "错误平台"
+            return self.result
+        user = await crud.UserDal(db).get_data(telephone=data.telephone, v_return_none=True)
         if not user:
             self.result.msg = "该手机号不存在！"
             return self.result
@@ -57,11 +66,9 @@ class LoginValidation:
             self.result.msg = result.msg
         elif not user.is_active:
             self.result.msg = "此手机号已被冻结！"
-        elif user.is_cancel:
-            self.result.msg = "此手机号已被注销！"
         elif user:
             self.result.msg = "OK"
             self.result.status = True
-            self.result.user = schemas.UserOut.from_orm(user)
+            self.result.user = schemas.UserSimpleOut.from_orm(user)
             await user.update_login_info(db, request.client.host)
         return self.result

@@ -55,8 +55,6 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 PC端演示地址：http://kinit.ktianc.top
 
-移动端演示地址：http://h5.ktianc.top
-
 微信小程序端演示：
 
 - 搜索：kinit
@@ -87,7 +85,7 @@ github地址：https://github.com/vvandk/kinit
 
 - [x] 文件上传：对接阿里云OSS与本地存储。
 
-- [x] 登录认证：目前支持用户使用手机号+密码方式或者手机验证码登录。
+- [x] 登录认证：目前支持用户使用手机号+密码登录方式，手机验证码登录方式。
 
   说明：新建用户密码默认为手机号后六位；
 
@@ -95,15 +93,15 @@ github地址：https://github.com/vvandk/kinit
 
 - [x] 系统配置：对本系统环境信息进行动态配置
 
-  网站标题，LOGO，描述，ICO，备案号，底部内容，百度统计代码，等等
+  网站标题，LOGO，描述，ICO，备案号，底部内容，微信小程序信息，等等
 
 - [x] 用户分布：接入高德地图显示各地区用户分布情况
+
+- [x] 智慧大屏：大屏展示`办公室空气质量实时检测`数据分析
 
 - [x] 登录日志：用户登录日志记录和查询。
 
 - [x] 操作日志：系统用户每次操作功能时的详细记录。
-
-- [ ] **异常日志：获取并展示接口异常日志**
 
 - [x] 接口文档：提供自动生成的交互式 API 文档，与 ReDoc 文档
 
@@ -123,7 +121,7 @@ github地址：https://github.com/vvandk/kinit
 
 ## 移动端内置功能
 
-- [x] 登录认证：目前支持用户使用手机号+密码方式登录。
+- [x] 登录认证：支持用户使用手机号+密码方式登录，微信手机号一键登录方式。
 
   说明：新建用户密码默认为手机号后六位；
 
@@ -138,7 +136,6 @@ github地址：https://github.com/vvandk/kinit
 - [ ] 考虑支持多机部署方案，如果接口使用多机，那么用户是否支持统一认证
 - [ ] **自动化编排服务：使用docker-compose部署项目**
 - [ ] **数据库备份：自动备份数据库**
-- [ ] **接入数据大屏**
 - [ ] **可视化低代码表单：接入低代码表单，https://vform666.com/vform3.html?from=element_plus**
 
 ##  前序准备
@@ -315,6 +312,10 @@ Redis (推荐使用最新稳定版)
    
    # 高德地图配置
    map_key
+   
+   # 微信小程序配置
+   wx_server_app_id
+   wx_server_app_secret
    ```
 
 6. 启动
@@ -401,6 +402,8 @@ pnpm run build:pro
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/1.png)
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/2.png)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/10.png)
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/3.png)
 

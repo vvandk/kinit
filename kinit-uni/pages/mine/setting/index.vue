@@ -49,7 +49,7 @@
       },
       handleLogout() {
         this.$modal.confirm('确定注销并退出系统吗？').then(() => {
-          this.$store.dispatch('LogOut')
+          this.$store.dispatch('auth/LogOut')
         })
       }
     }

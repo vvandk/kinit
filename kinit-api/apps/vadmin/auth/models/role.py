@@ -7,8 +7,10 @@
 # @desc           : 角色模型
 
 from sqlalchemy.orm import relationship
+from sqlalchemy_utils import aggregated
+from .user import VadminUser
 from db.db_base import BaseModel
-from sqlalchemy import Column, String, Boolean, Integer
+from sqlalchemy import Column, String, Boolean, Integer, func
 from .m2m import vadmin_user_roles, vadmin_role_menus
 
 
@@ -25,3 +27,7 @@ class VadminRole(BaseModel):
 
     users = relationship("VadminUser", back_populates='roles', secondary=vadmin_user_roles)
     menus = relationship("VadminMenu", back_populates='roles', secondary=vadmin_role_menus)
+
+    @aggregated('users', Column(Integer, default=0, comment="用户总数"))
+    def user_total_number(self):
+        return func.count(VadminUser.id)

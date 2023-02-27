@@ -32,7 +32,7 @@ class LoginRecordDal(DalBase):
             total: 20
         }
 
-        @return: List[dict]
+        :return: List[dict]
         """
         result = [{
                     "name": '北京',

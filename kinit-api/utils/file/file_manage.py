@@ -69,8 +69,8 @@ class FileManage(FileBase):
         复制文件
         根目录为项目根目录，传过来的文件路径均为相对路径
 
-        @param src: 原始文件
-        @param dst: 目标路径。绝对路径
+        :param src: 原始文件
+        :param dst: 目标路径。绝对路径
         """
         if src[0] == "/":
             src = src.lstrip("/")

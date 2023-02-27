@@ -1,12 +1,13 @@
-const constant = {
-   avatar: 'vuex_avatar',
-   name: 'vuex_name',
-   nickname: 'vuex_nickname',
-   telephone: 'vuex_telephone',
-   isUser: 'vuex_isUser',
-   roles: 'vuex_roles',
-   create_datetime: 'vuex_createDatetime',
-   permissions: 'vuex_permissions'
- }
-
- export default constant
+export const auth = {
+	isUser: 'vuex_auth_isUser',
+	isUserOpenid: 'vuex_auth_isUserOpenid',
+	isResetPassword: 'vuex_auth_isResetPassword',
+	name: 'vuex_auth_name',
+	nickname: 'vuex_auth_nickname',
+	gender: 'vuex_auth_gender',
+	telephone: 'vuex_auth_telephone',
+  avatar: 'vuex_auth_avatar',
+  createDatetime: 'vuex_auth_createDatetime',
+  roles: 'vuex_auth_roles',
+  permissions: 'vuex_auth_permissions'
+}

@@ -36,7 +36,7 @@ export const columns = reactive<TableColumn[]>([
   {
     field: 'login_method',
     label: '认证方式',
-    width: '120px',
+    width: '150px',
     show: true,
     span: 24
   },

@@ -68,13 +68,15 @@ def register_exception(app: FastAPI):
             msg = f"类型错误，提交参数应该为列表！"
         elif msg == "value is not a valid int":
             msg = f"类型错误，提交参数应该为整数！"
+        elif msg == "value could not be parsed to a boolean":
+            msg = f"类型错误，提交参数应该为布尔值！"
         return JSONResponse(
             status_code=200,
             content=jsonable_encoder(
                 {
-                    "message": msg
-                    , "body": exc.body
-                    , "code": status.HTTP_400_BAD_REQUEST
+                    "message": msg,
+                    "body": exc.body,
+                    "code": status.HTTP_400_BAD_REQUEST
                 }
             ),
         )
@@ -91,8 +93,8 @@ def register_exception(app: FastAPI):
             status_code=200,
             content=jsonable_encoder(
                 {
-                    "message": exc.__str__()
-                    , "code": status.HTTP_400_BAD_REQUEST
+                    "message": exc.__str__(),
+                    "code": status.HTTP_400_BAD_REQUEST
                 }
             ),
         )

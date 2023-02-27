@@ -38,8 +38,8 @@ def init_app():
     openapi_url：配置接口文件json数据文件路由地址，如果禁用则为None，默认为/openapi.json
     """
     app = FastAPI(
-        title="KInit",
-        description="本项目基于Fastapi与Vue3+Typescript+Vite+element-plus的基础项目 前端基于vue-element-plus-admin框架开发",
+        title="Kinit",
+        description="本项目基于Fastapi与Vue3+Typescript+Vite4+element-plus的基础项目 前端基于vue-element-plus-admin框架开发",
         version="1.0.0"
     )
 
@@ -92,7 +92,7 @@ def init(env: Environment = Environment.pro):
     """
     初始化数据
 
-    @params name: 数据库环境
+    :params name: 数据库环境
     """
     print("开始初始化数据")
     data = InitializeData()
@@ -104,7 +104,7 @@ def migrate(env: Environment = Environment.pro):
     """
     将模型迁移到数据库，更新数据库表结构
 
-    @params name: 数据库环境
+    :params name: 数据库环境
     """
     print("开始更新数据库表")
     InitializeData().migrate_model(env)
@@ -115,7 +115,7 @@ def create_app(path: str):
     """
     自动创建初始化 APP 结构
 
-    @params path: app 路径，根目录为apps，填写apps后面路径即可，例子：vadmin/auth
+    :params path: app 路径，根目录为apps，填写apps后面路径即可，例子：vadmin/auth
     """
     print(f"开始创建并初始化 {path} APP")
     app = CreateApp(path)

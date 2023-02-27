@@ -18,6 +18,7 @@ const props = defineProps({
 const rules = reactive({
   name: [required()],
   is_active: [required()],
+  is_staff: [required()],
   role_ids: [required()],
   telephone: [required()]
 })

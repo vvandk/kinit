@@ -49,10 +49,10 @@ class AliyunOSS(FileBase):
         """
         上传图片
 
-        @param path: path由包含文件后缀，不包含Bucket名称组成的Object完整路径，例如abc/efg/123.jpg。
-        @param file: 文件对象
-        @param compress: 是否压缩该文件
-        @return: 上传后的文件oss链接
+        :param path: path由包含文件后缀，不包含Bucket名称组成的Object完整路径，例如abc/efg/123.jpg。
+        :param file: 文件对象
+        :param compress: 是否压缩该文件
+        :return: 上传后的文件oss链接
         """
         path = self.generate_path(path, file.filename)
         if compress:
@@ -76,9 +76,9 @@ class AliyunOSS(FileBase):
         """
         上传文件
 
-        @param path: path由包含文件后缀，不包含Bucket名称组成的Object完整路径，例如abc/efg/123.jpg。
-        @param file: 文件对象
-        @return: 上传后的文件oss链接
+        :param path: path由包含文件后缀，不包含Bucket名称组成的Object完整路径，例如abc/efg/123.jpg。
+        :param file: 文件对象
+        :return: 上传后的文件oss链接
         """
         path = self.generate_path(path, file.filename)
         file_data = await file.read()

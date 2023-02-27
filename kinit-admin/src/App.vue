@@ -5,7 +5,7 @@ import { ConfigGlobal } from '@/components/ConfigGlobal'
 import { isDark } from '@/utils/is'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useCache } from '@/hooks/web/useCache'
-import { getSystemSettingsClassifysApi } from '@/api/vadmin/system/settings'
+import { getSystemBaseConfigApi } from '@/api/vadmin/system/settings'
 
 const { getPrefixCls } = useDesign()
 
@@ -23,16 +23,15 @@ const addMeta = (name: string, content: string) => {
 
 // 获取并设置系统配置
 const setSystemConfig = async () => {
-  const res = await getSystemSettingsClassifysApi({ classify: 'web' })
+  const res = await getSystemBaseConfigApi()
   if (res) {
-    appStore.setTitle(res.data.web_basic.web_title || import.meta.env.VITE_APP_TITLE)
-    appStore.setLogoImage(res.data.web_basic.web_logo || '/media/system/logo.png')
-    appStore.setFooterContent(res.data.web_basic.web_copyright || 'Copyright ©2022-present K')
-    appStore.setIcpNumber(res.data.web_basic.web_icp_number || '')
+    appStore.setTitle(res.data.web_title || import.meta.env.VITE_APP_TITLE)
+    appStore.setLogoImage(res.data.web_logo || '/media/system/logo.png')
+    appStore.setFooterContent(res.data.web_copyright || 'Copyright ©2022-present K')
+    appStore.setIcpNumber(res.data.web_icp_number || '')
     addMeta(
       'description',
-      res.data.web_basic.web_desc ||
-        'Kinit 是一套开箱即用的中后台解决方案，可以作为新项目的启动模版。'
+      res.data.web_desc || 'Kinit 是一套开箱即用的中后台解决方案，可以作为新项目的启动模版。'
     )
   }
 }

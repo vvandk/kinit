@@ -19,7 +19,6 @@ Python 3
 pip install alibabacloud_tea_openapi
 pip install alibabacloud_dysmsapi20170525
 """
-import json
 import random
 import re
 from enum import Enum, unique
@@ -31,7 +30,7 @@ from alibabacloud_tea_util import models as util_models
 from core.logger import logger
 import datetime
 from aioredis.client import Redis
-from utils.cache import cache_aliyun_settings
+from utils.cache import Cache
 from utils import status
 
 
@@ -52,28 +51,20 @@ class AliyunSMS:
         self.code = None
         self.scene = None
 
-    async def __get_settings(self, number: int = 3):
+    async def __get_settings(self, retry: int = 3):
         """
         获取配置信息
         """
-        aliyun_sms = await self.rd.get("aliyun_sms")
-        if not aliyun_sms and number > 0:
-            logger.error(f"未从Redis中获取到短信配置信息，正在重新更新配置信息，重试次数：{number}")
-            await cache_aliyun_settings(self.rd)
-            await self.__get_settings(number - 1)
-        elif not aliyun_sms and number:
-            raise CustomException("获取短信配置信息失败，请联系管理员！", code=status.HTTP_ERROR)
+        aliyun_sms = await Cache(self.rd).get_tab_name("aliyun_sms", retry)
+        self.access_key = aliyun_sms.get("sms_access_key")
+        self.access_key_secret = aliyun_sms.get("sms_access_key_secret")
+        self.send_interval = int(aliyun_sms.get("sms_send_interval"))
+        self.valid_time = int(aliyun_sms.get("sms_valid_time"))
+        if self.scene == self.Scene.login:
+            self.sign_name = aliyun_sms.get("sms_sign_name_1")
         else:
-            aliyun_sms = json.loads(aliyun_sms)
-            self.access_key = aliyun_sms.get("sms_access_key")
-            self.access_key_secret = aliyun_sms.get("sms_access_key_secret")
-            self.send_interval = int(aliyun_sms.get("sms_send_interval"))
-            self.valid_time = int(aliyun_sms.get("sms_valid_time"))
-            if self.scene == self.Scene.login:
-                self.sign_name = aliyun_sms.get("sms_sign_name_1")
-            else:
-                self.sign_name = aliyun_sms.get("sms_sign_name_2")
-            self.template_code = aliyun_sms.get(self.scene.value)
+            self.sign_name = aliyun_sms.get("sms_sign_name_2")
+        self.template_code = aliyun_sms.get(self.scene.value)
 
     async def main_async(self, scene: Scene, **kwargs) -> bool:
         """
@@ -152,8 +143,8 @@ class AliyunSMS:
         随机获取短信验证码
         短信验证码只支持数字，不支持字母及其他符号
 
-        @param length: 验证码长度
-        @param blend: 是否 字母+数字 混合
+        :param length: 验证码长度
+        :param blend: 是否 字母+数字 混合
         """
         code = ""  # 创建字符串变量,存储生成的验证码
         for i in range(length):  # 通过for循环控制验证码位数
@@ -186,10 +177,10 @@ class AliyunSMS:
     ) -> Dysmsapi20170525Client:
         """
         使用AK&SK初始化账号Client
-        @param access_key_id:
-        @param access_key_secret:
-        @return: Client
-        @throws Exception
+        :param access_key_id:
+        :param access_key_secret:
+        :return: Client
+        :throws Exception
         """
         config = open_api_models.Config(
             # 您的 AccessKey ID,

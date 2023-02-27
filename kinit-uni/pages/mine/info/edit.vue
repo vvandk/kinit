@@ -63,7 +63,13 @@
 				</u-form-item>
 			</u--form>
 			<view style="margin-top: 20px;">
-				<u-button :loading="btnLoading" type="primary" @click="submit" text="提交"></u-button>
+				<u-button
+					:loading="btnLoading"
+					type="primary"
+					@click="submit"
+					text="提交"
+				>
+				</u-button>
 			</view>
 		</view>
   </view>
@@ -113,7 +119,7 @@
       }
     },
     onLoad() {
-			this.$store.dispatch('getDicts', ["sys_vadmin_gender"]).then(result => {
+			this.$store.dispatch('dict/getDicts', ["sys_vadmin_gender"]).then(result => {
 				this.genderOptions = result.sys_vadmin_gender
 			})
 			// this.resetForm()
@@ -133,15 +139,18 @@
 				}
 			},
       getUser() {
+				this.$modal.loading("加载中")
         getInfo().then(res => {
 					this.form = res.data
+				}).finally(() => {
+					this.$modal.closeLoading()
 				})
       },
       submit(ref) {
         this.$refs.formRef.validate().then(res => {
 					this.btnLoading = true
 					updateCurrentUser(this.form).then(res => {
-						this.$store.dispatch('UpdateInfo', res.data)
+						this.$store.dispatch('auth/UpdateInfo', res.data)
 						this.$modal.msgSuccess("更新成功");
 					}).finally(() => {
 						this.btnLoading = false

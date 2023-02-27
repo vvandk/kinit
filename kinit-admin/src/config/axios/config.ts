@@ -3,7 +3,6 @@ const config: {
   unauthorized_code: number | string
   default_headers: AxiosHeaders
   request_timeout: number
-  token: string
 } = {
   /**
    * 接口成功返回状态码
@@ -23,13 +22,7 @@ const config: {
    * 默认接口请求类型
    * 可选值：application/x-www-form-urlencoded multipart/form-data
    */
-  default_headers: 'application/json',
-
-  /**
-   * 存储Token字段
-   * 关联 config/axios/service/service.interceptors
-   */
-  token: 'Token'
+  default_headers: 'application/json'
 }
 
 export { config }

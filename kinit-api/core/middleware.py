@@ -40,8 +40,8 @@ def write_request_log(request: Request, response: Response):
 def register_request_log_middleware(app: FastAPI):
     """
     记录请求日志中间件
-    @param app:
-    @return:
+    :param app:
+    :return:
     """
 
     @app.middleware("http")
@@ -58,8 +58,8 @@ def register_operation_record_middleware(app: FastAPI):
     """
     操作记录中间件
     用于将使用认证的操作全部记录到 mongodb 数据库中
-    @param app:
-    @return:
+    :param app:
+    :return:
     """
 
     @app.middleware("http")
@@ -121,8 +121,8 @@ def register_operation_record_middleware(app: FastAPI):
 def register_demo_env_middleware(app: FastAPI):
     """
     演示环境中间件
-    @param app:
-    @return:
+    :param app:
+    :return:
     """
 
     @app.middleware("http")

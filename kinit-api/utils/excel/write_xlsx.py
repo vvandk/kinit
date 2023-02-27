@@ -48,9 +48,9 @@ class WriteXlsx:
     def generate_template(self, headers: List[dict] = None, max_row: int = 101) -> None:
         """
         生成模板
-        @param headers: 表头
-        @param max_row: 设置下拉列表至最大行
-        @return: 文件链接地址
+        :param headers: 表头
+        :param max_row: 设置下拉列表至最大行
+        :return: 文件链接地址
         """
         self.create_excel()
         max_row = max_row + 100
@@ -80,8 +80,8 @@ class WriteXlsx:
         """
         写入 excel文件
 
-        @param rows: 行数据集
-        @param start_row: 开始行
+        :param rows: 行数据集
+        :param start_row: 开始行
         """
         font_format = {
             'bold': False,  # 字体加粗

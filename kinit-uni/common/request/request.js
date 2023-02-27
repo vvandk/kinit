@@ -49,7 +49,7 @@ http.interceptors.response.use(res => {
 	  } else if (code === 401) {
 			showConfirm("登录状态已过期，您可以继续留在该页面，或者重新登录?").then(res => {
 			  if (res.confirm) {
-			    store.dispatch('LogOut')
+			    store.dispatch('auth/LogOut')
 			  }
 			})
 			return Promise.reject("error");

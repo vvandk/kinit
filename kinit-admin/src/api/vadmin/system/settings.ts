@@ -12,10 +12,17 @@ export const putSystemSettingsApi = (data: any): Promise<IResponse> => {
   return request.put({ url: '/vadmin/system/settings/tabs/values/', data })
 }
 
-export const getSystemSettingsClassifysApi = (params: any): Promise<IResponse> => {
-  return request.get({ url: '/vadmin/system/settings/classifys/', params })
+// 获取系统基础配置，每次进入系统时使用
+export const getSystemBaseConfigApi = (): Promise<IResponse> => {
+  return request.get({ url: '/vadmin/system/settings/base/config/' })
 }
 
-export const getSystemSettingsConfigValueApi = (params: any): Promise<IResponse> => {
-  return request.get({ url: '/vadmin/system/settings/config/value/', params })
+// 获取系统隐私协议
+export const getSystemPrivacyApi = (): Promise<IResponse> => {
+  return request.get({ url: '/vadmin/system/settings/privacy/' })
+}
+
+// 获取系统用户协议
+export const getSystemAgreementApi = (): Promise<IResponse> => {
+  return request.get({ url: '/vadmin/system/settings/agreement/' })
 }

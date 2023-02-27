@@ -63,7 +63,6 @@ const dialogStyle = computed(() => {
     destroy-on-close
     lock-scroll
     draggable
-    align-center
     :close-on-click-modal="false"
   >
     <template #header>

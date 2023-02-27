@@ -33,9 +33,9 @@ class ExcelManage:
         """
         初始化 excel 文件
 
-        @param file: 文件名称或者对象
-        @param read_only: 是否只读，优化读取速度
-        @param data_only: 是否加载文件对象
+        :param file: 文件名称或者对象
+        :param read_only: 是否只读，优化读取速度
+        :param data_only: 是否加载文件对象
         """
         # 加载excel文件，获取表单
         self.wb = load_workbook(file, read_only=read_only, data_only=data_only)
@@ -44,7 +44,7 @@ class ExcelManage:
         """
         初始化 excel 文件
 
-        @param sheet_name: 表单名称，为空则默认第一个
+        :param sheet_name: 表单名称，为空则默认第一个
         """
         # 加载excel文件，获取表单
         if not self.wb:
@@ -57,7 +57,7 @@ class ExcelManage:
     def get_sheets(self) -> list:
         """
         读取所有工作区名称
-        @return: 一维数组
+        :return: 一维数组
         """
         return self.wb.sheetnames
 
@@ -65,7 +65,7 @@ class ExcelManage:
         """
         创建 excel 文件
 
-        @param sheet_name: 表单名称，为空则默认第一个
+        :param sheet_name: 表单名称，为空则默认第一个
         """
         # 加载excel文件，获取表单
         self.wb = Workbook()
@@ -77,7 +77,7 @@ class ExcelManage:
         """
         读取指定表单所有数据
 
-        @return: 二维数组
+        :return: 二维数组
         """
         rows = self.sheet.iter_rows(min_row=min_row, min_col=min_col, max_row=max_row, max_col=max_col)
         result = []
@@ -93,10 +93,10 @@ class ExcelManage:
         """
         读取指定表单的表头（第一行数据）
 
-        @param row: 指定行
-        @param col: 最大列
-        @param asterisk: 是否去除 * 号
-        @return: 一维数组
+        :param row: 指定行
+        :param col: 最大列
+        :param asterisk: 是否去除 * 号
+        :return: 一维数组
         """
         rows = self.sheet.iter_rows(min_row=row, max_col=col)
         result = []
@@ -111,8 +111,8 @@ class ExcelManage:
         """
         写入 excel文件
 
-        @param rows: 行数据集
-        @param header: 表头
+        :param rows: 行数据集
+        :param header: 表头
         """
         if header:
             self.sheet.append(header)
@@ -152,8 +152,8 @@ class ExcelManage:
         """
         设置行样式
 
-        @param row: 行
-        @param max_column: 最大列
+        :param row: 行
+        :param max_column: 最大列
         """
         for index in range(0, max_column):
             # 设置单元格对齐方式
@@ -165,8 +165,8 @@ class ExcelManage:
         """
         设置行样式
 
-        @param row: 行
-        @param columns: 列数据
+        :param row: 行
+        :param columns: 列数据
         """
         for index in columns.get("date_columns", []):
             self.sheet.cell(row=row, column=index).number_format = "yyyy/mm/dd h:mm:ss"

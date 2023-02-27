@@ -23,11 +23,13 @@ class UserParams(QueryParams):
             name: str = None,
             telephone: str = None,
             is_active: bool | str = None,
+            is_staff: bool | str = None,
             params: Paging = Depends()
     ):
         super().__init__(params)
         self.name = ("like", name)
         self.telephone = ("like", telephone)
         self.is_active = is_active
+        self.is_staff = is_staff
 
 

@@ -9,6 +9,8 @@
 from typing import List, Any
 from aioredis import Redis
 from fastapi import UploadFile
+from sqlalchemy.orm import joinedload
+
 from core.exception import CustomException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
@@ -27,6 +29,7 @@ from utils.excel.excel_manage import ExcelManage
 from apps.vadmin.system import crud as vadminSystemCRUD
 import copy
 from utils import status
+from utils.wx.oauth import WXOAuth
 
 
 class UserDal(DalBase):
@@ -58,11 +61,43 @@ class UserDal(DalBase):
         password = data.telephone[5:12] if settings.DEFAULT_PASSWORD == "0" else settings.DEFAULT_PASSWORD
         data.password = self.model.get_password_hash(password)
         obj = self.model(**data.dict(exclude={'role_ids'}))
-        for data_id in data.role_ids:
-            obj.roles.append(await RoleDal(db=self.db).get_data(data_id=data_id))
+        roles = await RoleDal(self.db).get_datas(limit=0, id=("in", data.role_ids), v_return_objs=True)
+        for role in roles:
+            obj.roles.append(role)
         await self.flush(obj)
         if v_options:
             obj = await self.get_data(obj.id, v_options=v_options)
+        if v_return_obj:
+            return obj
+        if v_schema:
+            return v_schema.from_orm(obj).dict()
+        return self.out_dict(obj)
+
+    async def put_data(
+            self,
+            data_id: int,
+            data: schemas.UserUpdate,
+            v_options: list = None,
+            v_return_obj: bool = False,
+            v_schema: Any = None
+    ):
+        """
+        更新用户信息
+        """
+        obj = await self.get_data(data_id, v_options=[joinedload(self.model.roles)])
+        data_dict = jsonable_encoder(data)
+        for key, value in data_dict.items():
+            if key == "role_ids":
+                if obj.roles:
+                    obj.roles.clear()
+                if value:
+                    roles = await RoleDal(self.db).get_datas(limit=0, id=("in", value), v_return_objs=True)
+                    for role in roles:
+                        obj.roles.append(role)
+                continue
+            setattr(obj, key, value)
+        await self.db.flush()
+        await self.db.refresh(obj)
         if v_return_obj:
             return obj
         if v_schema:
@@ -83,9 +118,9 @@ class UserDal(DalBase):
         await self.flush(user)
         return True
 
-    async def update_current_info(self, user: models.VadminUser, data: schemas.UserUpdate):
+    async def update_current_info(self, user: models.VadminUser, data: schemas.UserUpdateBaseInfo):
         """
-        更新当前用户信息
+        更新当前用户基本信息
         """
         if data.telephone != user.telephone:
             unique = await self.get_data(telephone=data.telephone, v_return_none=True)
@@ -225,6 +260,34 @@ class UserDal(DalBase):
         await self.flush(user)
         return result
 
+    async def update_wx_server_openid(self, code: str, user: models.VadminUser, redis: Redis):
+        """
+        更新用户服务端微信平台openid
+        """
+        wx = WXOAuth(redis, 0)
+        openid = await wx.parsing_openid(code)
+        if not openid:
+            return False
+        user.is_wx_server_openid = True
+        user.wx_server_openid = openid
+        await self.flush(user)
+        return True
+    
+    async def delete_datas(self, ids: List[int], v_soft: bool = False, **kwargs):
+        """
+        删除多个用户，软删除
+        删除后清空所关联的角色
+        :param ids: 数据集
+        :param v_soft: 是否执行软删除
+        :param kwargs: 其他更新字段
+        """
+        options = [joinedload(self.model.roles)]
+        objs = await self.get_datas(limit=0, id=("in", ids), v_options=options, v_return_objs=True)
+        for obj in objs:
+            if obj.roles:
+                obj.roles.clear()
+        return await super(UserDal, self).delete_datas(ids, v_soft, **kwargs)
+
 
 class RoleDal(DalBase):
 
@@ -240,8 +303,10 @@ class RoleDal(DalBase):
     ):
         """创建数据"""
         obj = self.model(**data.dict(exclude={'menu_ids'}))
-        for data_id in data.menu_ids:
-            obj.menus.append(await MenuDal(db=self.db).get_data(data_id))
+        menus = await MenuDal(db=self.db).get_datas(limit=0, id=("in", data.menu_ids), v_return_objs=True)
+        if data.menu_ids:
+            for menu in menus:
+                obj.menus.append(menu)
         await self.flush(obj)
         if v_options:
             obj = await self.get_data(obj.id, v_options=v_options)
@@ -260,14 +325,16 @@ class RoleDal(DalBase):
             v_schema: Any = None
     ):
         """更新单个数据"""
-        obj = await self.get_data(data_id, v_options=[self.model.menus])
+        obj = await self.get_data(data_id, v_options=[joinedload(self.model.menus)])
         obj_dict = jsonable_encoder(data)
         for key, value in obj_dict.items():
             if key == "menu_ids":
                 if obj.menus:
                     obj.menus.clear()
-                for data_id in value:
-                    obj.menus.append(await MenuDal(db=self.db).get_data(data_id=data_id))
+                if value:
+                    menus = await MenuDal(db=self.db).get_datas(limit=0, id=("in", value), v_return_objs=True)
+                    for menu in menus:
+                        obj.menus.append(menu)
                 continue
             setattr(obj, key, value)
         await self.db.flush()
@@ -279,7 +346,7 @@ class RoleDal(DalBase):
         return self.out_dict(obj)
 
     async def get_role_menu_tree(self, role_id: int):
-        role = await self.get_data(role_id, v_options=[self.model.menus])
+        role = await self.get_data(role_id, v_options=[joinedload(self.model.menus)])
         return [i.id for i in role.menus]
 
     async def get_select_datas(self):
@@ -287,6 +354,19 @@ class RoleDal(DalBase):
         sql = select(self.model)
         queryset = await self.db.execute(sql)
         return [schemas.RoleSelectOut.from_orm(i).dict() for i in queryset.scalars().all()]
+
+    async def delete_datas(self, ids: List[int], v_soft: bool = False, **kwargs):
+        """
+        删除多个角色，硬删除
+        如果存在用户关联则无法删除
+        :param ids: 数据集
+        :param v_soft: 是否执行软删除
+        :param kwargs: 其他更新字段
+        """
+        objs = await self.get_datas(limit=0, id=("in", ids), user_total_number=(">", 0), v_return_objs=True)
+        if objs:
+            raise CustomException("无法删除存在用户关联的角色", code=400)
+        return await super(RoleDal, self).delete_datas(ids, v_soft, **kwargs)
 
 
 class MenuDal(DalBase):
@@ -301,9 +381,9 @@ class MenuDal(DalBase):
         3：获取菜单树列表，角色添加菜单权限时使用
         """
         if mode == 3:
-            sql = select(self.model).where(self.model.disabled == 0, self.model.delete_datetime.is_(None))
+            sql = select(self.model).where(self.model.disabled == 0, self.model.is_delete == False)
         else:
-            sql = select(self.model).where(self.model.delete_datetime.is_(None))
+            sql = select(self.model).where(self.model.is_delete == False)
         queryset = await self.db.execute(sql)
         datas = queryset.scalars().all()
         roots = filter(lambda i: not i.parent_id, datas)
@@ -329,14 +409,15 @@ class MenuDal(DalBase):
         """
         if any([i.is_admin for i in user.roles]):
             sql = select(self.model)\
-                .where(self.model.disabled == 0, self.model.menu_type != "2", self.model.delete_datetime.is_(None))
+                .where(self.model.disabled == 0, self.model.menu_type != "2", self.model.is_delete == False)
             queryset = await self.db.execute(sql)
             datas = queryset.scalars().all()
         else:
+            options = [joinedload(models.VadminUser.roles), joinedload("roles.menus")]
+            user = await UserDal(self.db).get_data(user.id, v_options=options)
             datas = set()
             for role in user.roles:
-                role_obj = await RoleDal(self.db).get_data(role.id, v_options=[models.VadminRole.menus])
-                for menu in role_obj.menus:
+                for menu in role.menus:
                     # 该路由没有被禁用，并且菜单不是按钮
                     if not menu.disabled and menu.menu_type != "2":
                         datas.add(menu)
@@ -405,4 +486,19 @@ class MenuDal(DalBase):
             if item[children]:
                 item[children] = sorted(item[children], key=lambda menu: menu[order])
         return result
+
+    async def delete_datas(self, ids: List[int], v_soft: bool = False, **kwargs):
+        """
+        删除多个菜单
+        如果存在角色关联则无法删除
+        :param ids: 数据集
+        :param v_soft: 是否执行软删除
+        :param kwargs: 其他更新字段
+        """
+        options = [joinedload(self.model.roles)]
+        objs = await self.get_datas(limit=0, id=("in", ids), v_return_objs=True, v_options=options)
+        for obj in objs:
+            if obj.roles:
+                raise CustomException("无法删除存在角色关联的菜单", code=400)
+        return await super(MenuDal, self).delete_datas(ids, v_soft, **kwargs)
 

@@ -6,21 +6,20 @@
  */
 
 
-import { API_BASE_URL } from '@/common/setting/index'
-import { getToken, removeToken, getStorage } from '@/common/utils/cookies'
+import config from '@/config.js'
+import { getToken, removeToken } from '@/common/utils/cookies'
 
 
 // 单个文件上传
 export function uploadFile(api, file, data={}) {
   return new Promise((resolve, reject) => {
 	  uni.uploadFile({
-		  url: API_BASE_URL + api,
+		  url: config.baseUrl + api,
 		  filePath: file,
 		  name: 'file',
 		  timeout: 60000,
 		  formData: data,
 		  header: {
-			  ossign: getStorage("ossign"),
 			  Authorization: getToken()
 		  },
 		  success: (res) => {

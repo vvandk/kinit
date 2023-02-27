@@ -28,8 +28,8 @@ export const postCurrentUserUpdateInfo = (data: any): Promise<IResponse> => {
   return request.post({ url: `/vadmin/auth/user/current/update/info/`, data })
 }
 
-export const getCurrentUserInfo = (): Promise<IResponse> => {
-  return request.get({ url: `/vadmin/auth/user/current/info/` })
+export const getCurrentAdminUserInfo = (): Promise<IResponse> => {
+  return request.get({ url: `/vadmin/auth/user/admin/current/info/` })
 }
 
 export const postExportUserQueryListApi = (params: any, data: any): Promise<IResponse> => {
@@ -43,10 +43,7 @@ export const getImportTemplateApi = (): Promise<IResponse> => {
 export const postImportUserApi = (data: any): Promise<IResponse> => {
   return request.post({
     url: `/vadmin/auth/import/users/`,
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    },
-    timeout: 5 * 60 * 1000,
+    headersType: 'multipart/form-data',
     data
   })
 }

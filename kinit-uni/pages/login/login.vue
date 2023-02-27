@@ -15,7 +15,8 @@
         <input v-model="loginForm.password" type="password" class="input" placeholder="请输入密码" maxlength="20" />
       </view>
       <view class="action-btn">
-        <button @click="handleLogin" class="login-btn cu-btn block bg-blue lg round">登录</button>
+        <!-- <button @click="handleLogin" class="login-btn cu-btn block bg-blue lg round">登录</button> -->
+				<u-button type="primary" text="登录" @click="handleLogin" shape="circle"></u-button>
       </view>
     </view>
 
@@ -24,17 +25,29 @@
       <text @click="handleUserAgrement" class="text-blue">《用户协议》</text>
       <text @click="handlePrivacy" class="text-blue">《隐私协议》</text>
     </view>
+		
+		<view class="footer text-center">
+		  <u-button
+			  type="primary"
+			  text="微信一键登录"
+			  shape="circle"
+			  open-type="getPhoneNumber"
+				@getphonenumber="wxLogin"
+			></u-button>
+		</view>
   </view>
 </template>
 
 <script>
+	import { wxLoginMixins } from '@/common/mixins/auth.js'
+	
   export default {
+		mixins: [wxLoginMixins],
     data() {
       return {
         loginForm: {
           telephone: "15020221010",
-          password: "kinit2022",
-		      method: '0'
+          password: "kinit2022"
         }
       }
     },
@@ -53,6 +66,9 @@
 			},
 			agreement() {
 			  return this.$store.state.app.agreement
+			},
+			isResetPassword() {
+				return this.$store.state.auth.isResetPassword
 			}
 		},
     methods: {
@@ -73,24 +89,31 @@
         } else if (this.loginForm.password === "") {
           this.$modal.msgError("请输入您的密码")
         }else {
-          this.$modal.loading("登录中，请耐心等待...")
+          this.$modal.loading("正在登录中...")
           this.pwdLogin()
         }
       },
       // 密码登录
       async pwdLogin() {
-        this.$store.dispatch('Login', this.loginForm).then(() => {
+        this.$store.dispatch('auth/Login', this.loginForm).then(() => {
           this.$modal.closeLoading()
           this.loginSuccess()
         })
       },
       // 登录成功后，处理函数
-      loginSuccess(result) {
-        // 设置用户信息
-        this.$store.dispatch('GetInfo').then(res => {
-          this.$tab.reLaunch('/pages/index')
-        })
-      }
+      loginSuccess() {
+				if (this.isResetPassword) {
+					this.$tab.reLaunch('/pages/index')
+				} else {
+					this.$tab.reLaunch('/pages/mine/pwd/index')
+				}
+      },
+			// 微信一键登录
+			wxLogin(detail) {
+				this.onGetPhoneNumber(detail).then(res => {
+					this.loginSuccess()
+				})
+			},
     }
   }
 </script>
@@ -102,6 +125,8 @@
 
   .normal-login-container {
     width: 100%;
+		height: 100vh;
+		position: relative;
 
     .logo-content {
       width: 100%;
@@ -160,6 +185,14 @@
     .easyinput {
       width: 100%;
     }
+		
+		.footer {
+			margin: 20px auto;
+			width: 80%;
+			position: absolute;
+			bottom: 30px;
+			left: 10%;
+		}
   }
 
   .login-code-img {

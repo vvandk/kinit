@@ -7,7 +7,8 @@
 # @desc           : 简要说明
 
 from fastapi import APIRouter, Depends
-from apps.vadmin.auth.utils.current import login_auth, Auth
+from apps.vadmin.auth.utils.current import AllUserAuth
+from apps.vadmin.auth.utils.validation.auth import Auth
 from utils.response import SuccessResponse
 import datetime
 from apps.vadmin.record.crud import LoginRecordDal
@@ -19,7 +20,7 @@ app = APIRouter()
 #    工作区管理
 ###########################################################
 @app.get("/total/", summary="获取统计")
-async def get_total(auth: Auth = Depends(login_auth)):
+async def get_total(auth: Auth = Depends(AllUserAuth())):
     data = {
         "project": 40,
         "access": await LoginRecordDal(auth.db).get_count(),

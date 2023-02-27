@@ -5,13 +5,12 @@
 # @IDE            : PyCharm
 # @desc           : 用户凭证验证装饰器
 
-from fastapi import Request, Depends
+from fastapi import Request
 from jose import jwt, JWTError
 from pydantic import BaseModel
 from application import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 from apps.vadmin.auth import models
-from core.database import db_getter
 from core.exception import CustomException
 from utils import status
 
@@ -27,18 +26,14 @@ class Auth(BaseModel):
 class AuthValidation:
 
     """
-    验证提交 Token 与用户是否有效
+    用于用户每次调用接口时，验证用户提交的token是否正确，并从token中获取用户信息
     """
 
-    def __init__(self, func):
-        self.func = func
-
-    async def __call__(
-            self,
-            request: Request,
-            token: str = Depends(settings.oauth2_scheme),
-            db: AsyncSession = Depends(db_getter)
-    ):
+    @classmethod
+    def validate_token(cls, token: str, db: AsyncSession) -> str | Auth:
+        """
+        验证用户 token
+        """
         if not settings.OAUTH_ENABLE:
             return Auth(db=db)
         if not token:
@@ -50,13 +45,17 @@ class AuthValidation:
                 raise CustomException(msg="认证已过期，请您重新登陆", code=status.HTTP_401_UNAUTHORIZED)
         except JWTError:
             raise CustomException(msg="认证已过期，请您重新登陆", code=status.HTTP_401_UNAUTHORIZED)
-        user = await self.func(telephone, db)
+        return telephone
+
+    @classmethod
+    async def validate_user(cls, request: Request, user: models.VadminUser, db: AsyncSession) -> Auth:
+        """
+        验证用户信息
+        """
         if user is None:
             raise CustomException(msg="认证已过期，请您重新登陆", code=status.HTTP_401_UNAUTHORIZED)
         elif not user.is_active:
             raise CustomException(msg="用户已被冻结！", code=status.HTTP_403_FORBIDDEN)
-        elif user.is_cancel:
-            raise CustomException(msg="用户已被注销！", code=status.HTTP_403_FORBIDDEN)
         request.scope["telephone"] = user.telephone
         try:
             request.scope["body"] = await request.body()

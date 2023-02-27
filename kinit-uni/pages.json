@@ -4,7 +4,7 @@
 	},
   "pages": [
 		{
-      "path": "pages/login",
+      "path": "pages/login/login",
 		  "meta":{
 			  "loginAuth": false
 		  },
@@ -76,12 +76,20 @@
 				"navigationBarTitleText": "应用设置"
 			}
 		}, {
-			"path": "pages/mine/help/index",
+			"path": "pages/mine/help/issue/index",
 			"meta":{
 				"loginAuth": true
 			},
 			"style": {
 				"navigationBarTitleText": "常见问题"
+			}
+		}, {
+			"path": "pages/mine/help/issue/info",
+			"meta":{
+				"loginAuth": true
+			},
+			"style": {
+				"navigationBarTitleText": "常见问题详情"
 			}
 		}, {
 			"path": "pages/mine/about/index",

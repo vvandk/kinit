@@ -7,8 +7,9 @@
 # @desc           : 简要说明
 
 from fastapi import APIRouter, Depends
-from apps.vadmin.auth.utils.current import login_auth, Auth
+from apps.vadmin.auth.utils.current import AllUserAuth
 from utils.response import SuccessResponse
+from apps.vadmin.auth.utils.validation.auth import Auth
 
 app = APIRouter()
 
@@ -17,7 +18,7 @@ app = APIRouter()
 #    图表数据
 ###########################################################
 @app.get("/banners/", summary="轮播图")
-async def get_banners(auth: Auth = Depends(login_auth)):
+async def get_banners(auth: Auth = Depends(AllUserAuth())):
     data = [
         {
             "id": 1, "image": "https://ktianc.oss-cn-beijing.aliyuncs.com/kinit/system/banner/2022-11-14/1.jpg"

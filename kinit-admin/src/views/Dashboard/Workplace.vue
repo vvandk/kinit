@@ -6,7 +6,6 @@ import { ref, reactive } from 'vue'
 import { CountTo } from '@/components/CountTo'
 import { formatTime } from '@/utils'
 import { Highlight } from '@/components/Highlight'
-import { useAuthStoreWithOut } from '@/store/modules/auth'
 import {
   getCountApi,
   getProjectApi,
@@ -22,6 +21,7 @@ import type {
   Shortcuts
 } from '@/api/dashboard/workplace/types'
 import { useCache } from '@/hooks/web/useCache'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import avatar from '@/assets/imgs/avatar.jpg'
 
 const { wsCache } = useCache()
@@ -97,9 +97,9 @@ getAllApi()
 
 const { t } = useI18n()
 
-const authStore = useAuthStoreWithOut()
+const appStore = useAppStoreWithOut()
 
-const user = wsCache.get(authStore.getUserInfo)
+const user = wsCache.get(appStore.getUserInfo)
 </script>
 
 <template>

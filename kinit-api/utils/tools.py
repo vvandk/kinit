@@ -7,11 +7,13 @@
 # @desc           : 工具类
 
 import datetime
+import random
 import re
-from typing import List
+import string
+from typing import List, Union
 
 
-def test_password(password: str) -> str | bool:
+def test_password(password: str) -> Union[str, bool]:
     """
     检测密码强度
     """
@@ -32,7 +34,7 @@ def test_password(password: str) -> str | bool:
                 return '至少含数字/字母/字符2种组合，请重新输入。'
 
 
-def list_dict_find(options: List[dict], key: str, value: any) -> dict | None:
+def list_dict_find(options: List[dict], key: str, value: any) -> Union[dict, None]:
     """
     字典列表查找
     """
@@ -42,6 +44,37 @@ def list_dict_find(options: List[dict], key: str, value: any) -> dict | None:
     return None
 
 
+def get_time_interval(start_time: str, end_time: str, interval: int, time_format: str = "%H:%M:%S") -> List:
+    """
+    获取时间间隔
+    :param end_time: 结束时间
+    :param start_time: 开始时间
+    :param interval: 间隔时间（分）
+    :param time_format: 字符串格式化，默认：%H:%M:%S
+    """
+    if start_time.count(":") == 1:
+        start_time = f"{start_time}:00"
+    if end_time.count(":") == 1:
+        end_time = f"{end_time}:00"
+    start_time = datetime.datetime.strptime(start_time, "%H:%M:%S")
+    end_time = datetime.datetime.strptime(end_time, "%H:%M:%S")
+    time_range = []
+    while end_time > start_time:
+        time_range.append(start_time.strftime(time_format))
+        start_time = start_time + datetime.timedelta(minutes=interval)
+    return time_range
+
+
+def generate_string(length: int = 8) -> str:
+    """
+    生成随机字符串
+    :param length: 字符串长度
+    """
+    return ''.join(random.sample(string.ascii_letters + string.digits, length))
+
+
 if __name__ == '__main__':
     # print(generate_invitation_code())
-    print(int(datetime.datetime.now().timestamp()))
+    # print(int(datetime.datetime.now().timestamp()))
+    # print(datetime.datetime.today() + datetime.timedelta(days=7))
+    print(generate_string())

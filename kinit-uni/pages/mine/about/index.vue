@@ -17,13 +17,13 @@
         <view class="list-cell list-cell-arrow">
           <view class="menu-item-box">
             <view>官方邮箱</view>
-            <view class="text-right">kinit@xx.com</view>
+            <view class="text-right">{{ WXEmail }}</view>
           </view>
         </view>
         <view class="list-cell list-cell-arrow">
           <view class="menu-item-box">
             <view>服务热线</view>
-            <view class="text-right">400-999-9999</view>
+            <view class="text-right">{{ WXPhone }}</view>
           </view>
         </view>
         <view class="list-cell list-cell-arrow">
@@ -60,6 +60,12 @@
 		  },
 			siteUrl() {
 			  return this.$store.state.app.siteUrl
+			},
+			WXEmail() {
+			  return this.$store.state.app.WXEmail
+			},
+			WXPhone() {
+			  return this.$store.state.app.WXPhone
 			},
 			footerContent() {
 			  return this.$store.state.app.footerContent

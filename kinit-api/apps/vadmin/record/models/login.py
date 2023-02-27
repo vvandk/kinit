@@ -8,7 +8,7 @@
 import json
 
 from application.settings import LOGIN_LOG_RECORD
-from apps.vadmin.auth.utils.validation import LoginForm
+from apps.vadmin.auth.utils.validation import LoginForm, WXLoginForm
 from utils.ip_manage import IPManage
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.db_base import BaseModel
@@ -21,7 +21,7 @@ class VadminLoginRecord(BaseModel):
     __tablename__ = "vadmin_record_login"
     __table_args__ = ({'comment': '登录记录表'})
 
-    telephone = Column(String(50), index=True, nullable=False, comment="手机号")
+    telephone = Column(String(255), index=True, nullable=False, comment="手机号")
     status = Column(Boolean, default=True, comment="是否登录成功")
     platform = Column(String(8), comment="登陆平台")
     login_method = Column(String(8), comment="认证方式")
@@ -40,10 +40,17 @@ class VadminLoginRecord(BaseModel):
     request = Column(TEXT, comment="请求信息")
 
     @classmethod
-    async def create_login_record(cls, db: AsyncSession, data: LoginForm, status: bool, req: Request, resp: dict):
+    async def create_login_record(
+            cls,
+            db: AsyncSession,
+            data: LoginForm | WXLoginForm,
+            status: bool,
+            req: Request,
+            resp: dict
+    ):
         """
         创建登录记录
-        @return:
+        :return:
         """
         if not LOGIN_LOG_RECORD:
             return None
@@ -59,7 +66,7 @@ class VadminLoginRecord(BaseModel):
         params = json.dumps({"body": body, "headers": header})
         obj = VadminLoginRecord(
             **location.dict(),
-            telephone=data.telephone,
+            telephone=data.telephone if data.telephone else data.code,
             status=status,
             browser=browser,
             system=system,

@@ -38,6 +38,11 @@ export const columns = reactive<TableColumn[]>([
     show: true
   },
   {
+    field: 'is_staff',
+    label: '工作人员',
+    show: true
+  },
+  {
     field: 'last_login',
     label: '最近登录时间',
     show: true
@@ -120,10 +125,34 @@ export const schema = reactive<FormSchema[]>([
     value: '0'
   },
   {
+    field: 'is_staff',
+    label: '工作人员',
+    colProps: {
+      span: 24
+    },
+    component: 'Radio',
+    componentProps: {
+      style: {
+        width: '100%'
+      },
+      options: [
+        {
+          label: '是',
+          value: true
+        },
+        {
+          label: '否',
+          value: false
+        }
+      ]
+    },
+    value: true
+  },
+  {
     field: 'is_active',
     label: '状态',
     colProps: {
-      span: 12
+      span: 24
     },
     component: 'Radio',
     componentProps: {
@@ -161,7 +190,8 @@ export const schema = reactive<FormSchema[]>([
       multiple: true,
       collapseTags: true
     },
-    value: []
+    value: [],
+    ifshow: (values) => values.is_staff
   }
 ])
 
@@ -203,6 +233,26 @@ export const searchSchema = reactive<FormSchema[]>([
         },
         {
           label: '停用',
+          value: false
+        }
+      ]
+    }
+  },
+  {
+    field: 'is_staff',
+    label: '工作人员',
+    component: 'Select',
+    componentProps: {
+      style: {
+        width: '214px'
+      },
+      options: [
+        {
+          label: '是',
+          value: true
+        },
+        {
+          label: '否',
           value: false
         }
       ]

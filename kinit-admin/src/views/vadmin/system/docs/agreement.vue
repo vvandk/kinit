@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { getSystemSettingsConfigValueApi } from '@/api/vadmin/system/settings'
+import { getSystemAgreementApi } from '@/api/vadmin/system/settings'
 
 const content = ref(null)
 
 // 获取隐私协议内容
 const getSystemConfig = async () => {
-  const res = await getSystemSettingsConfigValueApi({ config_key: 'web_agreement' })
+  const res = await getSystemAgreementApi()
   if (res) {
     content.value = res.data
   }

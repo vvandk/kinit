@@ -9,10 +9,14 @@
 # sqlalchemy 查询操作：https://segmentfault.com/a/1190000016767008
 # sqlalchemy 关联查询：https://www.jianshu.com/p/dfad7c08c57a
 # sqlalchemy 关联查询详细：https://blog.csdn.net/u012324798/article/details/103940527
+import json
 import os
-from typing import List
+from typing import List, Union
+
+from aioredis import Redis
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 from application.settings import STATIC_ROOT
 from utils.file.file_manage import FileManage
 from . import models, schemas
@@ -29,14 +33,15 @@ class DictTypeDal(DalBase):
         获取多个字典类型下的字典元素列表
         """
         data = {}
-        for dict_type in dict_types:
-            dict_data = await DictTypeDal(self.db)\
-                .get_data(dict_type=dict_type, v_return_none=True, v_options=[self.model.details])
-            if not dict_data:
-                data[dict_type] = []
+        options = [joinedload(self.model.details)]
+        objs = await DictTypeDal(self.db).\
+            get_datas(limit=0, v_return_objs=True, v_options=options, dict_type=("in", dict_types))
+        for obj in objs:
+            if not obj:
+                data[obj.dict_type] = []
                 continue
             else:
-                data[dict_type] = [schemas.DictDetailsSimpleOut.from_orm(i).dict() for i in dict_data.details]
+                data[obj.dict_type] = [schemas.DictDetailsSimpleOut.from_orm(i).dict() for i in obj.details]
         return data
 
     async def get_select_datas(self):
@@ -68,7 +73,7 @@ class SettingsDal(DalBase):
                 result[data.config_key] = data.config_value
         return result
 
-    async def update_datas(self, datas: dict):
+    async def update_datas(self, datas: dict, rd: Redis):
         """
         更新系统配置信息
 
@@ -92,6 +97,20 @@ class SettingsDal(DalBase):
             else:
                 sql = update(self.model).where(self.model.config_key == key).values(config_value=value)
                 await self.db.execute(sql)
+        if "wx_server_app_id" in datas:
+            await rd.client().set("wx_server", json.dumps(datas))
+
+    async def get_base_config(self):
+        """
+        获取系统基本信息
+        """
+        ignore_configs = ["wx_server_app_id", "wx_server_app_secret"]
+        datas = await self.get_datas(limit=0, tab_id=("in", ["1", "9"]), disabled=False, v_return_objs=True)
+        result = {}
+        for config in datas:
+            if config.config_key not in ignore_configs:
+                result[config.config_key] = config.config_value
+        return result
 
 
 class SettingsTabDal(DalBase):
@@ -99,20 +118,43 @@ class SettingsTabDal(DalBase):
     def __init__(self, db: AsyncSession):
         super(SettingsTabDal, self).__init__(db, models.VadminSystemSettingsTab, schemas.SettingsTabSimpleOut)
 
-    async def get_classify_tab_values(self, classify: List[str], hidden: bool | None = False):
+    async def get_classify_tab_values(self, classify: List[str], hidden: Union[bool, None] = False):
         """
-        获取系统配置分类下的所有显示标签信息
+        获取系统配置分类下的标签信息
         """
         model = models.VadminSystemSettingsTab
-        options = [model.settings]
+        options = [joinedload(model.settings)]
         datas = await self.get_datas(
             limit=0,
             v_options=options,
             classify=("in", classify),
             disabled=False,
-            hidden=hidden,
-            v_return_objs=True
+            v_return_objs=True,
+            hidden=hidden
         )
+        return self.generate_values(datas)
+
+    async def get_tab_name_values(self, tab_names: List[str], hidden: Union[bool, None] = False):
+        """
+        获取系统配置标签下的标签信息
+        """
+        model = models.VadminSystemSettingsTab
+        options = [joinedload(model.settings)]
+        datas = await self.get_datas(
+            limit=0,
+            v_options=options,
+            tab_name=("in", tab_names),
+            disabled=False,
+            v_return_objs=True,
+            hidden=hidden
+        )
+        return self.generate_values(datas)
+
+    @classmethod
+    def generate_values(cls, datas: List[models.VadminSystemSettingsTab]):
+        """
+        生成字典值
+        """
         result = {}
         for tab in datas:
             tabs = {}
@@ -121,3 +163,6 @@ class SettingsTabDal(DalBase):
                     tabs[item.config_key] = item.config_value
             result[tab.tab_name] = tabs
         return result
+
+
+

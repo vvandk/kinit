@@ -14,7 +14,7 @@
           </view>
           <view v-if="name" @click="handleToInfo" class="user-info">
             <view class="u_title">
-              用户名：{{ name }}
+              {{ name }}
             </view>
           </view>
         </view>
@@ -37,7 +37,7 @@
         </view>
         <view class="action-item" @click="handleBuilding">
           <view class="iconfont icon-yaoqingdaoshi text-mauve icon"></view>
-          <text class="text">反馈社区</text>
+          <text class="text">意见反馈</text>
         </view>
         <view class="action-item" @click="praiseMe">
           <view class="iconfont icon-dianzan text-green icon"></view>
@@ -121,7 +121,7 @@
         this.$tab.navigateTo('/pages/mine/setting/index')
       },
       handleToLogin() {
-        this.$tab.reLaunch('/pages/login')
+        this.$tab.reLaunch('/pages/login/login')
       },
       handleToAvatar() {
         this.$tab.navigateTo('/pages/mine/avatar/index')
@@ -134,7 +134,7 @@
         })
       },
       handleHelp() {
-        this.$tab.navigateTo('/pages/mine/help/index')
+        this.$tab.navigateTo('/pages/mine/help/issue/index')
       },
       handleAbout() {
         this.$tab.navigateTo('/pages/mine/about/index')

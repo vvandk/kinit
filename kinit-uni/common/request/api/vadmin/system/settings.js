@@ -1,6 +1,6 @@
 import request from '@/common/request/request'
 
-// 获取系统配置分类
-export function getSystemSettingsClassifysApi(params) {
-	return request.get(`/vadmin/system/settings/classifys/`, {params: params})
+// 获取系统基本配置
+export function getSystemBaseConfigApi() {
+	return request.get(`/vadmin/system/settings/base/config/`)
 }

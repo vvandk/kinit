@@ -8,13 +8,6 @@ export const lineOptions: EChartsOption = {
     text: t('analysis.monthlySales'),
     left: 'center'
   },
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      type: 'cross'
-    },
-    padding: [5, 10]
-  },
   xAxis: {
     data: [
       t('analysis.january'),
@@ -41,6 +34,13 @@ export const lineOptions: EChartsOption = {
     bottom: 20,
     top: 80,
     containLabel: true
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross'
+    },
+    padding: [5, 10]
   },
   yAxis: {
     axisTick: {

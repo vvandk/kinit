@@ -16,18 +16,46 @@ from .role import RoleSimpleOut
 
 
 class User(BaseModel):
-    name: str
+    name: Optional[str] = None
     telephone: Telephone
     nickname: Optional[str] = None
     avatar: Optional[str] = None
     is_active: Optional[bool] = True
-    is_cancel: Optional[bool] = False
+    is_staff: Optional[bool] = False
     gender: Optional[str] = "0"
+    is_wx_server_openid: Optional[bool] = False
 
 
 class UserIn(User):
+    """
+    创建用户
+    """
     role_ids: Optional[List[int]] = []
     password: Optional[str] = ""
+
+
+class UserUpdateBaseInfo(BaseModel):
+    """
+    更新用户基本信息
+    """
+    name: str
+    telephone: Telephone
+    nickname: Optional[str] = None
+    gender: Optional[str] = "0"
+
+
+class UserUpdate(User):
+    """
+    更新用户详细信息
+    """
+    name: Optional[str] = None
+    telephone: Telephone
+    nickname: Optional[str] = None
+    avatar: Optional[str] = None
+    is_active: Optional[bool] = True
+    is_staff: Optional[bool] = False
+    gender: Optional[str] = "0"
+    role_ids: Optional[List[int]] = []
 
 
 class UserSimpleOut(User):
@@ -48,13 +76,6 @@ class UserOut(UserSimpleOut):
 
     class Config:
         orm_mode = True
-
-
-class UserUpdate(BaseModel):
-    name: str
-    telephone: Telephone
-    nickname: Optional[str] = None
-    gender: Optional[str] = "0"
 
 
 class ResetPwd(BaseModel):

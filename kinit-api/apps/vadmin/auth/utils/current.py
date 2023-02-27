@@ -5,46 +5,89 @@
 # @IDE            : PyCharm
 # @desc           : 获取认证后的信息工具
 
+from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from apps.vadmin.auth import crud, models
-from .validation import AuthValidation, Auth
+from sqlalchemy.orm import joinedload
+from apps.vadmin.auth.crud import UserDal
+from apps.vadmin.auth.models import VadminUser
+from core.exception import CustomException
+from utils import status
+from .validation import AuthValidation
+from fastapi import Request, Depends
+from application import settings
+from core.database import db_getter
+from .validation.auth import Auth
 
 
-async def get_user_permissions(user):
+def get_user_permissions(user: VadminUser) -> set:
     """
-    获取跟进系统用户所有权限列表
+    获取员工用户所有权限列表
     """
     if any([role.is_admin for role in user.roles]):
-        return ['*.*.*']
+        return {'*.*.*'}
     permissions = set()
     for role_obj in user.roles:
         for menu in role_obj.menus:
             if menu.perms and not menu.disabled:
                 permissions.add(menu.perms)
-    return list(permissions)
+    return permissions
 
 
-@AuthValidation
-async def login_auth(telephone: str, db: AsyncSession):
+class AllUserAuth(AuthValidation):
+
     """
-    更新 login_auth 以接收 JWT 令牌。
-
-    解码接收到的令牌，对其进行校验，然后返回当前用户。
-
-    如果令牌无效，立即返回一个 HTTP 错误。
+    支持所有用户认证
+    获取用户基本信息
     """
-    return await crud.UserDal(db).get_data(telephone=telephone, v_return_none=True)
+
+    async def __call__(
+            self,
+            request: Request,
+            token: str = Depends(settings.oauth2_scheme),
+            db: AsyncSession = Depends(db_getter)
+    ):
+        """
+        每次调用依赖此类的接口会执行该方法
+        """
+        telephone = self.validate_token(token, db)
+        if isinstance(telephone, Auth):
+            return telephone
+        user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
+        return await self.validate_user(request, user, db)
 
 
-@AuthValidation
-async def full_admin(telephone: str, db: AsyncSession):
+class FullAdminAuth(AuthValidation):
+
     """
-    更新 full_user 以接收 JWT 令牌。
-
-    解码接收到的令牌，对其进行校验，然后返回当前用户。
-
-    如果令牌无效，立即返回一个 HTTP 错误。
+    只支持员工用户认证
+    获取员工用户完整信息
+    如果有权限，那么会验证该用户是否包括权限列表中的其中一个权限
     """
-    options = [models.VadminUser.roles, "roles.menus"]
-    return await crud.UserDal(db).get_data(telephone=telephone, v_return_none=True, v_options=options)
+
+    def __init__(self, permissions: Optional[List[str]] = None):
+        if permissions:
+            self.permissions = set(permissions)
+        else:
+            self.permissions = None
+
+    async def __call__(
+            self,
+            request: Request,
+            token: str = Depends(settings.oauth2_scheme),
+            db: AsyncSession = Depends(db_getter)
+    ) -> Auth:
+        """
+        每次调用依赖此类的接口会执行该方法
+        """
+        telephone = self.validate_token(token, db)
+        if isinstance(telephone, Auth):
+            return telephone
+        options = [joinedload(VadminUser.roles), joinedload("roles.menus")]
+        user = await UserDal(db).get_data(telephone=telephone, v_return_none=True, v_options=options, is_staff=True)
+        result = await self.validate_user(request, user, db)
+        permissions = get_user_permissions(user)
+        if permissions != {'*.*.*'} and self.permissions:
+            if not (self.permissions & permissions):
+                raise CustomException(msg="无权限操作", code=status.HTTP_403_FORBIDDEN)
+        return result
 

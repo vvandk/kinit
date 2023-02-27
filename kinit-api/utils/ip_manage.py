@@ -15,6 +15,7 @@ https://api.ip138.com/ip/?ip=58.16.180.3&datatype=jsonp&token=cc87f3c77747bccbaa
 
 aiohttp 异步请求文档：https://docs.aiohttp.org/en/stable/client_quickstart.html
 """
+from aiohttp import TCPConnector
 
 from application.settings import IP_PARSE_TOKEN, IP_PARSE_ENABLE
 import aiohttp
@@ -39,7 +40,7 @@ class IPManage:
 
     def __init__(self, ip: str):
         self.ip = ip
-        self.url = f"http://api.ip138.com/ip/?ip={ip}&datatype=jsonp&token={IP_PARSE_TOKEN}"
+        self.url = f"https://api.ip138.com/ip/?ip={ip}&datatype=jsonp&token={IP_PARSE_TOKEN}"
 
     async def parse(self):
         """
@@ -52,7 +53,7 @@ class IPManage:
         if not IP_PARSE_ENABLE:
             logger.warning("未开启IP地址数据解析，无法获取到IP所属地，请在application/config/production.py:IP_PARSE_ENABLE中开启！")
             return out
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(connector=TCPConnector(ssl=False)) as session:
             async with session.get(self.url) as resp:
                 body = await resp.json()
                 if body.get("ret") != 'ok':

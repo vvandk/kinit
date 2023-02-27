@@ -21,7 +21,7 @@ const TIME_AGO_MESSAGE_MAP: {
   },
   en: {
     justNow: '刚刚',
-    invalid: 'Invalid Date',
+    invalid: '无效时间',
     past: (n) => (n.match(/\d/) ? `${n} ago` : n),
     future: (n) => (n.match(/\d/) ? `in ${n}` : n),
     month: (n, past) =>

@@ -8,7 +8,10 @@
 </template>
 
 <script>
+	import { wxShareMixins } from '@/common/mixins/share.js'
+	
   export default {
+		mixins: [wxShareMixins],
     computed: {
       name() {
         return this.$store.state.auth.name

@@ -19,6 +19,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
 import { Search } from '@/components/Search'
 import { useCache } from '@/hooks/web/useCache'
+import { useClipboard } from '@vueuse/core'
 
 const { wsCache } = useCache()
 const { push } = useRouter()
@@ -68,6 +69,13 @@ const delData = async (row: any) => {
 // 跳转到字典详情页面
 const toDetail = (row: any) => {
   push(`/system/dict/detail?dictType=${row.id}`)
+}
+
+// 复制字典类型
+const toCopy = async (value: string) => {
+  const { copy } = useClipboard()
+  await copy(value)
+  return ElMessage.success('复制成功')
 }
 
 const writeRef = ref<ComponentRef<typeof Write>>()
@@ -164,6 +172,11 @@ watch(
       </template>
 
       <template #dict_type="{ row }">
+        <Icon
+          icon="material-symbols:content-copy-rounded"
+          class="cursor-pointer"
+          @click="toCopy(row.dict_type)"
+        />
         <ElButton type="primary" link @click="toDetail(row)">
           {{ row.dict_type }}
         </ElButton>

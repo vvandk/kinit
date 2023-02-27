@@ -38,7 +38,7 @@ class FileBase:
         """
         验证文件是否符合格式
 
-        @params max_size: 文件最大值，单位 MB
+        :params max_size: 文件最大值，单位 MB
         """
         if max_size:
             size = len(await file.read()) / 1024 / 1024
