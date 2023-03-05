@@ -6,13 +6,11 @@
 # @IDE            : PyCharm
 # @desc           : 登录验证装饰器
 
-from fastapi import Request, Depends
+from fastapi import Request
 from pydantic import BaseModel, validator
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from application.settings import DEFAULT_AUTH_ERROR_MAX_NUMBER
-from apps.vadmin.auth import models, crud, schemas
-from core.database import db_getter
+from application.settings import DEFAULT_AUTH_ERROR_MAX_NUMBER, DEMO
+from apps.vadmin.auth import crud, schemas
 from core.validator import vali_telephone
 from typing import Optional
 from utils.count import Count
@@ -70,18 +68,20 @@ class LoginValidation:
 
         if not result.status:
             self.result.msg = result.msg
-            number = await count.add(ex=86400)
-            if number >= DEFAULT_AUTH_ERROR_MAX_NUMBER:
-                await count.reset()
-                # 如果等于最大次数，那么就将用户 is_active=False
-                user.is_active = False
-                await db.flush()
+            if not DEMO:
+                number = await count.add(ex=86400)
+                if number >= DEFAULT_AUTH_ERROR_MAX_NUMBER:
+                    await count.reset()
+                    # 如果等于最大次数，那么就将用户 is_active=False
+                    user.is_active = False
+                    await db.flush()
         elif not user.is_active:
             self.result.msg = "此手机号已被冻结！"
         elif data.platform in ["0", "1"] and not user.is_staff:
             self.result.msg = "此手机号无权限！"
         else:
-            await count.delete()
+            if not DEMO:
+                await count.delete()
             self.result.msg = "OK"
             self.result.status = True
             self.result.user = schemas.UserSimpleOut.from_orm(user)
