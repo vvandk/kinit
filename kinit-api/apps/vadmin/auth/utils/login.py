@@ -39,77 +39,66 @@ from core.data_types import Telephone
 app = APIRouter()
 
 
-@app.post("/login/", summary="手机号密码登录")
+@app.post("/login/", summary="手机号密码登录", description="员工登录通道，限制最多输错次数，达到最大值后将is_active=False")
 async def login_for_access_token(
         request: Request,
         data: LoginForm,
         manage: LoginManage = Depends(),
         db: AsyncSession = Depends(db_getter)
 ):
-    if data.method == "0":
-        result = await manage.password_login(data, db, request)
-    elif data.method == "1":
-        result = await manage.sms_login(data, db, request)
-    else:
-        return ErrorResponse(msg="请使用正确的登录方式")
-    if not result.status:
-        resp = {"message": result.msg}
-        await VadminLoginRecord.create_login_record(db, data, result.status, request, resp)
-        return ErrorResponse(msg=result.msg)
-    user = result.user
+    try:
+        if data.method == "0":
+            result = await manage.password_login(data, db, request)
+        elif data.method == "1":
+            result = await manage.sms_login(data, db, request)
+        else:
+            raise ValueError("无效参数")
 
-    if data.platform in ["0", "1"] and not user.is_staff:
-        msg = "此手机号无登录权限"
-        await VadminLoginRecord.create_login_record(db, data, result.status, request, {"message": msg})
-        return ErrorResponse(msg=msg)
+        if not result.status:
+            raise ValueError(result.msg)
 
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = LoginManage.create_access_token(data={"sub": user.telephone}, expires_delta=access_token_expires)
-    resp = {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "is_reset_password": user.is_reset_password,
-        "is_wx_server_openid": user.is_wx_server_openid
-    }
-    await VadminLoginRecord.create_login_record(db, data, result.status, request, resp)
-    return SuccessResponse(resp)
+        token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        token = LoginManage.create_access_token(data={"sub": result.user.telephone}, expires_delta=token_expires)
+        resp = {
+            "access_token": token,
+            "token_type": "bearer",
+            "is_reset_password": result.user.is_reset_password,
+            "is_wx_server_openid": result.user.is_wx_server_openid
+        }
+        await VadminLoginRecord.create_login_record(db, data, True, request, resp)
+        return SuccessResponse(resp)
+    except ValueError as e:
+        await VadminLoginRecord.create_login_record(db, data, False, request, {"message": str(e)})
+        return ErrorResponse(msg=str(e))
 
 
-@app.post("/wx/login/", summary="微信服务端一键登录")
+@app.post("/wx/login/", summary="微信服务端一键登录", description="员工登录通道")
 async def wx_login_for_access_token(request: Request, data: WXLoginForm, db: AsyncSession = Depends(db_getter)):
-    if data.platform not in ["0", "1"]:
-        msg = "错误平台"
-        await VadminLoginRecord.create_login_record(db, data, False, request, {"message": msg})
-        return ErrorResponse(msg=msg)
-    wx = WXOAuth(request.app.state.redis, 0)
-    telephone = await wx.parsing_phone_number(data.code)
-    if not telephone:
-        msg = "无效Code"
-        await VadminLoginRecord.create_login_record(db, data, False, request, {"message": msg})
-        return ErrorResponse(msg=msg)
-    data.telephone = telephone
-    user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
-    msg = None
-    if not user:
-        # 手机号不存在，创建新用户
-        # model = UserIn(name=generate_string(), telephone=Telephone(telephone))
-        # user = await UserDal(db).create_data(model, v_return_obj=True)
-        msg = "手机号不存在！"
-    elif not user.is_active:
-        msg = "此手机号已被冻结！"
-    elif data.platform in ["0", "1"] and not user.is_staff:
-        msg = "此手机号无登录权限"
-    if msg:
-        await VadminLoginRecord.create_login_record(db, data, False, request, {"message": msg})
-        return ErrorResponse(msg=msg)
+    try:
+        if data.platform != "1" or data.method != "2":
+            raise ValueError("无效参数")
+        wx = WXOAuth(request.app.state.redis, 0)
+        telephone = await wx.parsing_phone_number(data.code)
+        if not telephone:
+            raise ValueError("无效Code")
+        data.telephone = telephone
+        user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
+        if not user:
+            raise ValueError("此手机号不存在")
+        elif not user.is_active:
+            raise ValueError("此手机号已被冻结")
+    except ValueError as e:
+        await VadminLoginRecord.create_login_record(db, data, False, request, {"message": str(e)})
+        return ErrorResponse(msg=str(e))
+
     # 更新登录时间
     await user.update_login_info(db, request.client.host)
 
     # 登录成功创建 token
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = LoginManage.create_access_token(data={"sub": user.telephone}, expires_delta=access_token_expires)
+    token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    token = LoginManage.create_access_token(data={"sub": user.telephone}, expires_delta=token_expires)
     resp = {
-        "access_token": access_token,
+        "access_token": token,
         "token_type": "bearer",
         "is_reset_password": user.is_reset_password,
         "is_wx_server_openid": user.is_wx_server_openid

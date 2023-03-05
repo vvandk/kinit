@@ -107,7 +107,7 @@ const actions = {
 		return new Promise((resolve, reject) => {
 			getInfo().then(res => {
 				const user = res.data
-				const avatar = (user == null || user.avatar == "" || user.avatar == null) ? require("@/static/images/avatar.jpg") : user.avatar
+				const avatar = (user == null || user.avatar == "" || user.avatar == null) ? "https://vv-reserve.oss-cn-hangzhou.aliyuncs.com/avatar/2023-01-27/1674820804e81e7631.png" : user.avatar
 				const name = (user == null || user.name == "" || user.name == null) ? "" : user.name
 				commit('SET_ROLES', user.roles.map((item) => item.name) || ['ROLE_DEFAULT'])
 				commit('SET_PERMISSIONS', user.permissions)

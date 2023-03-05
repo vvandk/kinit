@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.6.0"
+VERSION = "1.6.1"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = True
@@ -105,6 +105,10 @@ EVENTS = [
 """
 # 默认密码，"0" 默认为手机号后六位
 DEFAULT_PASSWORD = "0"
+# 默认头像
+DEFAULT_AVATAR = "https://vv-reserve.oss-cn-hangzhou.aliyuncs.com/avatar/2023-01-27/1674820804e81e7631.png"
+# 默认登陆时最大输入密码或验证码错误次数
+DEFAULT_AUTH_ERROR_MAX_NUMBER = 5
 # 是否开启保存登录日志
 LOGIN_LOG_RECORD = not DEBUG
 # 是否开启保存每次请求日志到本地

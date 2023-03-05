@@ -60,6 +60,7 @@ class UserDal(DalBase):
             raise CustomException("手机号已存在！", code=status.HTTP_ERROR)
         password = data.telephone[5:12] if settings.DEFAULT_PASSWORD == "0" else settings.DEFAULT_PASSWORD
         data.password = self.model.get_password_hash(password)
+        data.avatar = data.avatar if data.avatar else settings.DEFAULT_AVATAR
         obj = self.model(**data.dict(exclude={'role_ids'}))
         roles = await RoleDal(self.db).get_datas(limit=0, id=("in", data.role_ids), v_return_objs=True)
         for role in roles:

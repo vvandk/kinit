@@ -9,10 +9,13 @@
 from fastapi import Request, Depends
 from pydantic import BaseModel, validator
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from application.settings import DEFAULT_AUTH_ERROR_MAX_NUMBER
 from apps.vadmin.auth import models, crud, schemas
 from core.database import db_getter
 from core.validator import vali_telephone
 from typing import Optional
+from utils.count import Count
 
 
 class LoginForm(BaseModel):
@@ -52,8 +55,8 @@ class LoginValidation:
 
     async def __call__(self, data: LoginForm, db: AsyncSession, request: Request) -> LoginResult:
         self.result = LoginResult()
-        if data.platform not in ["0", "1"]:
-            self.result.msg = "错误平台"
+        if data.platform not in ["0", "1"] or data.method not in ["0", "1"]:
+            self.result.msg = "无效参数"
             return self.result
         user = await crud.UserDal(db).get_data(telephone=data.telephone, v_return_none=True)
         if not user:
@@ -62,11 +65,23 @@ class LoginValidation:
 
         result = await self.func(self, data=data, user=user, request=request)
 
+        count_key = f"{data.telephone}_password_auth" if data.method == '0' else f"{data.telephone}_sms_auth"
+        count = Count(request.app.state.redis, count_key)
+
         if not result.status:
             self.result.msg = result.msg
+            number = await count.add(ex=86400)
+            if number >= DEFAULT_AUTH_ERROR_MAX_NUMBER:
+                await count.reset()
+                # 如果等于最大次数，那么就将用户 is_active=False
+                user.is_active = False
+                await db.flush()
         elif not user.is_active:
             self.result.msg = "此手机号已被冻结！"
-        elif user:
+        elif data.platform in ["0", "1"] and not user.is_staff:
+            self.result.msg = "此手机号无权限！"
+        else:
+            await count.delete()
             self.result.msg = "OK"
             self.result.status = True
             self.result.user = schemas.UserSimpleOut.from_orm(user)

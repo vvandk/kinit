@@ -6,6 +6,8 @@
 # @desc           : 获取认证后的信息工具
 
 from typing import List, Optional
+
+from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from apps.vadmin.auth.crud import UserDal
@@ -31,6 +33,61 @@ def get_user_permissions(user: VadminUser) -> set:
             if menu.perms and not menu.disabled:
                 permissions.add(menu.perms)
     return permissions
+
+
+class OpenAuth(AuthValidation):
+
+    """
+    开放认证，无认证也可以访问
+    认证了以后可以获取到用户信息，无认证则获取不到
+    """
+
+    @classmethod
+    def validate_token(cls, token: str | None, db: AsyncSession) -> str | None:
+        """
+        验证用户 token，没有则返回 None
+        """
+        if not token:
+            return None
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+            telephone: str = payload.get("sub")
+            if telephone is None:
+                return None
+        except JWTError:
+            return None
+        return telephone
+
+    @classmethod
+    async def validate_user(cls, request: Request, user: VadminUser, db: AsyncSession) -> Auth:
+        """
+        验证用户信息
+        """
+        if user is None:
+            return Auth(db=db)
+        elif not user.is_active:
+            return Auth(db=db)
+        request.scope["telephone"] = user.telephone
+        try:
+            request.scope["body"] = await request.body()
+        except RuntimeError:
+            request.scope["body"] = "获取失败"
+        return Auth(user=user, db=db)
+
+    async def __call__(
+            self,
+            request: Request,
+            token: str = Depends(settings.oauth2_scheme),
+            db: AsyncSession = Depends(db_getter)
+    ):
+        """
+        每次调用依赖此类的接口会执行该方法
+        """
+        telephone = self.validate_token(token, db)
+        if telephone:
+            user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
+            return await self.validate_user(request, user, db)
+        return Auth(db=db)
 
 
 class AllUserAuth(AuthValidation):
