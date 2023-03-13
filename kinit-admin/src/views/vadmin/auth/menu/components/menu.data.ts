@@ -45,6 +45,12 @@ export const columns = reactive<TableColumn[]>([
     show: true
   },
   {
+    field: 'noCache',
+    label: '页面缓存',
+    width: '120px',
+    show: true
+  },
+  {
     field: 'hidden',
     label: '显示状态',
     width: '120px',
@@ -224,5 +230,31 @@ export const schema = reactive<FormSchema[]>([
       span: 12
     },
     ifshow: (values) => values.menu_type === '2'
+  },
+  {
+    field: 'noCache',
+    label: '页面缓存',
+    colProps: {
+      span: 12
+    },
+    component: 'Radio',
+    componentProps: {
+      style: {
+        width: '100%'
+      },
+      options: [
+        {
+          label: '缓存',
+          value: false
+        },
+        {
+          label: '不缓存',
+          value: true
+        }
+      ]
+    },
+    value: false,
+    ifshow: (values) => values.menu_type === '1',
+    labelMessage: '开启页面缓存,需要组件名称必须与xx.vue页面的name一致'
   }
 ])

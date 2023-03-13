@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.6.1"
+VERSION = "1.6.2"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = True
@@ -21,6 +21,7 @@ DEMO = not DEBUG
 """演示功能白名单"""
 DEMO_WHITE_LIST_PATH = [
     "/auth/login/",
+    "/auth/token/refresh/",
     "/auth/wx/login/",
     "/vadmin/system/dict/types/details/",
     "/vadmin/auth/user/export/query/list/to/excel/"
@@ -49,8 +50,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/", auto_error=False) 
 SECRET_KEY = 'vgb0tnl9d58+6n-6h-ea&u^1#s0ccp!794=kbvqacjq75vzps$'
 """用于设定 JWT 令牌签名算法"""
 ALGORITHM = "HS256"
-"""令牌过期时间，9999分钟"""
-ACCESS_TOKEN_EXPIRE_MINUTES = 9999
+"""access_token 过期时间，一天"""
+ACCESS_TOKEN_EXPIRE_MINUTES = 1440
+"""refresh_token 过期时间，用于刷新token使用，两天"""
+REFRESH_TOKEN_EXPIRE_MINUTES = 1440 * 2
+"""access_token 缓存时间，用于刷新token使用，30分钟"""
+ACCESS_TOKEN_CACHE_MINUTES = 30
 
 """
 挂载临时文件目录，并添加路由访问，此路由不会在接口文档中显示

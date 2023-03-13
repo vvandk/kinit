@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+  name: 'SystemSettings'
+}
+</script>
+
 <script setup lang="ts">
 import { ElTabs, ElTabPane } from 'element-plus'
 import { ref } from 'vue'

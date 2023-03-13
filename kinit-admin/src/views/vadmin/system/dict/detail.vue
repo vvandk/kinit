@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+  name: 'SystemDictDetail'
+}
+</script>
+
 <script setup lang="ts">
 import { ContentWrap } from '@/components/ContentWrap'
 import { Table } from '@/components/Table'

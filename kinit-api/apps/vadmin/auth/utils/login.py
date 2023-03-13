@@ -20,21 +20,20 @@ PassLib 是一个用于处理哈希密码的很棒的 Python 包。它支持许�
 """
 
 from datetime import timedelta
-from fastapi import APIRouter, Depends, Request
+import jwt
+from fastapi import APIRouter, Depends, Request, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import db_getter
+from utils import status
 from utils.response import SuccessResponse, ErrorResponse
 from application import settings
-from utils.tools import generate_string
 from .login_manage import LoginManage
 from .validation import LoginForm, WXLoginForm
 from apps.vadmin.record.models import VadminLoginRecord
 from apps.vadmin.auth.crud import MenuDal, UserDal
-from apps.vadmin.auth.schemas import UserIn
 from .current import FullAdminAuth
 from .validation.auth import Auth
 from utils.wx.oauth import WXOAuth
-from core.data_types import Telephone
 
 app = APIRouter()
 
@@ -57,10 +56,12 @@ async def login_for_access_token(
         if not result.status:
             raise ValueError(result.msg)
 
-        token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-        token = LoginManage.create_access_token(data={"sub": result.user.telephone}, expires_delta=token_expires)
+        access_token = LoginManage.create_token({"sub": result.user.telephone, "is_refresh": False})
+        expires = timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+        refresh_token = LoginManage.create_token({"sub": result.user.telephone, "is_refresh": True}, expires=expires)
         resp = {
-            "access_token": token,
+            "access_token": access_token,
+            "refresh_token": refresh_token,
             "token_type": "bearer",
             "is_reset_password": result.user.is_reset_password,
             "is_wx_server_openid": result.user.is_wx_server_openid
@@ -95,10 +96,12 @@ async def wx_login_for_access_token(request: Request, data: WXLoginForm, db: Asy
     await user.update_login_info(db, request.client.host)
 
     # 登录成功创建 token
-    token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    token = LoginManage.create_access_token(data={"sub": user.telephone}, expires_delta=token_expires)
+    access_token = LoginManage.create_token({"sub": user.telephone, "is_refresh": False})
+    expires = timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+    refresh_token = LoginManage.create_token({"sub": user.telephone, "is_refresh": True}, expires=expires)
     resp = {
-        "access_token": token,
+        "access_token": access_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer",
         "is_reset_password": user.is_reset_password,
         "is_wx_server_openid": user.is_wx_server_openid
@@ -110,3 +113,28 @@ async def wx_login_for_access_token(request: Request, data: WXLoginForm, db: Asy
 @app.get("/getMenuList/", summary="获取当前用户菜单树")
 async def get_menu_list(auth: Auth = Depends(FullAdminAuth())):
     return SuccessResponse(await MenuDal(auth.db).get_routers(auth.user))
+
+
+@app.post("/token/refresh/", summary="刷新Token")
+async def token_refresh(refresh: str = Body(..., title="刷新Token")):
+    error_code = status.HTTP_401_UNAUTHORIZED
+    try:
+        payload = jwt.decode(refresh, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        telephone: str = payload.get("sub")
+        is_refresh: bool = payload.get("is_refresh")
+        if telephone is None or not is_refresh:
+            return ErrorResponse("未认证，请您重新登录", code=error_code, status=error_code)
+    except jwt.exceptions.InvalidSignatureError:
+        return ErrorResponse("无效认证，请您重新登录", code=error_code, status=error_code)
+    except jwt.exceptions.ExpiredSignatureError:
+        return ErrorResponse("登录已超时，请您重新登录", code=error_code, status=error_code)
+
+    access_token = LoginManage.create_token({"sub": telephone, "is_refresh": False})
+    expires = timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+    refresh_token = LoginManage.create_token({"sub": telephone, "is_refresh": True}, expires=expires)
+    resp = {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    }
+    return SuccessResponse(resp)

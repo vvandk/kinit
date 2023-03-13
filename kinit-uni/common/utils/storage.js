@@ -13,7 +13,7 @@ let storageNodeKeys = [...Object.values(auth)]
 let storageData = uni.getStorageSync(storageKey) || {}
 
 const storage = {
-  set: function(key, value) {
+  set: function (key, value) {
     if (storageNodeKeys.indexOf(key) != -1) {
       let tmp = uni.getStorageSync(storageKey)
       tmp = tmp ? tmp : {}
@@ -21,14 +21,14 @@ const storage = {
       uni.setStorageSync(storageKey, tmp)
     }
   },
-  get: function(key) {
-    return storageData[key] || ""
+  get: function (key) {
+    return storageData[key] || ''
   },
-  remove: function(key) {
+  remove: function (key) {
     delete storageData[key]
     uni.setStorageSync(storageKey, storageData)
   },
-  clean: function() {
+  clean: function () {
     uni.removeStorageSync(storageKey)
   }
 }

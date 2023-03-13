@@ -47,3 +47,23 @@ RuoYi App 移动解决方案，采用uniapp框架，一份代码多终端适配�
 - 文档地址：https://uviewui.com
 
 uView UI，是[uni-app](https://uniapp.dcloud.io/)全面兼容nvue的uni-app生态框架，全面的组件和便捷的工具会让您信手拈来，如鱼得水
+
+## 开发工具
+
+在此项目中我将开发`uni-app`的开发工具从 Hbuilder X 换到了 VSCode，没有谁好谁坏，只是本人更习惯使用 VSCode，但是在运行项目时依然使用的是 Hbuilder X，VSCode只是用来编写代码。当然使用 Hbuilder X 也是支持的，只做一个分享。
+
+以下是我在VSCode中安装的几个插件：
+
+1. 名称: Chinese (Simplified) (简体中文) Language Pack for Visual Studio Code
+2. 名称: ESLint
+3. 名称: Image preview
+4. 名称: Markdown Preview Enhanced
+5. 名称: Path Intellisense
+6. 名称: Prettier - Code formatter
+7. 名称: Sass (.sass only)
+8. 名称: SCSS IntelliSense
+9. 名称: Stylelint
+10. 名称: uni-app-schemas
+11. 名称: uni-app-snippets
+12. 名称: uni-create-view
+13. 名称: Vetur

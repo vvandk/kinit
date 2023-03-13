@@ -24,6 +24,7 @@ const rules = reactive({
   disabled: [required()],
   hidden: [required()],
   path: [required()],
+  noCache: [required()],
   order: [required()]
 })
 

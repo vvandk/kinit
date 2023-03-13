@@ -16,9 +16,10 @@ from core.logger import logger
 
 
 class CustomException(Exception):
-    def __init__(self, msg: str, code: int):
+    def __init__(self, msg: str, code: int, status_code: int = status.HTTP_200_OK):
         self.msg = msg
         self.code = code
+        self.status_code = status_code
 
 
 def register_exception(app: FastAPI):

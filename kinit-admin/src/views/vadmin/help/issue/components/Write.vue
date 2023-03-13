@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+  name: 'HelpIssueForm'
+}
+</script>
+
 <script setup lang="ts">
 import { Form } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'

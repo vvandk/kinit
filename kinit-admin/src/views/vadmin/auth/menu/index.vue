@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+  name: 'AuthMenu'
+}
+</script>
+
 <script setup lang="ts">
 import { ContentWrap } from '@/components/ContentWrap'
 import { RightToolbar } from '@/components/RightToolbar'
@@ -213,12 +219,16 @@ watch(
         <ElSwitch :value="!row.hidden" disabled />
       </template>
 
+      <template #noCache="{ row }">
+        <ElSwitch :value="!row.noCache" disabled />
+      </template>
+
       <template #disabled="{ row }">
         <ElSwitch :value="!row.disabled" disabled />
       </template>
     </Table>
 
-    <Dialog v-model="dialogVisible" :title="dialogTitle" width="700px">
+    <Dialog v-model="dialogVisible" :title="dialogTitle" width="800px">
       <Write ref="writeRef" :current-row="tableObject.currentRow" :parent-id="parentId" />
 
       <template #footer>

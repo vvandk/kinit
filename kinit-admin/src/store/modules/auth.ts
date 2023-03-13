@@ -7,6 +7,7 @@ import { useCache } from '@/hooks/web/useCache'
 import { getCurrentAdminUserInfo } from '@/api/vadmin/auth/user'
 import { resetRouter } from '@/router'
 import { useTagsViewStore } from '@/store/modules/tagsView'
+import router from '@/router'
 
 const { wsCache } = useCache()
 
@@ -48,6 +49,7 @@ export const useAuthStore = defineStore('auth', {
       if (res) {
         const appStore = useAppStore()
         wsCache.set(appStore.getToken, `${res.data.token_type} ${res.data.access_token}`)
+        wsCache.set(appStore.getRefreshToken, res.data.refresh_token)
         // 存储用户信息
         const auth = useAuthStore()
         await auth.getUserInfo()
@@ -61,7 +63,7 @@ export const useAuthStore = defineStore('auth', {
       const tagsViewStore = useTagsViewStore()
       tagsViewStore.delAllViews()
       resetRouter()
-      window.location.href = '/login'
+      router.push('/login')
     },
     updateUser(data: UserState) {
       this.user.gender = data.gender

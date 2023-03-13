@@ -118,7 +118,7 @@ export const searchSchema = reactive<FormSchema[]>([
   },
   {
     field: 'platform',
-    label: '展示平台',
+    label: '登录平台',
     component: 'Select',
     componentProps: {
       style: {

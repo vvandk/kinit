@@ -40,7 +40,7 @@ export default {
         content: content,
         cancelText: '取消',
         confirmText: '确定',
-        success: function(res) {
+        success: function (res) {
           if (res.confirm) {
             resolve(res.confirm)
           }
@@ -50,12 +50,12 @@ export default {
   },
   // 提示信息
   showToast(option) {
-    if (typeof option === "object") {
+    if (typeof option === 'object') {
       uni.showToast(option)
     } else {
       uni.showToast({
         title: option,
-        icon: "none",
+        icon: 'none',
         duration: 2500
       })
     }

@@ -39,6 +39,7 @@ interface AppState {
   footerContent: string
   icpNumber: string
   token: string
+  refreshToken: string
 }
 
 export const useAppStore = defineStore('app', {
@@ -46,6 +47,7 @@ export const useAppStore = defineStore('app', {
     return {
       userInfo: 'userInfo', // 登录信息存储字段-建议每个项目换一个字段，避免与其他项目冲突
       token: 'Token', // 存储Token字段
+      refreshToken: 'RefreshToken', // 存储刷新Token字段
       sizeMap: ['default', 'large', 'small'],
       mobile: false, // 是否是移动端
       title: import.meta.env.VITE_APP_TITLE, // 标题
@@ -169,6 +171,9 @@ export const useAppStore = defineStore('app', {
     },
     getToken(): string {
       return this.token
+    },
+    getRefreshToken(): string {
+      return this.refreshToken
     },
     getIsDark(): boolean {
       return this.isDark

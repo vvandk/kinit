@@ -31,12 +31,12 @@ async def get_users(
     schema = schemas.UserOut
     datas = await crud.UserDal(auth.db).get_datas(**params.dict(), v_options=options, v_schema=schema)
     count = await crud.UserDal(auth.db).get_count(**params.to_count())
-    return SuccessResponse(datas, count=count)
+    return SuccessResponse(datas, count=count, refresh=auth.refresh)
 
 
 @app.post("/users/", summary="创建用户")
 async def create_user(data: schemas.UserIn, auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.create"]))):
-    return SuccessResponse(await crud.UserDal(auth.db).create_data(data=data))
+    return SuccessResponse(await crud.UserDal(auth.db).create_data(data=data), refresh=auth.refresh)
 
 
 @app.delete("/users/", summary="批量删除用户", description="软删除，删除后清空所关联的角色")
@@ -46,7 +46,7 @@ async def delete_users(ids: IdList = Depends(), auth: Auth = Depends(FullAdminAu
     elif 1 in ids.ids:
         return ErrorResponse("不能删除超级管理员用户")
     await crud.UserDal(auth.db).delete_datas(ids=ids.ids, v_soft=True, is_active=False)
-    return SuccessResponse("删除成功")
+    return SuccessResponse("删除成功", refresh=auth.refresh)
 
 
 @app.put("/users/{data_id}/", summary="更新用户信息")
@@ -55,7 +55,7 @@ async def put_user(
         data: schemas.UserUpdate,
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.update"]))
 ):
-    return SuccessResponse(await crud.UserDal(auth.db).put_data(data_id, data))
+    return SuccessResponse(await crud.UserDal(auth.db).put_data(data_id, data), refresh=auth.refresh)
 
 
 @app.get("/users/{data_id}/", summary="获取用户信息")
@@ -66,29 +66,32 @@ async def get_user(
     model = models.VadminUser
     options = [joinedload(model.roles)]
     schema = schemas.UserOut
-    return SuccessResponse(await crud.UserDal(auth.db).get_data(data_id, options, v_schema=schema))
+    return SuccessResponse(
+        await crud.UserDal(auth.db).get_data(data_id, options, v_schema=schema),
+        refresh=auth.refresh
+    )
 
 
 @app.post("/user/current/reset/password/", summary="重置当前用户密码")
 async def user_current_reset_password(data: schemas.ResetPwd, auth: Auth = Depends(AllUserAuth())):
-    return SuccessResponse(await crud.UserDal(auth.db).reset_current_password(auth.user, data))
+    return SuccessResponse(await crud.UserDal(auth.db).reset_current_password(auth.user, data), refresh=auth.refresh)
 
 
 @app.post("/user/current/update/info/", summary="更新当前用户基本信息")
 async def post_user_current_update_info(data: schemas.UserUpdateBaseInfo, auth: Auth = Depends(AllUserAuth())):
-    return SuccessResponse(await crud.UserDal(auth.db).update_current_info(auth.user, data))
+    return SuccessResponse(await crud.UserDal(auth.db).update_current_info(auth.user, data), refresh=auth.refresh)
 
 
 @app.post("/user/current/update/avatar/", summary="更新当前用户头像")
 async def post_user_current_update_avatar(file: UploadFile, auth: Auth = Depends(AllUserAuth())):
-    return SuccessResponse(await crud.UserDal(auth.db).update_current_avatar(auth.user, file))
+    return SuccessResponse(await crud.UserDal(auth.db).update_current_avatar(auth.user, file), refresh=auth.refresh)
 
 
 @app.get("/user/admin/current/info/", summary="获取当前管理员信息")
 async def get_user_admin_current_info(auth: Auth = Depends(FullAdminAuth())):
     result = schemas.UserOut.from_orm(auth.user).dict()
     result["permissions"] = list(get_user_permissions(auth.user))
-    return SuccessResponse(result)
+    return SuccessResponse(result, refresh=auth.refresh)
 
 
 @app.post("/user/export/query/list/to/excel/", summary="导出用户查询列表为excel")
@@ -97,17 +100,17 @@ async def post_user_export_query_list(
         params: UserParams = Depends(),
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.export"]))
 ):
-    return SuccessResponse(await crud.UserDal(auth.db).export_query_list(header, params))
+    return SuccessResponse(await crud.UserDal(auth.db).export_query_list(header, params), refresh=auth.refresh)
 
 
 @app.get("/user/download/import/template/", summary="下载最新批量导入用户模板")
 async def get_user_download_new_import_template(auth: Auth = Depends(AllUserAuth())):
-    return SuccessResponse(await crud.UserDal(auth.db).download_import_template())
+    return SuccessResponse(await crud.UserDal(auth.db).download_import_template(), refresh=auth.refresh)
 
 
 @app.post("/import/users/", summary="批量导入用户")
 async def post_import_users(file: UploadFile, auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.import"]))):
-    return SuccessResponse(await crud.UserDal(auth.db).import_users(file))
+    return SuccessResponse(await crud.UserDal(auth.db).import_users(file), refresh=auth.refresh)
 
 
 @app.post("/users/init/password/send/sms/", summary="初始化所选用户密码并发送通知短信")
@@ -116,13 +119,16 @@ async def post_users_init_password(
         ids: IdList = Depends(),
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.reset"]))
 ):
-    return SuccessResponse(await crud.UserDal(auth.db).init_password_send_sms(ids.ids, request.app.state.redis))
+    return SuccessResponse(
+        await crud.UserDal(auth.db).init_password_send_sms(ids.ids, request.app.state.redis),
+        refresh=auth.refresh
+    )
 
 
 @app.put("/users/wx/server/openid/", summary="更新当前用户服务端微信平台openid")
 async def put_user_wx_server_openid(request: Request, code: str, auth: Auth = Depends(AllUserAuth())):
     result = await crud.UserDal(auth.db).update_wx_server_openid(code, auth.user, request.app.state.redis)
-    return SuccessResponse(result)
+    return SuccessResponse(result, refresh=auth.refresh)
 
 
 ###########################################################
@@ -135,12 +141,12 @@ async def get_roles(
 ):
     datas = await crud.RoleDal(auth.db).get_datas(**params.dict())
     count = await crud.RoleDal(auth.db).get_count(**params.to_count())
-    return SuccessResponse(datas, count=count)
+    return SuccessResponse(datas, count=count, refresh=auth.refresh)
 
 
 @app.post("/roles/", summary="创建角色信息")
 async def create_role(role: schemas.RoleIn, auth: Auth = Depends(FullAdminAuth(permissions=["auth.role.create"]))):
-    return SuccessResponse(await crud.RoleDal(auth.db).create_data(data=role))
+    return SuccessResponse(await crud.RoleDal(auth.db).create_data(data=role), refresh=auth.refresh)
 
 
 @app.delete("/roles/", summary="批量删除角色", description="硬删除, 如果存在用户关联则无法删除")
@@ -148,7 +154,7 @@ async def delete_roles(ids: IdList = Depends(), auth: Auth = Depends(FullAdminAu
     if 1 in ids.ids:
         return ErrorResponse("不能删除管理员角色")
     await crud.RoleDal(auth.db).delete_datas(ids.ids, v_soft=False)
-    return SuccessResponse("删除成功")
+    return SuccessResponse("删除成功", refresh=auth.refresh)
 
 
 @app.put("/roles/{data_id}/", summary="更新角色信息")
@@ -159,12 +165,12 @@ async def put_role(
 ):
     if 1 == data_id:
         return ErrorResponse("不能修改管理员角色")
-    return SuccessResponse(await crud.RoleDal(auth.db).put_data(data_id, data))
+    return SuccessResponse(await crud.RoleDal(auth.db).put_data(data_id, data), refresh=auth.refresh)
 
 
 @app.get("/roles/options/", summary="获取角色选择项")
 async def get_role_options(auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.create", "auth.user.update"]))):
-    return SuccessResponse(await crud.RoleDal(auth.db).get_select_datas())
+    return SuccessResponse(await crud.RoleDal(auth.db).get_select_datas(), refresh=auth.refresh)
 
 
 @app.get("/roles/{data_id}/", summary="获取角色信息")
@@ -175,7 +181,10 @@ async def get_role(
     model = models.VadminRole
     options = [joinedload(model.menus)]
     schema = schemas.RoleOut
-    return SuccessResponse(await crud.RoleDal(auth.db).get_data(data_id, options, v_schema=schema))
+    return SuccessResponse(
+        await crud.RoleDal(auth.db).get_data(data_id, options, v_schema=schema),
+        refresh=auth.refresh
+    )
 
 
 ###########################################################
@@ -184,33 +193,33 @@ async def get_role(
 @app.get("/menus/", summary="获取菜单列表")
 async def get_menus(auth: Auth = Depends(FullAdminAuth(permissions=["auth.menu.list"]))):
     datas = await crud.MenuDal(auth.db).get_tree_list(mode=1)
-    return SuccessResponse(datas)
+    return SuccessResponse(datas, refresh=auth.refresh)
 
 
 @app.get("/menus/tree/options/", summary="获取菜单树选择项，添加/修改菜单时使用")
 async def get_menus_options(auth: Auth = Depends(FullAdminAuth(permissions=["auth.menu.create", "auth.menu.update"]))):
     datas = await crud.MenuDal(auth.db).get_tree_list(mode=2)
-    return SuccessResponse(datas)
+    return SuccessResponse(datas, refresh=auth.refresh)
 
 
 @app.get("/menus/role/tree/options/", summary="获取菜单列表树信息，角色权限使用")
 async def get_menus_treeselect(
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.role.create", "auth.role.update"]))
 ):
-    return SuccessResponse(await crud.MenuDal(auth.db).get_tree_list(mode=3))
+    return SuccessResponse(await crud.MenuDal(auth.db).get_tree_list(mode=3), refresh=auth.refresh)
 
 
 @app.post("/menus/", summary="创建菜单信息")
 async def create_menu(menu: schemas.Menu, auth: Auth = Depends(FullAdminAuth(permissions=["auth.menu.create"]))):
     if menu.parent_id:
         menu.alwaysShow = False
-    return SuccessResponse(await crud.MenuDal(auth.db).create_data(data=menu))
+    return SuccessResponse(await crud.MenuDal(auth.db).create_data(data=menu), refresh=auth.refresh)
 
 
 @app.delete("/menus/", summary="批量删除菜单", description="硬删除, 如果存在角色关联则无法删除")
 async def delete_menus(ids: IdList = Depends(), auth: Auth = Depends(FullAdminAuth(permissions=["auth.menu.delete"]))):
     await crud.MenuDal(auth.db).delete_datas(ids.ids, v_soft=False)
-    return SuccessResponse("删除成功")
+    return SuccessResponse("删除成功", refresh=auth.refresh)
 
 
 @app.put("/menus/{data_id}/", summary="更新菜单信息")
@@ -218,7 +227,7 @@ async def put_menus(
         data_id: int,
         data: schemas.Menu, auth: Auth = Depends(FullAdminAuth(permissions=["auth.menu.update"]))
 ):
-    return SuccessResponse(await crud.MenuDal(auth.db).put_data(data_id, data))
+    return SuccessResponse(await crud.MenuDal(auth.db).put_data(data_id, data), refresh=auth.refresh)
 
 
 @app.get("/menus/{data_id}/", summary="获取菜单信息")
@@ -227,7 +236,7 @@ async def put_menus(
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.menu.view", "auth.menu.update"]))
 ):
     schema = schemas.MenuSimpleOut
-    return SuccessResponse(await crud.MenuDal(auth.db).get_data(data_id, None, v_schema=schema))
+    return SuccessResponse(await crud.MenuDal(auth.db).get_data(data_id, None, v_schema=schema), refresh=auth.refresh)
 
 
 @app.get("/role/menus/tree/{role_id}/", summary="获取菜单列表树信息以及角色菜单权限ID，角色权限使用")
@@ -237,4 +246,4 @@ async def get_role_menu_tree(
 ):
     treeselect = await crud.MenuDal(auth.db).get_tree_list(mode=3)
     role_menu_tree = await crud.RoleDal(auth.db).get_role_menu_tree(role_id)
-    return SuccessResponse({"role_menu_tree": role_menu_tree, "menus": treeselect})
+    return SuccessResponse({"role_menu_tree": role_menu_tree, "menus": treeselect}, refresh=auth.refresh)

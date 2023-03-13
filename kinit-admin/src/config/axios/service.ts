@@ -5,6 +5,7 @@ import { useAuthStore } from '@/store/modules/auth'
 import qs from 'qs'
 import { config } from './config'
 import { ElMessage } from 'element-plus'
+import request from '@/config/axios'
 
 const { result_code, unauthorized_code, request_timeout } = config
 
@@ -62,33 +63,99 @@ service.interceptors.request.use(
 // response 拦截器
 service.interceptors.response.use(
   (response: AxiosResponse<any>) => {
+    // 这个状态码是和后端约定好的
+    const code = response.data.code || unauthorized_code
+    const message = response.data.message || '后端接口无返回内容'
+    const refresh = response.data.refresh || false
+
     if (response.config.responseType === 'blob') {
       // 如果是文件流，直接过
       return response
-    } else if (response.data.code === result_code) {
+    } else if (code === result_code) {
+      if (refresh) {
+        // 因token快过期，刷新token
+        refreshToken().then((res) => {
+          const appStore = useAppStore()
+          wsCache.set(appStore.getToken, `${res.data.token_type} ${res.data.access_token}`)
+          wsCache.set(appStore.getRefreshToken, res.data.refresh_token)
+        })
+        // .catch(() => {
+        //   const authStore = useAuthStore()
+        //   authStore.logout()
+        //   ElMessage.error('未认证，请登录')
+        // })
+      }
       return response.data
-    } else if (response.data.code === unauthorized_code) {
-      // 请重新登录
-      ElMessage.error(response.data.message)
-      const authStore = useAuthStore()
-      authStore.logout()
+    } else if (code === unauthorized_code) {
+      // 因token无效，token过期导致
+      refreshToken().then((res) => {
+        const appStore = useAppStore()
+        wsCache.set(appStore.getToken, `${res.data.token_type} ${res.data.access_token}`)
+        wsCache.set(appStore.getRefreshToken, res.data.refresh_token)
+        ElMessage.error('操作失败，请重试')
+      })
+      // .catch(() => {
+      //   const authStore = useAuthStore()
+      //   authStore.logout()
+      //   ElMessage.error('未认证，请登录')
+      // })
     } else {
-      ElMessage.error(response.data.message)
+      ElMessage.error(message)
     }
   },
   (error: AxiosError) => {
-    console.log('err' + error)
     let { message } = error
-    if (message == 'Network Error') {
-      message = '后端接口连接异常'
-    } else if (message.includes('timeout')) {
-      message = '系统接口请求超时'
-    } else if (message.includes('Request failed with status code')) {
-      message = '系统接口' + message.substr(message.length - 3) + '异常'
+    const status = error.response?.status
+    switch (status) {
+      case 400:
+        message = '请求错误'
+        break
+      case 401:
+        // 强制要求重新登录，因账号已冻结，账号已过期，手机号码错误，刷新token无效等问题导致
+        const authStore = useAuthStore()
+        authStore.logout()
+        message = '未认证，请登录'
+        break
+      case 403:
+        message = '拒绝访问'
+        break
+      case 404:
+        message = `请求地址出错: ${error.response?.config.url}`
+        break
+      case 408:
+        message = '请求超时'
+        break
+      case 500:
+        message = '服务器内部错误'
+        break
+      case 501:
+        message = '服务未实现'
+        break
+      case 502:
+        message = '网关错误'
+        break
+      case 503:
+        message = '服务不可用'
+        break
+      case 504:
+        message = '网关超时'
+        break
+      case 505:
+        message = 'HTTP版本不受支持'
+        break
+      default:
+        break
     }
     ElMessage.error(message)
     return Promise.reject(error)
   }
 )
+
+// 刷新Token
+const refreshToken = (): Promise<IResponse> => {
+  const appStore = useAppStore()
+  const data = wsCache.get(appStore.getRefreshToken)
+  return request.post({ url: '/auth/token/refresh/', data })
+}
 
 export { service }

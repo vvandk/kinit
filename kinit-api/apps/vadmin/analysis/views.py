@@ -30,11 +30,11 @@ async def get_banners(auth: Auth = Depends(AllUserAuth())):
             "id": 3, "image": "https://ktianc.oss-cn-beijing.aliyuncs.com/kinit/system/banner/2022-11-09/banner3.png"
         },
     ]
-    return SuccessResponse(data)
+    return SuccessResponse(data, refresh=auth.refresh)
 
 
 @app.get("/user/access/source/", summary="用户来源")
-async def get_user_access_source():
+async def get_user_access_source(auth: Auth = Depends(AllUserAuth())):
     data = [
         {"value": 1000, "name": 'analysis.directAccess'},
         {"value": 310, "name": 'analysis.mailMarketing'},
@@ -42,11 +42,11 @@ async def get_user_access_source():
         {"value": 135, "name": 'analysis.videoAdvertising'},
         {"value": 1548, "name": 'analysis.searchEngines'}
     ]
-    return SuccessResponse(data)
+    return SuccessResponse(data, refresh=auth.refresh)
 
 
 @app.get("/weekly/user/activity/", summary="每周用户活跃量")
-async def get_weekly_user_activity():
+async def get_weekly_user_activity(auth: Auth = Depends(AllUserAuth())):
     data = [
         {"value": 13253, "name": 'analysis.monday'},
         {"value": 34235, "name": 'analysis.tuesday'},
@@ -56,11 +56,11 @@ async def get_weekly_user_activity():
         {"value": 1322, "name": 'analysis.saturday'},
         {"value": 1324, "name": 'analysis.sunday'}
     ]
-    return SuccessResponse(data)
+    return SuccessResponse(data, refresh=auth.refresh)
 
 
 @app.get("/monthly/sales/", summary="每月销售额")
-async def get_monthly_sales():
+async def get_monthly_sales(auth: Auth = Depends(AllUserAuth())):
     data = [
         {"estimate": 100, "actual": 120, "name": 'analysis.january'},
         {"estimate": 120, "actual": 82, "name": 'analysis.february'},
@@ -75,4 +75,4 @@ async def get_monthly_sales():
         {"estimate": 118, "actual": 99, "name": 'analysis.november'},
         {"estimate": 123, "actual": 123, "name": 'analysis.december'}
     ]
-    return SuccessResponse(data)
+    return SuccessResponse(data, refresh=auth.refresh)

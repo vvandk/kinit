@@ -4,10 +4,9 @@
 # @File           : current.py
 # @IDE            : PyCharm
 # @desc           : 获取认证后的信息工具
-
+from datetime import datetime, timedelta
 from typing import List, Optional
-
-from jose import jwt, JWTError
+import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from apps.vadmin.auth.crud import UserDal
@@ -43,7 +42,7 @@ class OpenAuth(AuthValidation):
     """
 
     @classmethod
-    def validate_token(cls, token: str | None, db: AsyncSession) -> str | None:
+    def validate_token(cls, request: Request, token: str | None) -> str | None:
         """
         验证用户 token，没有则返回 None
         """
@@ -52,9 +51,19 @@ class OpenAuth(AuthValidation):
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
             telephone: str = payload.get("sub")
-            if telephone is None:
+            exp: int = payload.get("exp")
+            is_refresh: bool = payload.get("is_refresh")
+            if telephone is None or is_refresh:
                 return None
-        except JWTError:
+            # 计算当前时间 + 缓冲时间是否大于等于 JWT 过期时间
+            buffer_time = (datetime.now() + timedelta(minutes=settings.ACCESS_TOKEN_CACHE_MINUTES)).timestamp()
+            if buffer_time >= exp:
+                request.scope["refresh"] = True
+            else:
+                request.scope["refresh"] = False
+        except jwt.exceptions.InvalidSignatureError:
+            return None
+        except jwt.exceptions.ExpiredSignatureError:
             return None
         return telephone
 
@@ -83,7 +92,7 @@ class OpenAuth(AuthValidation):
         """
         每次调用依赖此类的接口会执行该方法
         """
-        telephone = self.validate_token(token, db)
+        telephone = self.validate_token(request, token)
         if telephone:
             user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
             return await self.validate_user(request, user, db)
@@ -106,7 +115,9 @@ class AllUserAuth(AuthValidation):
         """
         每次调用依赖此类的接口会执行该方法
         """
-        telephone = self.validate_token(token, db)
+        if not settings.OAUTH_ENABLE:
+            return Auth(db=db)
+        telephone = self.validate_token(request, token)
         if isinstance(telephone, Auth):
             return telephone
         user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
@@ -136,7 +147,9 @@ class FullAdminAuth(AuthValidation):
         """
         每次调用依赖此类的接口会执行该方法
         """
-        telephone = self.validate_token(token, db)
+        if not settings.OAUTH_ENABLE:
+            return Auth(db=db)
+        telephone = self.validate_token(request, token)
         if isinstance(telephone, Auth):
             return telephone
         options = [joinedload(VadminUser.roles), joinedload("roles.menus")]

@@ -7,10 +7,9 @@
 # @desc           : 简要说明
 
 from datetime import datetime, timedelta
-from typing import Optional
 from fastapi import Request
 from application import settings
-from jose import jwt
+import jwt
 from apps.vadmin.auth import models
 from .validation import LoginValidation, LoginForm, LoginResult
 from utils.aliyun_sms import AliyunSMS
@@ -44,15 +43,19 @@ class LoginManage:
         return LoginResult(status=False, msg="验证码错误")
 
     @staticmethod
-    def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    def create_token(payload: dict, expires: timedelta = None):
         """
         创建一个生成新的访问令牌的工具函数。
+
+        pyjwt：https://github.com/jpadilla/pyjwt/blob/master/docs/usage.rst
+        jwt 博客：https://geek-docs.com/python/python-tutorial/j_python-jwt.html
+
+        #TODO 传入的时间为UTC时间datetime.datetime类型，但是在解码时获取到的是本机时间的时间戳
         """
-        to_encode = data.copy()
-        if expires_delta:
-            expire = datetime.utcnow() + expires_delta
+        if expires:
+            expire = datetime.utcnow() + expires
         else:
-            expire = datetime.utcnow() + timedelta(minutes=60)
-        to_encode.update({"exp": expire})
-        encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+            expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        payload.update({"exp": expire})
+        encoded_jwt = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
         return encoded_jwt
