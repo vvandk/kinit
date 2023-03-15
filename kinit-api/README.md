@@ -45,6 +45,16 @@ Typer 官方文档：https://typer.tiangolo.com/
 
 开发框架：Fastapi 0.94.1
 
+## 开发工具
+
+Pycharm 2022.3.2
+
+推荐插件：Chinese (Simplified) Language Pack / 中文语言包
+
+代码样式配置：
+
+![image-20230315194534959](https://ktianc.oss-cn-beijing.aliyuncs.com/kinit/public/images/image-20230315194534959.png)
+
 ## 使用
 
 ```
