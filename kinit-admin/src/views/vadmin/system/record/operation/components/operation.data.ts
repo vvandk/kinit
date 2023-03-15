@@ -4,6 +4,22 @@ import { reactive } from 'vue'
 
 export const columns = reactive<TableColumn[]>([
   {
+    field: 'user_id',
+    label: '操作人编号',
+    show: true,
+    disabled: true,
+    width: '100px',
+    span: 24
+  },
+  {
+    field: 'user_name',
+    label: '操作人',
+    show: true,
+    disabled: true,
+    width: '100px',
+    span: 24
+  },
+  {
     field: 'telephone',
     label: '手机号',
     show: true,
@@ -82,7 +98,7 @@ export const columns = reactive<TableColumn[]>([
   {
     field: 'system',
     label: '系统',
-    show: true,
+    show: false,
     width: '150px',
     span: 24
   },

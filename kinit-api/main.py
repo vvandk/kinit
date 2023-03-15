@@ -17,19 +17,19 @@ from starlette.middleware.cors import CORSMiddleware
 from application import settings
 from application import urls
 from starlette.staticfiles import StaticFiles  # 依赖安装：pip install aiofiles
-import importlib
-from core.logger import logger
 from core.exception import register_exception
 import typer
 from scripts.initialize.initialize import InitializeData, Environment
 import asyncio
 from scripts.create_app.main import CreateApp
+from core.event import lifespan
+from utils.tools import import_modules
 
 
 shell_app = typer.Typer()
 
 
-def init_app():
+def create_app():
     """
     启动项目
 
@@ -40,24 +40,10 @@ def init_app():
     app = FastAPI(
         title="Kinit",
         description="本项目基于Fastapi与Vue3+Typescript+Vite4+element-plus的基础项目 前端基于vue-element-plus-admin框架开发",
-        version="1.0.0"
+        version=settings.VERSION,
+        lifespan=lifespan
     )
-
-    def import_module(modules: list, desc: str):
-        for module in modules:
-            if not module:
-                continue
-            try:
-                # 动态导入模块
-                module_pag = importlib.import_module(module[0:module.rindex(".")])
-                getattr(module_pag, module[module.rindex(".") + 1:])(app)
-            except ModuleNotFoundError:
-                logger.error(f"AttributeError：导入{desc}失败，未找到该模块：{module}")
-            except AttributeError:
-                logger.error(f"ModuleNotFoundError：导入{desc}失败，未找到该模块下的方法：{module}")
-
-    import_module(settings.MIDDLEWARES, "中间件")
-    import_module(settings.EVENTS, "全局事件")
+    import_modules(settings.MIDDLEWARES, "中间件", app=app)
     # 全局异常捕捉处理
     register_exception(app)
     # 跨域解决
@@ -83,8 +69,11 @@ def init_app():
 def run():
     """
     启动项目
+
+    factory: 在使用 uvicorn.run() 启动 ASGI 应用程序时，可以通过设置 factory 参数来指定应用程序工厂。
+    应用程序工厂是一个返回 ASGI 应用程序实例的可调用对象，它可以在启动时动态创建应用程序实例。
     """
-    uvicorn.run(app='main:init_app', host="0.0.0.0", port=9000)
+    uvicorn.run(app='main:create_app', host="0.0.0.0", port=9000, lifespan="on", factory=True)
 
 
 @shell_app.command()
@@ -111,7 +100,7 @@ def migrate(env: Environment = Environment.pro):
 
 
 @shell_app.command()
-def create_app(path: str):
+def init_app(path: str):
     """
     自动创建初始化 APP 结构
 

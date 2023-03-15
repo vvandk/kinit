@@ -45,11 +45,13 @@ export const columns = reactive<TableColumn[]>([
   {
     field: 'last_login',
     label: '最近登录时间',
-    show: true
+    show: true,
+    width: '190px'
   },
   {
     field: 'create_datetime',
     label: '创建时间',
+    width: '190px',
     show: true
   },
   {

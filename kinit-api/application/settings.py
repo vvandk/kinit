@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.6.2"
+VERSION = "1.6.3"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = True
@@ -101,8 +101,8 @@ ALLOW_HEADERS = ["*"]
 全局事件配置
 """
 EVENTS = [
-    "core.event.register_mongo" if MONGO_DB_ENABLE else None,
-    "core.event.register_redis" if REDIS_DB_ENABLE else None,
+    "core.event.connect_mongo" if MONGO_DB_ENABLE else None,
+    "core.event.connect_redis" if REDIS_DB_ENABLE else None,
 ]
 
 """

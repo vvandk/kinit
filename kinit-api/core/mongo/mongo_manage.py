@@ -21,13 +21,11 @@ class MongoManage(DatabaseManage):
     db: AsyncIOMotorDatabase = None
 
     async def connect_to_database(self, path: str, db_name: str):
-        print("Connecting to MongoDB")
         self.client = AsyncIOMotorClient(path, maxPoolSize=10, minPoolSize=10)
         self.db = self.client[db_name]
 
     async def close_database_connection(self):
         self.client.close()
-        print("MongoDB connection closed")
 
     async def create_data(self, collection: str, data: dict) -> InsertOneResult:
         return await self.db[collection].insert_one(data)

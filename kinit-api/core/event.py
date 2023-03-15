@@ -8,13 +8,25 @@
 
 
 from fastapi import FastAPI
-from aioredis import from_url
-from application.settings import REDIS_DB_URL, MONGO_DB_URL, MONGO_DB_NAME
+from application.settings import REDIS_DB_URL, MONGO_DB_URL, MONGO_DB_NAME, EVENTS
 from core.mongo import db
 from utils.cache import Cache
+import aioredis
+from contextlib import asynccontextmanager
+from utils.tools import import_modules_async
 
 
-def register_redis(app: FastAPI) -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+
+    await import_modules_async(EVENTS, "全局事件", app=app, status=True)
+
+    yield
+
+    await import_modules_async(EVENTS, "全局事件", app=app, status=False)
+
+
+async def connect_redis(app: FastAPI, status: bool):
     """
     把 redis 挂载到 app 对象上面
 
@@ -46,30 +58,20 @@ def register_redis(app: FastAPI) -> None:
     该参数的默认值是 0，表示不进行健康检查。如果需要启用健康检查，则可以将该参数设置为一个正整数，表示检查间隔的秒数。
     例如，如果需要每隔 5 秒对 Redis 连接进行一次健康检查，则可以将 health_check_interval 设置为 5
     :param app:
+    :param status:
     :return:
     """
-
-    @app.on_event('startup')
-    async def startup_event():
-        """
-        获取链接
-        :return:
-        """
+    if status:
         print("Connecting to Redis")
-        app.state.redis = from_url(REDIS_DB_URL, decode_responses=True, health_check_interval=1)
+        assert isinstance(app, FastAPI)
+        app.state.redis = aioredis.from_url(REDIS_DB_URL, decode_responses=True, health_check_interval=1)
         await Cache(app.state.redis).cache_tab_names()
-
-    @app.on_event('shutdown')
-    async def shutdown_event():
-        """
-        关闭
-        :return:
-        """
+    else:
         print("Redis connection closed")
         await app.state.redis.close()
 
 
-def register_mongo(app: FastAPI) -> None:
+async def connect_mongo(app: FastAPI, status: bool):
     """
     把 mongo 挂载到 app 对象上面
 
@@ -77,21 +79,16 @@ def register_mongo(app: FastAPI) -> None:
     mongodb 官网：https://www.mongodb.com/docs/drivers/motor/
     motor 文档：https://motor.readthedocs.io/en/stable/
     :param app:
+    :param status:
     :return:
     """
-
-    @app.on_event('startup')
-    async def startup_event():
-        """
-        获取 mongodb 连接
-        :return:
-        """
+    if status:
+        print("Connecting to Mongo")
         await db.connect_to_database(path=MONGO_DB_URL, db_name=MONGO_DB_NAME)
-
-    @app.on_event('shutdown')
-    async def shutdown_event():
-        """
-        关闭
-        :return:
-        """
+    else:
+        print("Mongo connection closed")
         await db.close_database_connection()
+
+
+
+

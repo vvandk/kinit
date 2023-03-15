@@ -14,6 +14,7 @@ export const columns = reactive<TableColumn[]>([
   {
     field: 'category.name',
     label: '类别名称',
+    width: '200px',
     show: true,
     disabled: true,
     span: 24
@@ -28,18 +29,21 @@ export const columns = reactive<TableColumn[]>([
     field: 'view_number',
     label: '查看次数',
     show: true,
+    width: '100px',
     span: 24
   },
   {
     field: 'is_active',
     label: '是否可见',
     show: true,
+    width: '100px',
     span: 24
   },
   {
     field: 'create_datetime',
     label: '创建时间',
     show: true,
+    width: '200px',
     span: 24,
     sortable: true
   },
@@ -47,6 +51,7 @@ export const columns = reactive<TableColumn[]>([
     field: 'user.name',
     label: '创建人',
     show: true,
+    width: '100px',
     span: 24
   },
   {

@@ -69,6 +69,8 @@ def register_operation_record_middleware(app: FastAPI):
         if not MONGO_DB_ENABLE:
             return response
         telephone = request.scope.get('telephone', None)
+        user_id = request.scope.get('user_id', None)
+        user_name = request.scope.get('user_name', None)
         route = request.scope.get('route')
         if not telephone:
             return response
@@ -98,6 +100,8 @@ def register_operation_record_middleware(app: FastAPI):
         document = {
             "process_time": process_time,
             "telephone": telephone,
+            "user_id": user_id,
+            "user_name": user_name,
             "request_api": request.url.__str__(),
             "request_ip": request.client.host,
             "system": system,

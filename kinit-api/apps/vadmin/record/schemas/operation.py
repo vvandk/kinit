@@ -15,6 +15,8 @@ from pydantic import BaseModel
 
 class OpertionRecord(BaseModel):
     telephone: Optional[str] = None
+    user_id: Optional[str] = None
+    user_name: Optional[str] = None
     status_code: Optional[int] = None
     request_ip: Optional[str] = None
     request_method: Optional[str] = None

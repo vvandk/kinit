@@ -70,6 +70,8 @@ class AuthValidation:
             raise CustomException(msg="未认证，请您重新登陆", code=cls.error_code, status_code=cls.error_code)
         elif not user.is_active:
             raise CustomException(msg="用户已被冻结！", code=cls.error_code, status_code=cls.error_code)
+        request.scope["user_id"] = user.id
+        request.scope["user_name"] = user.name
         request.scope["telephone"] = user.telephone
         try:
             request.scope["body"] = await request.body()

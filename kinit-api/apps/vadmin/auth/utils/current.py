@@ -76,6 +76,8 @@ class OpenAuth(AuthValidation):
             return Auth(db=db)
         elif not user.is_active:
             return Auth(db=db)
+        request.scope["user_id"] = user.id
+        request.scope["user_name"] = user.name
         request.scope["telephone"] = user.telephone
         try:
             request.scope["body"] = await request.body()
