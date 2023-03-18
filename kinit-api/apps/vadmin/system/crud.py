@@ -34,8 +34,12 @@ class DictTypeDal(DalBase):
         """
         data = {}
         options = [joinedload(self.model.details)]
-        objs = await DictTypeDal(self.db).\
-            get_datas(limit=0, v_return_objs=True, v_options=options, dict_type=("in", dict_types))
+        objs = await DictTypeDal(self.db).get_datas(
+            limit=0,
+            v_return_objs=True,
+            v_options=options,
+            dict_type=("in", dict_types)
+        )
         for obj in objs:
             if not obj:
                 data[obj.dict_type] = []
@@ -163,6 +167,3 @@ class SettingsTabDal(DalBase):
                     tabs[item.config_key] = item.config_value
             result[tab.tab_name] = tabs
         return result
-
-
-

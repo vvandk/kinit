@@ -24,11 +24,18 @@ class QueryParams:
             self.v_order = params.v_order
             self.v_order_field = params.v_order_field
 
-    def dict(self) -> dict:
-        return self.__dict__
+    def dict(self, exclude: List[str] = None) -> dict:
+        result = copy.deepcopy(self.__dict__)
+        if exclude:
+            for item in exclude:
+                try:
+                    del result[item]
+                except KeyError:
+                    pass
+        return result
 
-    def to_count(self) -> dict:
-        params = copy.deepcopy(self.__dict__)
+    def to_count(self, exclude: List[str] = None) -> dict:
+        params = self.dict(exclude=exclude)
         del params["page"]
         del params["limit"]
         del params["v_order"]

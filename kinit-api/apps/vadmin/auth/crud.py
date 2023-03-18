@@ -66,13 +66,7 @@ class UserDal(DalBase):
         for role in roles:
             obj.roles.append(role)
         await self.flush(obj)
-        if v_options:
-            obj = await self.get_data(obj.id, v_options=v_options)
-        if v_return_obj:
-            return obj
-        if v_schema:
-            return v_schema.from_orm(obj).dict()
-        return self.out_dict(obj)
+        return await self.out_dict(obj, v_options, v_return_obj, v_schema)
 
     async def put_data(
             self,
@@ -97,13 +91,8 @@ class UserDal(DalBase):
                         obj.roles.append(role)
                 continue
             setattr(obj, key, value)
-        await self.db.flush()
-        await self.db.refresh(obj)
-        if v_return_obj:
-            return obj
-        if v_schema:
-            return v_schema.from_orm(obj).dict()
-        return self.out_dict(obj)
+        await self.flush(obj)
+        return await self.out_dict(obj, None, v_return_obj, v_schema)
 
     async def reset_current_password(self, user: models.VadminUser, data: schemas.ResetPwd):
         """
@@ -133,7 +122,7 @@ class UserDal(DalBase):
         user.nickname = data.nickname
         user.gender = data.gender
         await self.flush(user)
-        return self.out_dict(user)
+        return await self.out_dict(user)
 
     async def export_query_list(self, header: list, params: UserParams):
         """
@@ -309,13 +298,7 @@ class RoleDal(DalBase):
             for menu in menus:
                 obj.menus.append(menu)
         await self.flush(obj)
-        if v_options:
-            obj = await self.get_data(obj.id, v_options=v_options)
-        if v_return_obj:
-            return obj
-        if v_schema:
-            return v_schema.from_orm(obj).dict()
-        return self.out_dict(await self.get_data(obj.id))
+        return await self.out_dict(obj, v_options, v_return_obj, v_schema)
 
     async def put_data(
             self,
@@ -338,13 +321,8 @@ class RoleDal(DalBase):
                         obj.menus.append(menu)
                 continue
             setattr(obj, key, value)
-        await self.db.flush()
-        await self.db.refresh(obj)
-        if v_return_obj:
-            return obj
-        if v_schema:
-            return v_schema.from_orm(obj).dict()
-        return self.out_dict(obj)
+        await self.flush(obj)
+        return await self.out_dict(obj, None, v_return_obj, v_schema)
 
     async def get_role_menu_tree(self, role_id: int):
         role = await self.get_data(role_id, v_options=[joinedload(self.model.menus)])

@@ -7,6 +7,7 @@
 # @desc           : 数据库 增删改查操作
 
 # sqlalchemy 查询操作：https://segmentfault.com/a/1190000016767008
+# sqlalchemy 查询操作（官方文档）: https://www.osgeo.cn/sqlalchemy/orm/queryguide.html
 # sqlalchemy 增删改操作：https://www.osgeo.cn/sqlalchemy/tutorial/orm_data_manipulation.html#updating-orm-objects
 # SQLAlchemy lazy load和eager load: https://www.jianshu.com/p/dfad7c08c57a
 # Mysql中内连接,左连接和右连接的区别总结:https://www.cnblogs.com/restartyang/articles/9080993.html
@@ -28,10 +29,12 @@ from starlette import status
 from core.logger import logger
 from sqlalchemy.sql.selectable import Select
 from typing import Any
-from sqlalchemy.engine.result import ScalarResult
 
 
 class DalBase:
+
+    # 倒叙
+    ORDER_FIELD = ["desc", "descending"]
 
     def __init__(self, db: AsyncSession, model: Any, schema: Any, key_models: dict = None):
         self.db = db
@@ -64,7 +67,7 @@ class DalBase:
         if data_id:
             sql = sql.where(self.model.id == data_id)
         sql = self.add_filter_condition(sql, v_join_query, v_options, **kwargs)
-        if v_order and (v_order == "desc" or v_order == "descending"):
+        if v_order and (v_order in self.ORDER_FIELD):
             sql = sql.order_by(self.model.create_datetime.desc())
         queryset = await self.db.execute(sql)
         data = queryset.scalars().unique().first()
@@ -105,20 +108,18 @@ class DalBase:
         if not isinstance(v_start_sql, Select):
             v_start_sql = select(self.model).where(self.model.is_delete == False)
         sql = self.add_filter_condition(v_start_sql, v_join_query, v_options, **kwargs)
-        if v_order_field and (v_order == "desc" or v_order == "descending"):
+        if v_order_field and (v_order in self.ORDER_FIELD):
             sql = sql.order_by(getattr(self.model, v_order_field).desc(), self.model.id.desc())
         elif v_order_field:
             sql = sql.order_by(getattr(self.model, v_order_field), self.model.id)
-        elif v_order == "desc" or v_order == "descending":
+        elif v_order in self.ORDER_FIELD:
             sql = sql.order_by(self.model.id.desc())
         if limit != 0:
             sql = sql.offset((page - 1) * limit).limit(limit)
         queryset = await self.db.execute(sql)
         if v_return_objs:
             return queryset.scalars().unique().all()
-        if v_schema:
-            return [v_schema.from_orm(i).dict() for i in queryset.scalars().unique().all()]
-        return [self.out_dict(i) for i in queryset.scalars().unique().all()]
+        return [await self.out_dict(i, v_schema=v_schema) for i in queryset.scalars().unique().all()]
 
     async def get_count(self, v_join_query: dict = None, v_options: list = None, **kwargs):
         """
@@ -145,13 +146,7 @@ class DalBase:
         else:
             obj = self.model(**data.dict())
         await self.flush(obj)
-        if v_options:
-            obj = await self.get_data(obj.id, v_options=v_options)
-        if v_return_obj:
-            return obj
-        if v_schema:
-            return v_schema.from_orm(obj).dict()
-        return self.out_dict(obj)
+        return await self.out_dict(obj, v_options, v_return_obj, v_schema)
 
     async def put_data(
             self,
@@ -174,11 +169,7 @@ class DalBase:
         for key, value in obj_dict.items():
             setattr(obj, key, value)
         await self.flush(obj)
-        if v_return_obj:
-            return obj
-        if v_schema:
-            return v_schema.from_orm(obj).dict()
-        return self.out_dict(obj)
+        return await self.out_dict(obj, None, v_return_obj, v_schema)
 
     async def delete_datas(self, ids: List[int], v_soft: bool = False, **kwargs):
         """
@@ -189,9 +180,11 @@ class DalBase:
         """
         if v_soft:
             await self.db.execute(
-                update(self.model)
-                .where(self.model.id.in_(ids))
-                .values(delete_datetime=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), is_delete=True, **kwargs)
+                update(self.model).where(self.model.id.in_(ids)).values(
+                    delete_datetime=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    is_delete=True,
+                    **kwargs
+                )
             )
         else:
             await self.db.execute(delete(self.model).where(self.model.id.in_(ids)))
@@ -209,7 +202,7 @@ class DalBase:
                 foreign_key = self.key_models.get(key)
                 if foreign_key and foreign_key.get("model"):
                     # 当外键模型在查询模型中存在多个外键时，则需要添加onclause属性
-                    sql = sql.join(foreign_key.get("model"), onclause=foreign_key.get("onclause"))
+                    sql = sql.join(foreign_key.get("model"), onclause=foreign_key.get("onclause", None))
                     for v_key, v_value in value.items():
                         if v_value is not None and v_value != "":
                             v_attr = getattr(foreign_key.get("model"), v_key, None)
@@ -250,7 +243,7 @@ class DalBase:
                     sql = sql.where(or_(i for i in value[1]))
                 elif value[0] == "in":
                     sql = sql.where(attr.in_(value[1]))
-                elif value[0] == "between":
+                elif value[0] == "between" and len(value[1]) == 2:
                     sql = sql.where(attr.between(value[1][0], value[1][1]))
                 elif value[0] == "month":
                     sql = sql.where(func.date_format(attr, "%Y-%m") == value[1])
@@ -272,10 +265,19 @@ class DalBase:
         if obj:
             await self.db.refresh(obj)
 
-    def out_dict(self, data: Any):
+    async def out_dict(self, obj: Any, v_options: list = None, v_return_obj: bool = False, v_schema: Any = None):
         """
         序列化
-        :param data:
+        :param obj:
+        :param v_options: 指示应使用select在预加载中加载给定的属性。
+        :param v_return_obj: ，是否返回对象
+        :param v_schema: ，指定使用的序列化对象
         :return:
         """
-        return self.schema.from_orm(data).dict()
+        if v_options:
+            obj = await self.get_data(obj.id, v_options=v_options)
+        if v_return_obj:
+            return obj
+        if v_schema:
+            return v_schema.from_orm(obj).dict()
+        return self.schema.from_orm(obj).dict()
