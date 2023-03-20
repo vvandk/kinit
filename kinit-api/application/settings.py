@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.6.4"
+VERSION = "1.7.0"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = True
@@ -132,4 +132,5 @@ MIDDLEWARES = [
     "core.middleware.register_request_log_middleware" if REQUEST_LOG_RECORD else None,
     "core.middleware.register_operation_record_middleware" if OPERATION_LOG_RECORD and MONGO_DB_ENABLE else None,
     "core.middleware.register_demo_env_middleware" if DEMO else None,
+    "core.middleware.register_jwt_refresh_middleware"
 ]

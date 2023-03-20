@@ -43,7 +43,7 @@ Typer 官方文档：https://typer.tiangolo.com/
 
 开发语言：Python 3.10
 
-开发框架：Fastapi 0.94.1
+开发框架：Fastapi 0.95.0
 
 ## 开发工具
 

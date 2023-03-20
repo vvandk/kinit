@@ -13,7 +13,6 @@ import datetime
 import json
 import time
 from fastapi import Request, Response
-from core.exception import CustomException
 from core.logger import logger
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
@@ -21,10 +20,6 @@ from user_agents import parse
 from application.settings import OPERATION_RECORD_METHOD, MONGO_DB_ENABLE, IGNORE_OPERATION_FUNCTION,\
     DEMO_WHITE_LIST_PATH, DEMO
 from core.mongo import get_database
-
-
-# 记录请求日志
-from utils import status
 from utils.response import ErrorResponse
 
 
@@ -137,3 +132,18 @@ def register_demo_env_middleware(app: FastAPI):
         if DEMO and request.method != "GET" and path not in DEMO_WHITE_LIST_PATH:
             return ErrorResponse(msg="演示环境，禁止操作")
         return await call_next(request)
+
+
+def register_jwt_refresh_middleware(app: FastAPI):
+    """
+    JWT刷新中间件
+    :param app:
+    :return:
+    """
+
+    @app.middleware("http")
+    async def jwt_refresh_middleware(request: Request, call_next):
+        response = await call_next(request)
+        refresh = request.scope.get('refresh', 0)
+        response.headers["refresh"] = str(refresh)
+        return response

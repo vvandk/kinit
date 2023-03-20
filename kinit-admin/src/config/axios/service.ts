@@ -66,13 +66,13 @@ service.interceptors.response.use(
     // 这个状态码是和后端约定好的
     const code = response.data.code || unauthorized_code
     const message = response.data.message || '后端接口无返回内容'
-    const refresh = response.data.refresh || false
+    const refresh = response.headers.refresh
 
     if (response.config.responseType === 'blob') {
       // 如果是文件流，直接过
       return response
     } else if (code === result_code) {
-      if (refresh) {
+      if (refresh === '1') {
         // 因token快过期，刷新token
         refreshToken().then((res) => {
           const appStore = useAppStore()

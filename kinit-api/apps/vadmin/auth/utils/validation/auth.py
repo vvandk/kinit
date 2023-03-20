@@ -4,20 +4,20 @@
 # @File           : auth.py
 # @IDE            : PyCharm
 # @desc           : 用户凭证验证装饰器
-from datetime import datetime, timedelta
+
 from fastapi import Request
 import jwt
 from pydantic import BaseModel
 from application import settings
 from sqlalchemy.ext.asyncio import AsyncSession
-from apps.vadmin.auth import models
+from apps.vadmin.auth.models import VadminUser
 from core.exception import CustomException
 from utils import status
+from datetime import timedelta, datetime
 
 
 class Auth(BaseModel):
-    user: models.VadminUser = None
-    refresh: bool = False
+    user: VadminUser = None
     db: AsyncSession
 
     class Config:
@@ -33,7 +33,7 @@ class AuthValidation:
     error_code = status.HTTP_401_UNAUTHORIZED
 
     @classmethod
-    def validate_token(cls, request: Request, token: str) -> str:
+    def validate_token(cls, request: Request, token: str | None) -> str:
         """
         验证用户 token
         """
@@ -52,9 +52,9 @@ class AuthValidation:
             # print("当前时间", buffer_time, datetime.fromtimestamp(buffer_time))
             # print("剩余时间", exp - buffer_time)
             if buffer_time >= exp:
-                request.scope["refresh"] = True
+                request.scope["refresh"] = 1
             else:
-                request.scope["refresh"] = False
+                request.scope["refresh"] = 0
         except jwt.exceptions.InvalidSignatureError:
             raise CustomException(msg="无效认证，请您重新登录", code=cls.error_code)
         except jwt.exceptions.ExpiredSignatureError:
@@ -62,7 +62,7 @@ class AuthValidation:
         return telephone
 
     @classmethod
-    async def validate_user(cls, request: Request, user: models.VadminUser, db: AsyncSession) -> Auth:
+    async def validate_user(cls, request: Request, user: VadminUser, db: AsyncSession) -> Auth:
         """
         验证用户信息
         """
@@ -70,12 +70,25 @@ class AuthValidation:
             raise CustomException(msg="未认证，请您重新登陆", code=cls.error_code, status_code=cls.error_code)
         elif not user.is_active:
             raise CustomException(msg="用户已被冻结！", code=cls.error_code, status_code=cls.error_code)
+        request.scope["telephone"] = user.telephone
         request.scope["user_id"] = user.id
         request.scope["user_name"] = user.name
-        request.scope["telephone"] = user.telephone
         try:
             request.scope["body"] = await request.body()
         except RuntimeError:
             request.scope["body"] = "获取失败"
-        refresh = request.scope.get("refresh", False)
-        return Auth(user=user, db=db, refresh=refresh)
+        return Auth(user=user, db=db)
+
+    @classmethod
+    def get_user_permissions(cls, user: VadminUser) -> set:
+        """
+        获取员工用户所有权限列表
+        """
+        if any([role.is_admin for role in user.roles]):
+            return {'*.*.*'}
+        permissions = set()
+        for role_obj in user.roles:
+            for menu in role_obj.menus:
+                if menu.perms and not menu.disabled:
+                    permissions.add(menu.perms)
+        return permissions

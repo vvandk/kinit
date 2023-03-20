@@ -42,7 +42,7 @@ http.interceptors.response.use(
     // 获取错误信息
     const msg = res.data.message || errorCode[code] || errorCode['default']
     // 是否刷新token
-    const refresh = res.data.refresh || false
+    const refresh = res.header.refresh
     if (code === 500) {
       toast(msg)
       return Promise.reject(new Error(msg))
@@ -58,7 +58,7 @@ http.interceptors.response.use(
       toast(msg)
       return Promise.reject('error')
     } else if (code === 200) {
-      if (refresh) {
+      if (refresh === '1') {
         // 因token快过期，刷新token
         refreshToken().then((res) => {
           setToken(`${res.data.token_type} ${res.data.access_token}`)
