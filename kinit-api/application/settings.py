@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.7.0"
+VERSION = "1.7.1"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = True

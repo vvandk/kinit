@@ -18,13 +18,13 @@ class OpertionRecord(BaseModel):
     user_id: Optional[str] = None
     user_name: Optional[str] = None
     status_code: Optional[int] = None
-    request_ip: Optional[str] = None
+    client_ip: Optional[str] = None
     request_method: Optional[str] = None
     api_path: Optional[str] = None
     system: Optional[str] = None
     browser: Optional[str] = None
     summary: Optional[str] = None
-    name: Optional[str] = None
+    route_name: Optional[str] = None
     description: Optional[str] = None
     tags: Optional[List[str]] = None
     process_time: Optional[str] = None

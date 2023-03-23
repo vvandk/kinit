@@ -36,8 +36,8 @@ export const columns = reactive<TableColumn[]>([
     span: 24
   },
   {
-    field: 'request_ip',
-    label: '登陆地址',
+    field: 'client_ip',
+    label: '客户端地址',
     width: '130px',
     show: true,
     disabled: true,
@@ -70,7 +70,7 @@ export const columns = reactive<TableColumn[]>([
     span: 24
   },
   {
-    field: 'name',
+    field: 'route_name',
     label: '接口函数',
     show: false,
     width: '150px',

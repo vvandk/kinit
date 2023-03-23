@@ -5,7 +5,6 @@ from bson.json_util import dumps
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from core.mongo import DatabaseManage
 from pymongo.results import InsertOneResult
-from pydantic import BaseModel
 
 
 class MongoManage(DatabaseManage):
@@ -76,6 +75,8 @@ class MongoManage(DatabaseManage):
             elif isinstance(v, tuple):
                 if v[0] == "like" and v[1]:
                     params[k] = {'$regex': v[1]}
+                elif v[0] == "between" and len(v[1]) == 2:
+                    params[k] = {'$gte': v[1][0], '$lt': v[1][0]}
             else:
                 params[k] = v
         return params
