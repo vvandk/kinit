@@ -21,6 +21,7 @@ from utils.file.aliyun_oss import AliyunOSS, BucketConf
 from utils.aliyun_sms import AliyunSMS
 from utils.excel.import_manage import ImportManage, FieldType
 from utils.excel.write_xlsx import WriteXlsx
+from utils.send_email import EmailSender
 from .params import UserParams
 from utils.tools import test_password
 from . import models, schemas
@@ -205,16 +206,16 @@ class UserDal(DalBase):
             "error_url": im.generate_error_url()
         }
 
-    async def init_password_send_sms(self, ids: List[int], rd: Redis):
+    async def init_password(self, ids: List[int]):
         """
-        初始化所选用户密码并发送通知短信
+        初始化所选用户密码
         将用户密码改为系统默认密码，并将初始化密码状态改为false
         """
         users = await self.get_datas(limit=0, id=("in", ids), v_return_objs=True)
         result = []
         for user in users:
             # 重置密码
-            data = {"id": user.id, "telephone": user.telephone, "name": user.name}
+            data = {"id": user.id, "telephone": user.telephone, "name": user.name, "email": user.email}
             password = user.telephone[5:12] if settings.DEFAULT_PASSWORD == "0" else settings.DEFAULT_PASSWORD
             user.password = self.model.get_password_hash(password)
             user.is_reset_password = False
@@ -223,6 +224,14 @@ class UserDal(DalBase):
             data["password"] = password
             result.append(data)
         await self.db.flush()
+        return result
+
+    async def init_password_send_sms(self, ids: List[int], rd: Redis):
+        """
+        初始化所选用户密码并发送通知短信
+        将用户密码改为系统默认密码，并将初始化密码状态改为false
+        """
+        result = await self.init_password(ids)
         for user in result:
             if not user["reset_password_status"]:
                 user["send_sms_status"] = False
@@ -237,6 +246,35 @@ class UserDal(DalBase):
             except CustomException as e:
                 user["send_sms_status"] = False
                 user["send_sms_msg"] = e.msg
+        return result
+
+    async def init_password_send_email(self, ids: List[int], rd: Redis):
+        """
+        初始化所选用户密码并发送通知邮件
+        将用户密码改为系统默认密码，并将初始化密码状态改为false
+        """
+        result = await self.init_password(ids)
+        for user in result:
+            if not user["reset_password_status"]:
+                user["send_sms_status"] = False
+                user["send_sms_msg"] = "重置密码失败"
+                continue
+            password: str = user.pop("password")
+            email: str = user.get("email", None)
+            if email:
+                subject = "密码已重置"
+                body = f"您好，您的密码已经重置为{password}，请及时登录并修改密码。"
+                es = EmailSender(rd)
+                try:
+                    send_result = await es.send_email([email], subject, body)
+                    user["send_sms_status"] = send_result
+                    user["send_sms_msg"] = "" if send_result else "发送失败，请联系管理员"
+                except CustomException as e:
+                    user["send_sms_status"] = False
+                    user["send_sms_msg"] = e.msg
+            else:
+                user["send_sms_status"] = False
+                user["send_sms_msg"] = "未获取到邮箱地址"
         return result
 
     async def update_current_avatar(self, user: models.VadminUser, file: UploadFile):

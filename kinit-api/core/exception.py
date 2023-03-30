@@ -16,7 +16,8 @@ from core.logger import logger
 
 
 class CustomException(Exception):
-    def __init__(self, msg: str, code: int, status_code: int = status.HTTP_200_OK):
+
+    def __init__(self, msg: str, code: int = status.HTTP_400_BAD_REQUEST, status_code: int = status.HTTP_200_OK):
         self.msg = msg
         self.code = code
         self.status_code = status_code
@@ -33,7 +34,7 @@ def register_exception(app: FastAPI):
         自定义异常
         """
         return JSONResponse(
-            status_code=200,
+            status_code=exc.status_code,
             content={"message": exc.msg, "code": exc.code},
         )
 

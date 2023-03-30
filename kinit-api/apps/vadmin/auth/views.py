@@ -119,6 +119,15 @@ async def post_users_init_password(
     return SuccessResponse(await crud.UserDal(auth.db).init_password_send_sms(ids.ids, request.app.state.redis))
 
 
+@app.post("/users/init/password/send/email/", summary="初始化所选用户密码并发送通知邮件")
+async def post_users_init_password_send_email(
+        request: Request,
+        ids: IdList = Depends(),
+        auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.reset"]))
+):
+    return SuccessResponse(await crud.UserDal(auth.db).init_password_send_email(ids.ids, request.app.state.redis))
+
+
 @app.put("/users/wx/server/openid/", summary="更新当前用户服务端微信平台openid")
 async def put_user_wx_server_openid(request: Request, code: str, auth: Auth = Depends(AllUserAuth())):
     result = await crud.UserDal(auth.db).update_wx_server_openid(code, auth.user, request.app.state.redis)

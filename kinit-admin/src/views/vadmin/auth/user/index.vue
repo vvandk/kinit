@@ -20,7 +20,8 @@ import { columns, searchSchema } from './components/user.data'
 import { ref, unref, watch, nextTick } from 'vue'
 import Write from './components/Write.vue'
 import Import from './components/Import.vue'
-import Password from './components/Password.vue'
+import PasswordSendSMS from './components/PasswordSendSMS.vue'
+import PasswordSendEmail from './components/PasswordSendEmail.vue'
 import { Dialog } from '@/components/Dialog'
 import {
   ElButton,
@@ -180,7 +181,8 @@ const importList = () => {
 }
 
 const passwordDialogVisible = ref(false)
-const passwordDialogTitle = ref('重置密码并发送短信')
+let passwordDialogType = 'sms'
+let passwordDialogTitle = ref('重置密码并发送短信')
 const selections = ref([] as any[])
 
 // 批量发送密码至短信
@@ -189,6 +191,21 @@ const sendPasswordToSMS = async () => {
   selections.value = await getSelections()
   if (selections.value.length > 0) {
     passwordDialogVisible.value = true
+    passwordDialogType = 'sms'
+    passwordDialogTitle.value = '重置密码并发送短信'
+  } else {
+    return ElMessage.warning('请先选择数据')
+  }
+}
+
+// 批量发送密码至邮件
+const sendPasswordToEmail = async () => {
+  const { getSelections } = methods
+  selections.value = await getSelections()
+  if (selections.value.length > 0) {
+    passwordDialogVisible.value = true
+    passwordDialogType = 'email'
+    passwordDialogTitle.value = '重置密码并发送邮件'
   } else {
     return ElMessage.warning('请先选择数据')
   }
@@ -205,6 +222,8 @@ const handleCommand = (command: string) => {
   } else if (command === 'c') {
     sendPasswordToSMS()
   } else if (command === 'd') {
+    sendPasswordToEmail()
+  } else if (command === 'e') {
     delDatas(null, true)
   }
 }
@@ -233,6 +252,9 @@ const handleCommand = (command: string) => {
         <ElCol :span="1.5" v-hasPermi="['auth.user.reset']" v-if="!mobile">
           <ElButton @click="sendPasswordToSMS">重置密码通知短信</ElButton>
         </ElCol>
+        <ElCol :span="1.5" v-hasPermi="['auth.user.reset']" v-if="!mobile">
+          <ElButton @click="sendPasswordToEmail">重置密码通知邮件</ElButton>
+        </ElCol>
         <ElCol :span="1.5" v-hasPermi="['auth.user.delete']" v-if="!mobile">
           <ElButton type="danger" @click="delDatas(null, true)">批量删除</ElButton>
         </ElCol>
@@ -255,7 +277,10 @@ const handleCommand = (command: string) => {
                 <ElDropdownItem command="c" v-hasPermi="['auth.user.reset']"
                   >重置密码通知短信</ElDropdownItem
                 >
-                <ElDropdownItem command="d" v-hasPermi="['auth.user.delete']"
+                <ElDropdownItem command="d" v-hasPermi="['auth.user.reset']"
+                  >重置密码通知邮件</ElDropdownItem
+                >
+                <ElDropdownItem command="e" v-hasPermi="['auth.user.delete']"
                   >批量删除</ElDropdownItem
                 >
               </ElDropdownMenu>
@@ -343,10 +368,20 @@ const handleCommand = (command: string) => {
     <Dialog
       v-model="passwordDialogVisible"
       :title="passwordDialogTitle"
-      width="850px"
+      width="1000px"
       maxHeight="550px"
     >
-      <Password :selections="selections" @get-list="getList" />
+      <PasswordSendSMS
+        v-if="passwordDialogType === 'sms'"
+        :selections="selections"
+        @get-list="getList"
+      />
+
+      <PasswordSendEmail
+        v-else-if="passwordDialogType === 'email'"
+        :selections="selections"
+        @get-list="getList"
+      />
     </Dialog>
   </ContentWrap>
 </template>

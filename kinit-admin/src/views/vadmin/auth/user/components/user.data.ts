@@ -28,6 +28,12 @@ export const columns = reactive<TableColumn[]>([
     disabled: true
   },
   {
+    field: 'email',
+    label: '邮箱',
+    show: true,
+    disabled: true
+  },
+  {
     field: 'gender',
     label: '性别',
     show: true
@@ -77,6 +83,19 @@ export const schema = reactive<FormSchema[]>([
     }
   },
   {
+    field: 'nickname',
+    label: '用户昵称',
+    colProps: {
+      span: 12
+    },
+    component: 'Input',
+    componentProps: {
+      style: {
+        width: '100%'
+      }
+    }
+  },
+  {
     field: 'telephone',
     label: '手机号码',
     colProps: {
@@ -90,8 +109,8 @@ export const schema = reactive<FormSchema[]>([
     }
   },
   {
-    field: 'nickname',
-    label: '用户昵称',
+    field: 'email',
+    label: '邮箱',
     colProps: {
       span: 12
     },

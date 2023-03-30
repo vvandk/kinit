@@ -42,13 +42,13 @@ class Cache:
         """
         获取系统配置
         :params tab_name: 配置表标签名称
-        :params retry: 重试次数
+        :params retry_num: 重试次数
         """
         result = await self.rd.get(tab_name)
         if not result and retry > 0:
-            logger.error(f"未从Redis中获取到{tab_name}配置信息，正在重新更新配置信息，重试次数：{retry}")
+            logger.error(f"未从Redis中获取到{tab_name}配置信息，正在重新更新配置信息，重试次数：{retry}。")
             await self.cache_tab_names([tab_name])
-            await self.get_tab_name(tab_name, retry - 1)
+            return await self.get_tab_name(tab_name, retry - 1)
         elif not result and retry == 0:
             raise CustomException(f"获取{tab_name}配置信息失败，请联系管理员！", code=status.HTTP_ERROR)
         else:

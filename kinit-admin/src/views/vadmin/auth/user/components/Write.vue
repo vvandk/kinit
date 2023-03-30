@@ -6,7 +6,7 @@ import { useValidator } from '@/hooks/web/useValidator'
 import { schema } from './user.data'
 import { getRoleOptionsApi } from '@/api/vadmin/auth/role'
 
-const { required } = useValidator()
+const { required, isEmail } = useValidator()
 
 const props = defineProps({
   currentRow: {
@@ -20,7 +20,8 @@ const rules = reactive({
   is_active: [required()],
   is_staff: [required()],
   role_ids: [required()],
-  telephone: [required()]
+  telephone: [required()],
+  email: [required(), { validator: isEmail, trigger: 'blur' }]
 })
 
 const { register, methods, elFormRef } = useForm({

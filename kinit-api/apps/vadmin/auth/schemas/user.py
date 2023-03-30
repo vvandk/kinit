@@ -11,13 +11,14 @@
 
 from typing import List, Optional
 from pydantic import BaseModel, root_validator
-from core.data_types import Telephone, DatetimeStr
+from core.data_types import Telephone, DatetimeStr, Email
 from .role import RoleSimpleOut
 
 
 class User(BaseModel):
     name: Optional[str] = None
     telephone: Telephone
+    email: Optional[Email] = None
     nickname: Optional[str] = None
     avatar: Optional[str] = None
     is_active: Optional[bool] = True
@@ -40,6 +41,7 @@ class UserUpdateBaseInfo(BaseModel):
     """
     name: str
     telephone: Telephone
+    email: Optional[Email] = None
     nickname: Optional[str] = None
     gender: Optional[str] = "0"
 
@@ -50,6 +52,7 @@ class UserUpdate(User):
     """
     name: Optional[str] = None
     telephone: Telephone
+    email: Optional[Email] = None
     nickname: Optional[str] = None
     avatar: Optional[str] = None
     is_active: Optional[bool] = True

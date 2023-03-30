@@ -12,6 +12,7 @@ import Baidu from './baidu.vue'
 import Privacy from './privacy.vue'
 import Agreement from './agreement.vue'
 import WXClient from './wxServer.vue'
+import Email from './email.vue'
 import { ContentWrap } from '@/components/ContentWrap'
 import { getSystemSettingsTabsApi } from '@/api/vadmin/system/settings'
 
@@ -37,6 +38,7 @@ getList()
           <Privacy v-else-if="item.tab_name === 'web_privacy'" :tab-id="item.id" />
           <Agreement v-else-if="item.tab_name === 'web_agreement'" :tab-id="item.id" />
           <WXClient v-else-if="item.tab_name === 'wx_server'" :tab-id="item.id" />
+          <Email v-else-if="item.tab_name === 'web_email'" :tab-id="item.id" />
         </ElTabPane>
       </template>
     </ElTabs>

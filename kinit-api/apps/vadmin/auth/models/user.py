@@ -23,6 +23,7 @@ class VadminUser(BaseModel):
 
     avatar = Column(String(500), nullable=True, comment='头像')
     telephone = Column(String(11), nullable=False, index=True, comment="手机号", unique=False)
+    email = Column(String(50), nullable=True, comment="邮箱地址")
     name = Column(String(50), index=True, nullable=False, comment="姓名")
     nickname = Column(String(50), nullable=True, comment="昵称")
     password = Column(String(255), nullable=True, comment="密码")

@@ -6,7 +6,6 @@
 # @IDE            : PyCharm
 # @desc           : 简要说明
 
-import json
 import requests
 from core.logger import logger
 from utils.cache import Cache

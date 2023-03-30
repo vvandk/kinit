@@ -24,5 +24,6 @@ error = logger.add(log_path_error, rotation="00:00", retention="3 days", enqueue
 
 if __name__ == '__main__':
     print(BASE_DIR)
-    logger.info("hell")
-    logger.error("hell")
+    # logger.info("1")
+    retry: int = 1
+    logger.error("未从Redis中获取到配置信息，正在重新更新配置信息，重试次数：{}。".format(retry))

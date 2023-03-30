@@ -54,11 +54,21 @@ export const useValidator = () => {
     }
   }
 
+  const isEmail = (rule: any, val: any, callback: Callback) => {
+    // 判断是否为邮箱地址
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      callback()
+    } else {
+      callback(new Error('请填写正确的邮箱地址'))
+    }
+  }
+
   return {
     required,
     lengthRange,
     notSpace,
     notSpecialCharacters,
-    isEqual
+    isEqual,
+    isEmail
   }
 }

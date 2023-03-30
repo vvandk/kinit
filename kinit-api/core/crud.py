@@ -19,14 +19,14 @@
 # https://www.osgeo.cn/sqlalchemy/orm/loading_relationships.html?highlight=selectinload#sqlalchemy.orm.joinedload
 
 import datetime
-from typing import List
+from typing import List, Set
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func, delete, update, or_
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from core.logger import logger
+from core.exception import CustomException
 from sqlalchemy.sql.selectable import Select
 from typing import Any
 
@@ -47,6 +47,7 @@ class DalBase:
             data_id: int = None,
             v_options: list = None,
             v_join_query: dict = None,
+            v_or: List[tuple] = None,
             v_order: str = None,
             v_return_none: bool = False,
             v_schema: Any = None,
@@ -58,6 +59,7 @@ class DalBase:
         :param data_id: 数据 ID
         :param v_options: 指示应使用select在预加载中加载给定的属性。
         :param v_join_query: 外键字段查询，内连接
+        :param v_or: 或逻辑查询
         :param v_order: 排序，默认正序，为 desc 是倒叙
         :param v_return_none: 是否返回空 None，否认 抛出异常，默认抛出异常
         :param v_schema: 指定使用的序列化对象
@@ -66,7 +68,7 @@ class DalBase:
         sql = select(self.model).where(self.model.is_delete == False)
         if data_id:
             sql = sql.where(self.model.id == data_id)
-        sql = self.add_filter_condition(sql, v_join_query, v_options, **kwargs)
+        sql = self.add_filter_condition(sql, v_options, v_join_query, v_or, **kwargs)
         if v_order and (v_order in self.ORDER_FIELD):
             sql = sql.order_by(self.model.create_datetime.desc())
         queryset = await self.db.execute(sql)
@@ -83,8 +85,9 @@ class DalBase:
             self,
             page: int = 1,
             limit: int = 10,
-            v_join_query: dict = None,
             v_options: list = None,
+            v_join_query: dict = None,
+            v_or: List[tuple] = None,
             v_order: str = None,
             v_order_field: str = None,
             v_return_objs: bool = False,
@@ -96,18 +99,19 @@ class DalBase:
         获取数据列表
         :param page: 页码
         :param limit: 当前页数据量
-        :param v_join_query: 外键字段查询
         :param v_options: 指示应使用select在预加载中加载给定的属性。
-        :param v_schema: 指定使用的序列化对象
+        :param v_join_query: 外键字段查询
+        :param v_or: 或逻辑查询
         :param v_order: 排序，默认正序，为 desc 是倒叙
         :param v_order_field: 排序字段
         :param v_return_objs: 是否返回对象
         :param v_start_sql: 初始 sql
+        :param v_schema: 指定使用的序列化对象
         :param kwargs: 查询参数
         """
         if not isinstance(v_start_sql, Select):
             v_start_sql = select(self.model).where(self.model.is_delete == False)
-        sql = self.add_filter_condition(v_start_sql, v_join_query, v_options, **kwargs)
+        sql = self.add_filter_condition(v_start_sql, v_options, v_join_query, v_or, **kwargs)
         if v_order_field and (v_order in self.ORDER_FIELD):
             sql = sql.order_by(getattr(self.model, v_order_field).desc(), self.model.id.desc())
         elif v_order_field:
@@ -121,15 +125,17 @@ class DalBase:
             return queryset.scalars().unique().all()
         return [await self.out_dict(i, v_schema=v_schema) for i in queryset.scalars().unique().all()]
 
-    async def get_count(self, v_join_query: dict = None, v_options: list = None, **kwargs):
+    async def get_count(self, v_options: list = None, v_join_query: dict = None, v_or: List[tuple] = None, **kwargs):
         """
         获取数据总数
-        :param v_join_query: 外键字段查询
+
         :param v_options: 指示应使用select在预加载中加载给定的属性。
+        :param v_join_query: 外键字段查询
+        :param v_or: 或逻辑查询
         :param kwargs: 查询参数
         """
         sql = select(func.count(self.model.id).label('total')).where(self.model.is_delete == False)
-        sql = self.add_filter_condition(sql, v_join_query, v_options, **kwargs)
+        sql = self.add_filter_condition(sql, v_options, v_join_query, v_or, **kwargs)
         queryset = await self.db.execute(sql)
         return queryset.one()['total']
 
@@ -189,71 +195,117 @@ class DalBase:
         else:
             await self.db.execute(delete(self.model).where(self.model.id.in_(ids)))
 
-    def add_filter_condition(self, sql: select, v_join_query: dict = None, v_options: list = None, **kwargs) -> select:
+    def add_filter_condition(
+            self,
+            sql: select,
+            v_options: list = None,
+            v_join_query: dict = None,
+            v_or: List[tuple] = None,
+            **kwargs
+    ) -> select:
         """
         添加过滤条件，以及内连接过滤条件
         :param sql:
-        :param v_join_query: 外键字段查询，内连接
         :param v_options: 指示应使用select在预加载中加载给定的属性。
+        :param v_join_query: 外键字段查询，内连接
+        :param v_or: 或逻辑
         :param kwargs: 关键词参数
         """
-        if v_join_query and self.key_models:
+        v_join: Set[str] = set()
+        v_join_left: Set[str] = set()
+        if v_join_query:
             for key, value in v_join_query.items():
                 foreign_key = self.key_models.get(key)
-                if foreign_key and foreign_key.get("model"):
-                    # 当外键模型在查询模型中存在多个外键时，则需要添加onclause属性
-                    sql = sql.join(foreign_key.get("model"), onclause=foreign_key.get("onclause", None))
-                    for v_key, v_value in value.items():
-                        if v_value is not None and v_value != "":
-                            v_attr = getattr(foreign_key.get("model"), v_key, None)
-                            sql = self.filter_condition(sql, v_attr, v_value)
-                else:
-                    logger.error(f"外键查询报错：{key}模型不存在，无法进行下一步查询。")
-        elif v_join_query and not self.key_models:
-            logger.error(f"外键查询报错：key_models 外键模型无配置项，无法进行下一步查询。")
-        for field in kwargs:
-            value = kwargs.get(field)
-            if value is not None and value != "":
-                attr = getattr(self.model, field, None)
-                sql = self.filter_condition(sql, attr, value)
+                conditions = []
+                self.__dict_filter(conditions, foreign_key.get("model"), **value)
+                if conditions:
+                    sql = sql.where(*conditions)
+                    v_join.add(key)
+        if v_or:
+            sql = self.__or_filter(sql, v_or, v_join_left, v_join)
+        for item in v_join:
+            foreign_key = self.key_models.get(item)
+            # 当外键模型在查询模型中存在多个外键时，则需要添加onclause属性
+            sql = sql.join(foreign_key.get("model"), onclause=foreign_key.get("onclause"))
+        for item in v_join_left:
+            foreign_key = self.key_models.get(item)
+            # 当外键模型在查询模型中存在多个外键时，则需要添加onclause属性
+            sql = sql.outerjoin(foreign_key.get("model"), onclause=foreign_key.get("onclause"))
+        conditions = []
+        self.__dict_filter(conditions, self.model, **kwargs)
+        if conditions:
+            sql = sql.where(*conditions)
         if v_options:
             sql = sql.options(*[load for load in v_options])
         return sql
 
-    @classmethod
-    def filter_condition(cls, sql: Any, attr: Any, value: Any):
+    def __or_filter(self, sql: select, v_or: List[tuple], v_join_left: Set[str], v_join: Set[str]):
         """
-        过滤条件
+        或逻辑操作
+        :param sql:
+        :param v_or: 或逻辑
+        :param v_join_left: 左连接
+        :param v_join: 内连接
         """
-        if not attr:
-            return sql
-        if isinstance(value, tuple):
-            if len(value) == 1:
-                if value[0] == "None":
-                    sql = sql.where(attr.is_(None))
-                elif value[0] == "not None":
-                    sql = sql.where(attr.isnot(None))
-            elif len(value) == 2 and value[1] is not None:
-                if value[0] == "date":
-                    # 根据日期查询， 关键函数是：func.time_format和func.date_format
-                    sql = sql.where(func.date_format(attr, "%Y-%m-%d") == value[1])
-                elif value[0] == "like":
-                    sql = sql.where(attr.like(f"%{value[1]}%"))
-                elif value[0] == "or":
-                    sql = sql.where(or_(i for i in value[1]))
-                elif value[0] == "in":
-                    sql = sql.where(attr.in_(value[1]))
-                elif value[0] == "between" and len(value[1]) == 2:
-                    sql = sql.where(attr.between(value[1][0], value[1][1]))
-                elif value[0] == "month":
-                    sql = sql.where(func.date_format(attr, "%Y-%m") == value[1])
-                elif value[0] == "!=":
-                    sql = sql.where(attr != value[1])
-                elif value[0] == ">":
-                    sql = sql.where(attr > value[1])
-        else:
-            sql = sql.where(attr == value)
+        or_list = []
+        for item in v_or:
+            if len(item) == 2:
+                model = self.model
+                condition = {item[0]: item[1]}
+                self.__dict_filter(or_list, model, **condition)
+            elif len(item) == 4 and item[0] == "fk":
+                model = self.key_models.get(item[1]).get("model")
+                condition = {item[2]: item[3]}
+                conditions = []
+                self.__dict_filter(conditions, model, **condition)
+                if conditions:
+                    or_list = or_list + conditions
+                    v_join_left.add(item[1])
+                    if item[1] in v_join:
+                        v_join.remove(item[1])
+            else:
+                raise CustomException(msg="v_or 获取查询属性失败，语法错误！")
+        if or_list:
+            sql = sql.where(or_(i for i in or_list))
         return sql
+
+    def __dict_filter(self, conditions: list, model, **kwargs):
+        """
+        字典过滤
+        :param model:
+        :param kwargs:
+        """
+        for field, value in kwargs.items():
+            if value is not None and value != "":
+                attr = getattr(model, field)
+                if isinstance(value, tuple):
+                    if len(value) == 1:
+                        if value[0] == "None":
+                            conditions.append(attr.is_(None))
+                        elif value[0] == "not None":
+                            conditions.append(attr.isnot(None))
+                        else:
+                            raise CustomException("SQL查询语法错误")
+                    elif len(value) == 2 and value[1] not in [None, [], ""]:
+                        if value[0] == "date":
+                            # 根据日期查询， 关键函数是：func.time_format和func.date_format
+                            conditions.append(func.date_format(attr, "%Y-%m-%d") == value[1])
+                        elif value[0] == "like":
+                            conditions.append(attr.like(f"%{value[1]}%"))
+                        elif value[0] == "in":
+                            conditions.append(attr.in_(value[1]))
+                        elif value[0] == "between" and len(value[1]) == 2:
+                            conditions.append(attr.between(value[1][0], value[1][1]))
+                        elif value[0] == "month":
+                            conditions.append(func.date_format(attr, "%Y-%m") == value[1])
+                        elif value[0] == "!=":
+                            conditions.append(attr != value[1])
+                        elif value[0] == ">":
+                            conditions.append(attr > value[1])
+                        else:
+                            raise CustomException("SQL查询语法错误")
+                else:
+                    conditions.append(attr == value)
 
     async def flush(self, obj: Any = None):
         """

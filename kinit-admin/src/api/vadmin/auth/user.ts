@@ -51,3 +51,7 @@ export const postImportUserApi = (data: any): Promise<IResponse> => {
 export const postUsersInitPasswordSendSMSApi = (data: any): Promise<IResponse> => {
   return request.post({ url: `/vadmin/auth/users/init/password/send/sms/`, data })
 }
+
+export const postUsersInitPasswordSendEmailApi = (data: any): Promise<IResponse> => {
+  return request.post({ url: `/vadmin/auth/users/init/password/send/email/`, data })
+}

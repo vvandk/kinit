@@ -37,6 +37,17 @@ class Telephone(str):
         return vali_telephone(v)
 
 
+class Email(str):
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        return vali_email(v)
+
+
 class DateStr(str):
 
     @classmethod
