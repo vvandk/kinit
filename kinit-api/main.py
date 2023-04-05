@@ -96,7 +96,7 @@ def migrate(env: Environment = Environment.pro):
     :params name: 数据库环境
     """
     print("开始更新数据库表")
-    InitializeData().migrate_model(env)
+    InitializeData.migrate_model(env)
 
 
 @shell_app.command()
