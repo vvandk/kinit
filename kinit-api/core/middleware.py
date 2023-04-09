@@ -144,6 +144,6 @@ def register_jwt_refresh_middleware(app: FastAPI):
     @app.middleware("http")
     async def jwt_refresh_middleware(request: Request, call_next):
         response = await call_next(request)
-        refresh = request.scope.get('refresh', 0)
-        response.headers["refresh"] = str(refresh)
+        refresh = request.scope.get('if-refresh', 0)
+        response.headers["if-refresh"] = str(refresh)
         return response

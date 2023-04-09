@@ -66,7 +66,7 @@ service.interceptors.response.use(
     // 这个状态码是和后端约定好的
     const code = response.data.code || unauthorized_code
     const message = response.data.message || '后端接口无返回内容'
-    const refresh = response.headers.refresh
+    const refresh = response.headers['if-refresh']
 
     if (response.config.responseType === 'blob') {
       // 如果是文件流，直接过

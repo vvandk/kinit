@@ -52,9 +52,9 @@ class AuthValidation:
             # print("当前时间", buffer_time, datetime.fromtimestamp(buffer_time))
             # print("剩余时间", exp - buffer_time)
             if buffer_time >= exp:
-                request.scope["refresh"] = 1
+                request.scope["if-refresh"] = 1
             else:
-                request.scope["refresh"] = 0
+                request.scope["if-refresh"] = 0
         except jwt.exceptions.InvalidSignatureError:
             raise CustomException(msg="无效认证，请您重新登录", code=cls.error_code)
         except jwt.exceptions.ExpiredSignatureError:

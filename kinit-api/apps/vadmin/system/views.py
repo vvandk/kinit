@@ -67,10 +67,7 @@ async def put_dict_types(data_id: int, data: schemas.DictType, auth: Auth = Depe
 @app.get("/dict/types/{data_id}/", summary="获取字典类型详细")
 async def get_dict_type(data_id: int, auth: Auth = Depends(AllUserAuth())):
     schema = schemas.DictTypeSimpleOut
-    return SuccessResponse(
-        await crud.DictTypeDal(auth.db).get_data(data_id, None, v_schema=schema),
-        refresh=auth.refresh
-    )
+    return SuccessResponse(await crud.DictTypeDal(auth.db).get_data(data_id, None, v_schema=schema))
 
 
 ###########################################################
@@ -104,10 +101,7 @@ async def put_dict_details(data_id: int, data: schemas.DictDetails, auth: Auth =
 @app.get("/dict/details/{data_id}/", summary="获取字典元素详情")
 async def get_dict_detail(data_id: int, auth: Auth = Depends(AllUserAuth())):
     schema = schemas.DictDetailsSimpleOut
-    return SuccessResponse(
-        await crud.DictDetailsDal(auth.db).get_data(data_id, None, v_schema=schema),
-        refresh=auth.refresh
-    )
+    return SuccessResponse(await crud.DictDetailsDal(auth.db).get_data(data_id, None, v_schema=schema))
 
 
 ###########################################################

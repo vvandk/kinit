@@ -53,7 +53,8 @@ def create_app():
             allow_origins=settings.ALLOW_ORIGINS,
             allow_credentials=settings.ALLOW_CREDENTIALS,
             allow_methods=settings.ALLOW_METHODS,
-            allow_headers=settings.ALLOW_HEADERS)
+            allow_headers=settings.ALLOW_HEADERS
+        )
     # 挂在静态目录
     if settings.STATIC_ENABLE:
         app.mount(settings.STATIC_URL, app=StaticFiles(directory=settings.STATIC_ROOT))

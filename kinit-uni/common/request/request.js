@@ -42,7 +42,7 @@ http.interceptors.response.use(
     // 获取错误信息
     const msg = res.data.message || errorCode[code] || errorCode['default']
     // 是否刷新token
-    const refresh = res.header.refresh
+    const refresh = res.header['if-refresh']
     if (code === 500) {
       toast(msg)
       return Promise.reject(new Error(msg))
