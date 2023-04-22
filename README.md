@@ -135,7 +135,7 @@ github地址：https://github.com/vvandk/kinit
 
 - [ ] 考虑支持多机部署方案，如果接口使用多机，那么用户是否支持统一认证
 - [ ] **自动化编排服务：使用docker-compose部署项目**
-- [ ] **数据库备份：自动备份数据库**
+- [ ] **定时任务：定时执行数据库备份**
 - [ ] **可视化低代码表单：接入低代码表单，https://vform666.com/vform3.html?from=element_plus**
 
 ##  前序准备
@@ -193,7 +193,7 @@ git clone https://gitee.com/ktianc/kinit.git
 ### 准备工作
 
 ```
-Python >= 3.10.0
+Python == 3.10 (其他版本均未测试)
 nodejs >= 14.0 (推荐使用最新稳定版)
 Mysql >= 8.0
 MongoDB (推荐使用最新稳定版)
