@@ -76,7 +76,7 @@ class MongoManage(DatabaseManage):
                 if v[0] == "like" and v[1]:
                     params[k] = {'$regex': v[1]}
                 elif v[0] == "between" and len(v[1]) == 2:
-                    params[k] = {'$gte': v[1][0], '$lt': v[1][0]}
+                    params[k] = {'$gte': f"{v[1][0]} 00:00:00", '$lt': f"{v[1][1]} 23:59:59"}
             else:
                 params[k] = v
         return params

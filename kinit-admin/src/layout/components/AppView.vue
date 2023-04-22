@@ -25,10 +25,11 @@ const getCaches = computed((): string[] => {
       'p-[var(--app-content-padding)] w-[100%] bg-[var(--app-content-bg-color)] dark:bg-[var(--el-bg-color)]',
       {
         '!min-h-[calc(100%-var(--app-footer-height))]':
-          fixedHeader && (layout === 'classic' || layout === 'topLeft') && footer,
+          ((fixedHeader && (layout === 'classic' || layout === 'topLeft')) || layout === 'top') &&
+          footer,
 
         '!min-h-[calc(100%-var(--tags-view-height)-var(--top-tool-height)-var(--app-footer-height))]':
-          ((!fixedHeader && layout === 'classic') || layout === 'top') && footer,
+          !fixedHeader && layout === 'classic' && footer,
 
         '!min-h-[calc(100%-var(--tags-view-height)-var(--app-footer-height))]':
           !fixedHeader && layout === 'topLeft' && footer,
@@ -36,7 +37,7 @@ const getCaches = computed((): string[] => {
         '!min-h-[calc(100%-var(--top-tool-height))]': fixedHeader && layout === 'cutMenu' && footer,
 
         '!min-h-[calc(100%-var(--top-tool-height)-var(--tags-view-height))]':
-          !fixedHeader && layout === 'cutMenu' && footer
+          !fixedHeader && (layout === 'topLeft' || layout === 'top') && footer
       }
     ]"
   >
