@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/18 22:19
+# @Create Time    : 2021/10/18 22:19
 # @File           : role.py
 # @IDE            : PyCharm
 # @desc           : pydantic 模型，用于数据库序列化操作

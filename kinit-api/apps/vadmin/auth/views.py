@@ -1,13 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/2/24 17:02
+# @Create Time    : 2022/2/24 17:02
 # @File           : views.py
 # @IDE            : PyCharm
 # @desc           : 简要说明
-
+from aioredis import Redis
 from fastapi import APIRouter, Depends, Body, UploadFile, Request
 from sqlalchemy.orm import joinedload
+
+from core.database import redis_getter
 from utils.response import SuccessResponse, ErrorResponse
 from . import schemas, crud, models
 from core.dependencies import IdList
@@ -114,23 +116,25 @@ async def post_import_users(file: UploadFile, auth: Auth = Depends(FullAdminAuth
 async def post_users_init_password(
         request: Request,
         ids: IdList = Depends(),
-        auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.reset"]))
+        auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.reset"])),
+        rd: Redis = Depends(redis_getter)
 ):
-    return SuccessResponse(await crud.UserDal(auth.db).init_password_send_sms(ids.ids, request.app.state.redis))
+    return SuccessResponse(await crud.UserDal(auth.db).init_password_send_sms(ids.ids, rd))
 
 
 @app.post("/users/init/password/send/email/", summary="初始化所选用户密码并发送通知邮件")
 async def post_users_init_password_send_email(
         request: Request,
         ids: IdList = Depends(),
-        auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.reset"]))
+        auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.reset"])),
+        rd: Redis = Depends(redis_getter)
 ):
-    return SuccessResponse(await crud.UserDal(auth.db).init_password_send_email(ids.ids, request.app.state.redis))
+    return SuccessResponse(await crud.UserDal(auth.db).init_password_send_email(ids.ids, rd))
 
 
 @app.put("/users/wx/server/openid/", summary="更新当前用户服务端微信平台openid")
-async def put_user_wx_server_openid(request: Request, code: str, auth: Auth = Depends(AllUserAuth())):
-    result = await crud.UserDal(auth.db).update_wx_server_openid(code, auth.user, request.app.state.redis)
+async def put_user_wx_server_openid(code: str, auth: Auth = Depends(AllUserAuth()), rd: Redis = Depends(redis_getter)):
+    result = await crud.UserDal(auth.db).update_wx_server_openid(code, auth.user, rd)
     return SuccessResponse(result)
 
 

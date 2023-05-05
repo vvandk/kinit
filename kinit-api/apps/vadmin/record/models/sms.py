@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/3/21 17:36 
+# @Create Time    : 2022/3/21 17:36 
 # @File           : sms.py
 # @IDE            : PyCharm
 # @desc           : 短信发送记录模型

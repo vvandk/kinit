@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/11/3 17:23 
+# @Create Time    : 2022/11/3 17:23 
 # @File           : ip_manage.py
 # @IDE            : PyCharm
 # @desc           : 获取IP地址归属地

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/11/11 12:01 
+# @Create Time    : 2022/11/11 12:01 
 # @File           : write_xlsx.py
 # @IDE            : PyCharm
 # @desc           : 简要说明

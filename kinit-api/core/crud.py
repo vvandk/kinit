@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/18 22:18
+# @Create Time    : 2021/10/18 22:18
 # @File           : crud.py
 # @IDE            : PyCharm
 # @desc           : 数据库 增删改查操作

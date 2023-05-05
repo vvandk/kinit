@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/18 22:19
+# @Create Time    : 2021/10/18 22:19
 # @File           : validator.py
 # @IDE            : PyCharm
 # @desc           : pydantic 模型重用验证器

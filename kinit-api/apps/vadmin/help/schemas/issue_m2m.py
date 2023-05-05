@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2023/2/17 15:18 
+# @Create Time    : 2023/2/17 15:18 
 # @File           : issue_m2m.py.py
 # @IDE            : PyCharm
 # @desc           : 简要说明

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2023-02-15 20:03:49
+# @Create Time    : 2023-02-15 20:03:49
 # @File           : crud.py
 # @IDE            : PyCharm
 # @desc           : 帮助中心 - 增删改查

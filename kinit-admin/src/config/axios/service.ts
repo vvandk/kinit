@@ -114,7 +114,7 @@ service.interceptors.response.use(
         // 强制要求重新登录，因账号已冻结，账号已过期，手机号码错误，刷新token无效等问题导致
         const authStore = useAuthStore()
         authStore.logout()
-        message = '未认证，请登录'
+        message = '认证已过期，请重新登录'
         break
       case 403:
         message = '拒绝访问'

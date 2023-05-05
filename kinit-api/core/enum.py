@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2023/02/12 22:18
+# @Create Time    : 2023/02/12 22:18
 # @File           : enum.py
 # @IDE            : PyCharm
 # @desc           : 增加枚举类方法

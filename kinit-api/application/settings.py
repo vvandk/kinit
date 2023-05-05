@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/19 15:47
+# @Create Time    : 2021/10/19 15:47
 # @File           : settings.py
 # @IDE            : PyCharm
 # @desc           : 主配置文件
@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.7.7"
+VERSION = "1.7.8"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = True
@@ -55,7 +55,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 1440
 """refresh_token 过期时间，用于刷新token使用，两天"""
 REFRESH_TOKEN_EXPIRE_MINUTES = 1440 * 2
 """access_token 缓存时间，用于刷新token使用，30分钟"""
-ACCESS_TOKEN_CACHE_MINUTES = 30
+ACCESS_TOKEN_CACHE_MINUTES = 60 * 2
 
 """
 挂载临时文件目录，并添加路由访问，此路由不会在接口文档中显示

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/11/3 17:23
+# @Create Time    : 2022/11/3 17:23
 # @File           : count.py
 # @IDE            : PyCharm
 # @desc           : 计数

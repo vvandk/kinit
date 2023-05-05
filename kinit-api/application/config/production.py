@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/19 15:47
+# @Create Time    : 2021/10/19 15:47
 # @File           : production.py
 # @IDE            : PyCharm
 # @desc           : 数据库开发配置文件
@@ -12,7 +12,6 @@ Mysql 数据库配置项
 数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
 """
 SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称"
-SQLALCHEMY_DATABASE_TYPE = "mysql"
 
 
 """

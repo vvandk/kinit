@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/3/21 11:03
+# @Create Time    : 2022/3/21 11:03
 # @File           : cache.py
 # @IDE            : PyCharm
 # @desc           : 缓存

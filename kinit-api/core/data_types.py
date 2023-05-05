@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/11/14 12:42 
+# @Create Time    : 2022/11/14 12:42 
 # @File           : data_types.py
 # @IDE            : PyCharm
 # @desc           : 自定义数据类型

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/18 22:19
+# @Create Time    : 2021/10/18 22:19
 # @File           : db_base.py
 # @IDE            : PyCharm
 # @desc           : 数据库公共 ORM 模型

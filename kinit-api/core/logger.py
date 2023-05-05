@@ -20,10 +20,3 @@ log_path_error = os.path.join(log_path, f'error_{time.strftime("%Y-%m-%d")}.log'
 
 info = logger.add(log_path_info, rotation="00:00", retention="3 days", enqueue=True, encoding="UTF-8", level="INFO")
 error = logger.add(log_path_error, rotation="00:00", retention="3 days", enqueue=True, encoding="UTF-8", level="ERROR")
-
-
-if __name__ == '__main__':
-    print(BASE_DIR)
-    # logger.info("1")
-    retry: int = 1
-    logger.error("未从Redis中获取到配置信息，正在重新更新配置信息，重试次数：{}。".format(retry))

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/3/21 11:03 
+# @Create Time    : 2022/3/21 11:03 
 # @File           : event.py
 # @IDE            : PyCharm
 # @desc           : 全局事件
@@ -63,7 +63,6 @@ async def connect_redis(app: FastAPI, status: bool):
     """
     if status:
         print("Connecting to Redis")
-        assert isinstance(app, FastAPI)
         app.state.redis = aioredis.from_url(REDIS_DB_URL, decode_responses=True, health_check_interval=1)
         await Cache(app.state.redis).cache_tab_names()
     else:

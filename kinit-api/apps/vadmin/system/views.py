@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/24 16:44
+# @Create Time    : 2021/10/24 16:44
 # @File           : views.py
 # @IDE            : PyCharm
 # @desc           : 主要接口文件
 
 # UploadFile 库依赖：pip install python-multipart
 from typing import List
+from aioredis import Redis
 from fastapi import APIRouter, Depends, Body, UploadFile, Request, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 from application.settings import ALIYUN_OSS
-from core.database import db_getter
+from core.database import db_getter, redis_getter
 from utils.file.aliyun_oss import AliyunOSS, BucketConf
 from utils.aliyun_sms import AliyunSMS
 from utils.file.file_manage import FileManage
@@ -126,8 +127,8 @@ async def upload_image_to_local(file: UploadFile, path: str = Form(...)):
 #    短信服务管理
 ###########################################################
 @app.post("/sms/send/", summary="发送短信验证码（阿里云服务）")
-async def sms_send(request: Request, telephone: str):
-    sms = AliyunSMS(request.app.state.redis, telephone)
+async def sms_send(telephone: str, rd: Redis = Depends(redis_getter)):
+    sms = AliyunSMS(rd, telephone)
     return SuccessResponse(await sms.main_async(AliyunSMS.Scene.login))
 
 
@@ -145,8 +146,8 @@ async def get_settings_tabs_values(tab_id: int, auth: Auth = Depends(FullAdminAu
 
 
 @app.put("/settings/tabs/values/", summary="更新系统配置信息")
-async def put_settings_tabs_values(request: Request, datas: dict = Body(...), auth: Auth = Depends(FullAdminAuth())):
-    return SuccessResponse(await crud.SettingsDal(auth.db).update_datas(datas, request.app.state.redis))
+async def put_settings_tabs_values(datas: dict = Body(...), auth: Auth = Depends(FullAdminAuth()), rd: Redis = Depends(redis_getter)):
+    return SuccessResponse(await crud.SettingsDal(auth.db).update_datas(datas, rd))
 
 
 @app.get("/settings/base/config/", summary="获取系统基础配置", description="每次进入系统中时使用")

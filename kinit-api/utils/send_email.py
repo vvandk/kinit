@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2023/3/27 9:48 
+# @Create Time    : 2023/3/27 9:48 
 # @File           : send_email.py
 # @IDE            : PyCharm
 # @desc           : 发送邮件封装类

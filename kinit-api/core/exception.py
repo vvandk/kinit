@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/19 15:47
+# @Create Time    : 2021/10/19 15:47
 # @File           : exception.py
 # @IDE            : PyCharm
 # @desc           : 全局异常处理
@@ -17,10 +17,17 @@ from core.logger import logger
 
 class CustomException(Exception):
 
-    def __init__(self, msg: str, code: int = status.HTTP_400_BAD_REQUEST, status_code: int = status.HTTP_200_OK):
+    def __init__(
+            self,
+            msg: str,
+            code: int = status.HTTP_400_BAD_REQUEST,
+            status_code: int = status.HTTP_200_OK,
+            desc: str = None
+    ):
         self.msg = msg
         self.code = code
         self.status_code = status_code
+        self.desc = desc
 
 
 def register_exception(app: FastAPI):
@@ -33,8 +40,14 @@ def register_exception(app: FastAPI):
         """
         自定义异常
         """
+        print("请求地址", request.url.__str__())
+        print("捕捉到重写CustomException异常异常：custom_exception_handler")
+        logger.error(exc.desc)
+        logger.error(exc.msg)
+        print(exc.desc)
+        print(exc.msg)
         return JSONResponse(
-            status_code=exc.status_code,
+            status_code=200,
             content={"message": exc.msg, "code": exc.code},
         )
 
@@ -43,6 +56,7 @@ def register_exception(app: FastAPI):
         """
         重写HTTPException异常处理器
         """
+        print("请求地址", request.url.__str__())
         print("捕捉到重写HTTPException异常异常：unicorn_exception_handler")
         logger.error(exc.detail)
         print(exc.detail)
@@ -59,6 +73,7 @@ def register_exception(app: FastAPI):
         """
         重写请求验证异常处理器
         """
+        print("请求地址", request.url.__str__())
         print("捕捉到重写请求验证异常异常：validation_exception_handler")
         logger.error(exc.errors())
         print(exc.errors())
@@ -88,6 +103,7 @@ def register_exception(app: FastAPI):
         """
         捕获值异常
         """
+        print("请求地址", request.url.__str__())
         print("捕捉到值异常：value_exception_handler")
         logger.error(exc.__str__())
         print(exc.__str__())
@@ -106,6 +122,7 @@ def register_exception(app: FastAPI):
         """
         捕获全部异常
         """
+        print("请求地址", request.url.__str__())
         print("捕捉到全局异常：all_exception_handler")
         logger.error(exc.__str__())
         return JSONResponse(

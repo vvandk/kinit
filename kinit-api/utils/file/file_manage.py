@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/12/5 8:45
+# @Create Time    : 2021/12/5 8:45
 # @File           : file_manage.py
 # @IDE            : PyCharm
 # @desc           : 保存图片到本地

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.3
-# @Creaet Time    : 2021/3/15
+# @Create Time    : 2021/3/15
 # @Author         : LZK
 # @File           : aliyun_sms.py
 # @Software       : PyCharm

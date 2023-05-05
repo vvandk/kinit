@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/18 22:19 
+# @Create Time    : 2021/10/18 22:19 
 # @File           : database.py
 # @IDE            : PyCharm
 # @desc           : SQLAlchemy 部分
@@ -10,13 +10,16 @@
 安装： pip install sqlalchemy
 中文文档：https://www.osgeo.cn/sqlalchemy/
 """
+from aioredis import Redis
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
 from sqlalchemy.orm import sessionmaker
-from application.settings import SQLALCHEMY_DATABASE_URL, DEBUG, SQLALCHEMY_DATABASE_TYPE
+from application.settings import SQLALCHEMY_DATABASE_URL, REDIS_DB_ENABLE
+from fastapi import Request
+from core.exception import CustomException
 
 
-def create_async_engine_session(database_url: str, database_type: str = "mysql"):
+def create_async_engine_session(database_url: str):
     """
     创建数据库会话
 
@@ -33,13 +36,13 @@ def create_async_engine_session(database_url: str, database_type: str = "mysql")
     :return:
     """
     engine = create_async_engine(
-        database_url
-        , echo=False
-        , pool_pre_ping=True
-        , pool_recycle=3600
-        , future=True
-        , max_overflow=5
-        , connect_args={"check_same_thread": False, "timeout": 30} if database_type == "sqlite3" else {}
+        database_url,
+        echo=False,
+        pool_pre_ping=True,
+        pool_recycle=3600,
+        future=True,
+        max_overflow=5,
+        connect_args={}
     )
     return sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=True, class_=AsyncSession)
 
@@ -84,6 +87,17 @@ async def db_getter():
 
     数据库依赖项，它将在单个请求中使用，然后在请求完成后将其关闭。
     """
-    async with create_async_engine_session(SQLALCHEMY_DATABASE_URL, SQLALCHEMY_DATABASE_TYPE)() as session:
+    async with create_async_engine_session(SQLALCHEMY_DATABASE_URL)() as session:
         async with session.begin():
             yield session
+
+
+def redis_getter(request: Request) -> Redis:
+    """
+    获取关系数据库
+
+    数据库依赖项，它将在单个请求中使用，然后在请求完成后将其关闭。
+    """
+    if not REDIS_DB_ENABLE:
+        raise CustomException("请先配置Redis数据库链接并启用！", desc="请启用 application/settings.py: REDIS_DB_ENABLE")
+    return request.app.state.redis

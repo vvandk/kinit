@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/11/27 18:37
+# @Create Time    : 2021/11/27 18:37
 # @File           : wx_access_token.py
 # @IDE            : PyCharm
 # @desc           : 获取小程序全局唯一后台接口调用凭据

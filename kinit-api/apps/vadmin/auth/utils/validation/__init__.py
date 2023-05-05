@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/11/9 10:14 
+# @Create Time    : 2022/11/9 10:14 
 # @File           : __init__.py.py
 # @IDE            : PyCharm
 # @desc           : 简要说明

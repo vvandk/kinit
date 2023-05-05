@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/24 16:44
+# @Create Time    : 2021/10/24 16:44
 # @File           : views.py
 # @IDE            : PyCharm
 # @desc           : 安全认证视图
@@ -21,9 +21,10 @@ PassLib 是一个用于处理哈希密码的很棒的 Python 包。它支持许�
 
 from datetime import timedelta
 import jwt
+from aioredis import Redis
 from fastapi import APIRouter, Depends, Request, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from core.database import db_getter
+from core.database import db_getter, redis_getter
 from utils import status
 from utils.response import SuccessResponse, ErrorResponse
 from application import settings
@@ -74,11 +75,11 @@ async def login_for_access_token(
 
 
 @app.post("/wx/login/", summary="微信服务端一键登录", description="员工登录通道")
-async def wx_login_for_access_token(request: Request, data: WXLoginForm, db: AsyncSession = Depends(db_getter)):
+async def wx_login_for_access_token(data: WXLoginForm, db: AsyncSession = Depends(db_getter), rd: Redis = Depends(redis_getter)):
     try:
         if data.platform != "1" or data.method != "2":
             raise ValueError("无效参数")
-        wx = WXOAuth(request.app.state.redis, 0)
+        wx = WXOAuth(rd, 0)
         telephone = await wx.parsing_phone_number(data.code)
         if not telephone:
             raise ValueError("无效Code")

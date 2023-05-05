@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/24 16:44
+# @Create Time    : 2021/10/24 16:44
 # @File           : views.py
 # @IDE            : PyCharm
 # @desc           : 主要接口文件

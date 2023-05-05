@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/3/21 17:54 
+# @Create Time    : 2022/3/21 17:54 
 # @File           : sms.py
 # @IDE            : PyCharm
 # @desc           : 简要说明

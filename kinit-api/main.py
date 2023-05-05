@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/19 15:47
+# @Create Time    : 2021/10/19 15:47
 # @File           : main.py
 # @IDE            : PyCharm
 # @desc           : 主程序入口

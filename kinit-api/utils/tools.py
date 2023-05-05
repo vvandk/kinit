@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2022/10/9 17:09 
+# @Create Time    : 2022/10/9 17:09 
 # @File           : tools.py
 # @IDE            : PyCharm
 # @desc           : 工具类
