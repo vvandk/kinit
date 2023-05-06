@@ -20,7 +20,6 @@ PassLib 是一个用于处理哈希密码的很棒的 Python 包。它支持许�
 """
 
 from datetime import timedelta
-import jwt
 from aioredis import Redis
 from fastapi import APIRouter, Depends, Request, Body
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,6 +34,7 @@ from apps.vadmin.auth.crud import MenuDal, UserDal
 from .current import FullAdminAuth
 from .validation.auth import Auth
 from utils.wx.oauth import WXOAuth
+import jwt
 
 app = APIRouter()
 
@@ -75,7 +75,12 @@ async def login_for_access_token(
 
 
 @app.post("/wx/login/", summary="微信服务端一键登录", description="员工登录通道")
-async def wx_login_for_access_token(data: WXLoginForm, db: AsyncSession = Depends(db_getter), rd: Redis = Depends(redis_getter)):
+async def wx_login_for_access_token(
+        request: Request,
+        data: WXLoginForm,
+        db: AsyncSession = Depends(db_getter),
+        rd: Redis = Depends(redis_getter)
+):
     try:
         if data.platform != "1" or data.method != "2":
             raise ValueError("无效参数")
@@ -86,9 +91,9 @@ async def wx_login_for_access_token(data: WXLoginForm, db: AsyncSession = Depend
         data.telephone = telephone
         user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
         if not user:
-            raise ValueError("此手机号不存在")
+            raise ValueError("手机号不存在")
         elif not user.is_active:
-            raise ValueError("此手机号已被冻结")
+            raise ValueError("手机号已被冻结")
     except ValueError as e:
         await VadminLoginRecord.create_login_record(db, data, False, request, {"message": str(e)})
         return ErrorResponse(msg=str(e))
