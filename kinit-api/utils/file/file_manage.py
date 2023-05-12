@@ -12,6 +12,8 @@ from application.settings import TEMP_DIR, STATIC_ROOT, BASE_DIR, STATIC_URL, ST
 from fastapi import UploadFile
 import sys
 from utils.file.file_base import FileBase
+from aiopathlib import AsyncPath as Path
+import aioshutil
 
 
 class FileManage(FileBase):
@@ -39,11 +41,11 @@ class FileManage(FileBase):
         path = self.path
         if sys.platform == "win32":
             path = self.path.replace("/", "\\")
-        save_path = os.path.join(STATIC_ROOT, path)
-        if not os.path.exists(os.path.dirname(save_path)):
-            os.mkdir(os.path.dirname(save_path))
-        with open(save_path, "wb") as f:
-            f.write(await self.file.read())
+        # save_path = os.path.join(STATIC_ROOT, path)
+        save_path = Path(STATIC_ROOT) / path
+        if not await save_path.parent.exists():
+            await save_path.parent.mkdir(parents=True, exist_ok=True)
+        await save_path.write_bytes(await self.file.read())
         return {
             "local_path": f"{STATIC_DIR}/{self.path}",
             "remote_path": f"{STATIC_URL}/{self.path}"
@@ -55,13 +57,13 @@ class FileManage(FileBase):
         保存临时文件
         """
         date = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d")
-        file_dir = os.path.join(TEMP_DIR, date)
-        if not os.path.exists(file_dir):
-            os.mkdir(file_dir)
-        filename = os.path.join(file_dir, str(int(datetime.datetime.now().timestamp())) + file.filename)
-        with open(filename, "wb") as f:
-            f.write(await file.read())
-        return filename
+        # file_dir = os.path.join(TEMP_DIR, date)
+        file_dir = Path(TEMP_DIR) / date
+        if not await file_dir.exists():
+            await file_dir.mkdir(parents=True, exist_ok=True)
+        filename = file_dir / str(int(datetime.datetime.now().timestamp())) + file.filename
+        await filename.write_bytes(await self.file.read())
+        return str(filename)
 
     @staticmethod
     def copy(src: str, dst: str):
@@ -82,6 +84,17 @@ class FileManage(FileBase):
             os.mkdir(os.path.dirname(dst))
         shutil.copyfile(src, dst)
 
+    async def async_copy(src: str, dst: str):
+        if src[0] == "/":
+            src = src.lstrip("/")
+        if sys.platform == "win32":
+            src = src.replace("/", "\\")
+            dst = dst.replace("/", "\\")
+        src = Path(BASE_DIR) / src
+        dst = Path(dst)
+        if not await dst.parent.exists():
+            await dst.parent.mkdir(parents=True, exist_ok=True)
+        await aioshutil.copyfile(src, dst)
 
 if __name__ == '__main__':
     # src = r"D:\ktianc\private\vv-reserve\reserve-api\static\system\2022-12-07\16703958210ab33912.ico"
