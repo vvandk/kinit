@@ -18,7 +18,7 @@ class IssueCategory(BaseModel):
     platform: Optional[str] = None
     is_active: Optional[bool] = None
 
-    user_id: Optional[int] = None
+    create_user_id: Optional[int] = None
 
 
 class IssueCategorySimpleOut(IssueCategory):
@@ -31,7 +31,7 @@ class IssueCategorySimpleOut(IssueCategory):
 
 
 class IssueCategoryListOut(IssueCategorySimpleOut):
-    user: UserSimpleOut
+    create_user: UserSimpleOut
 
     class Config:
         orm_mode = True

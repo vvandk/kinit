@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { usePermissionStore } from '@/store/modules/permission'
+import { useRouterStore } from '@/store/modules/router'
 import { useAppStore } from '@/store/modules/app'
 import { computed, unref, defineComponent, watch, ref, onMounted } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -30,9 +30,9 @@ export default defineComponent({
 
     const fixedMenu = computed(() => appStore.getFixedMenu)
 
-    const permissionStore = usePermissionStore()
+    const routerStore = useRouterStore()
 
-    const routers = computed(() => permissionStore.getRouters)
+    const routers = computed(() => routerStore.getRouters)
 
     const tabRouters = computed(() => unref(routers).filter((v) => !v?.meta?.hidden))
 
@@ -51,7 +51,7 @@ export default defineComponent({
 
         tabActive.value = path
         if (children) {
-          permissionStore.setMenuTabRouters(
+          routerStore.setMenuTabRouters(
             cloneDeep(children).map((v) => {
               v.path = pathResolve(unref(tabActive), v.path)
               return v
@@ -108,7 +108,7 @@ export default defineComponent({
           showMenu.value = unref(fixedMenu) ? true : !unref(showMenu)
         }
         if (unref(showMenu)) {
-          permissionStore.setMenuTabRouters(
+          routerStore.setMenuTabRouters(
             cloneDeep(item.children).map((v) => {
               v.path = pathResolve(unref(tabActive), v.path)
               return v
@@ -117,7 +117,7 @@ export default defineComponent({
         }
       } else {
         push(item.path)
-        permissionStore.setMenuTabRouters([])
+        routerStore.setMenuTabRouters([])
         showMenu.value = false
       }
     }

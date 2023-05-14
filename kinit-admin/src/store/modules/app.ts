@@ -27,7 +27,6 @@ interface AppState {
   pageLoading: boolean
   layout: LayoutType
   title: string
-  userInfo: string
   isDark: boolean
   currentSize: ElementPlusSize
   sizeMap: ElementPlusSize[]
@@ -45,7 +44,6 @@ interface AppState {
 export const useAppStore = defineStore('app', {
   state: (): AppState => {
     return {
-      userInfo: 'userInfo', // 登录信息存储字段-建议每个项目换一个字段，避免与其他项目冲突
       token: 'Token', // 存储Token字段
       refreshToken: 'RefreshToken', // 存储刷新Token字段
       sizeMap: ['default', 'large', 'small'],
@@ -165,9 +163,6 @@ export const useAppStore = defineStore('app', {
     },
     getTitle(): string {
       return this.title
-    },
-    getUserInfo(): string {
-      return this.userInfo
     },
     getToken(): string {
       return this.token

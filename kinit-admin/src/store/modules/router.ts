@@ -4,15 +4,15 @@ import { generateRoutesFn2, flatMultiLevelRoutes } from '@/utils/routerHelper'
 import { store } from '../index'
 import { cloneDeep } from 'lodash-es'
 
-export interface PermissionState {
+export interface RouterState {
   routers: AppRouteRecordRaw[]
   addRouters: AppRouteRecordRaw[]
   isAddRouters: boolean
   menuTabRouters: AppRouteRecordRaw[]
 }
 
-export const usePermissionStore = defineStore('permission', {
-  state: (): PermissionState => ({
+export const useRouterStore = defineStore('router', {
+  state: (): RouterState => ({
     routers: [],
     addRouters: [],
     isAddRouters: false,
@@ -63,6 +63,6 @@ export const usePermissionStore = defineStore('permission', {
   }
 })
 
-export const usePermissionStoreWithOut = () => {
-  return usePermissionStore(store)
+export const useRouterStoreWithOut = () => {
+  return useRouterStore(store)
 }

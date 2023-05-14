@@ -4,15 +4,17 @@
 # @File           : file_manage.py
 # @IDE            : PyCharm
 # @desc           : 保存图片到本地
-
+import asyncio
 import datetime
 import os
 import shutil
 from application.settings import TEMP_DIR, STATIC_ROOT, BASE_DIR, STATIC_URL, STATIC_DIR
 from fastapi import UploadFile
 import sys
+from pathlib import Path
+from core.exception import CustomException
 from utils.file.file_base import FileBase
-from aiopathlib import AsyncPath as Path
+from aiopathlib import AsyncPath
 import aioshutil
 
 
@@ -41,8 +43,7 @@ class FileManage(FileBase):
         path = self.path
         if sys.platform == "win32":
             path = self.path.replace("/", "\\")
-        # save_path = os.path.join(STATIC_ROOT, path)
-        save_path = Path(STATIC_ROOT) / path
+        save_path = AsyncPath(STATIC_ROOT) / path
         if not await save_path.parent.exists():
             await save_path.parent.mkdir(parents=True, exist_ok=True)
         await save_path.write_bytes(await self.file.read())
@@ -52,21 +53,20 @@ class FileManage(FileBase):
         }
 
     @staticmethod
-    async def save_tmp_file(file: UploadFile):
+    async def save_tmp_file(file: UploadFile) -> str:
         """
         保存临时文件
         """
         date = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d")
-        # file_dir = os.path.join(TEMP_DIR, date)
-        file_dir = Path(TEMP_DIR) / date
+        file_dir = AsyncPath(TEMP_DIR) / date
         if not await file_dir.exists():
             await file_dir.mkdir(parents=True, exist_ok=True)
         filename = file_dir / str(int(datetime.datetime.now().timestamp())) + file.filename
-        await filename.write_bytes(await self.file.read())
+        await filename.write_bytes(await file.read())
         return str(filename)
 
     @staticmethod
-    def copy(src: str, dst: str):
+    def copy(src: str, dst: str) -> None:
         """
         复制文件
         根目录为项目根目录，传过来的文件路径均为相对路径
@@ -79,25 +79,39 @@ class FileManage(FileBase):
         if sys.platform == "win32":
             src = src.replace("/", "\\")
             dst = dst.replace("/", "\\")
-        src = os.path.join(BASE_DIR, src)
-        if not os.path.exists(os.path.dirname(dst)):
-            os.mkdir(os.path.dirname(dst))
+        src = Path(BASE_DIR) / src
+        dst = Path(dst)
+        if not src.exists():
+            raise CustomException("源文件不存在！")
+        if not dst.parent.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(src, dst)
 
-    async def async_copy(src: str, dst: str):
+    @staticmethod
+    async def async_copy(src: str, dst: str) -> None:
+        """
+        异步复制文件
+        根目录为项目根目录，传过来的文件路径均为相对路径
+
+        :param src: 原始文件
+        :param dst: 目标路径。绝对路径
+        """
         if src[0] == "/":
             src = src.lstrip("/")
         if sys.platform == "win32":
             src = src.replace("/", "\\")
             dst = dst.replace("/", "\\")
-        src = Path(BASE_DIR) / src
-        dst = Path(dst)
+        src = AsyncPath(BASE_DIR) / src
+        if not await src.exists():
+            raise CustomException("源文件不存在！")
+        dst = AsyncPath(dst)
         if not await dst.parent.exists():
             await dst.parent.mkdir(parents=True, exist_ok=True)
         await aioshutil.copyfile(src, dst)
 
+
 if __name__ == '__main__':
-    # src = r"D:\ktianc\private\vv-reserve\reserve-api\static\system\2022-12-07\16703958210ab33912.ico"
-    # dst = r"D:\ktianc\private\vv-reserve\reserve-api\static\system\favicon.ico"
-    # shutil.copyfile(src, dst)
-    pass
+    _src = r"D:\programming\ktianc\project\kinit-pro\kinit-api\static\system\favicon.ico"
+    _dst = r"D:\programming\ktianc\project\kinit-pro\kinit-api\static\system\2022-12-07\16703958210ab33912.ico"
+    asyncio.run(FileManage.async_copy(_src, _dst))
+    # FileManage.copy(_src, _dst)

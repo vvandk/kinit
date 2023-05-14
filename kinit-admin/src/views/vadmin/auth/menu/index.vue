@@ -49,7 +49,6 @@ const { register, elTableRef, tableObject, methods } = useTable({
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
-const delLoading = ref(false)
 const actionType = ref('')
 const parentId = ref()
 
@@ -74,12 +73,8 @@ const updateAction = (row: any) => {
 // 删除事件
 const delData = async (row: any) => {
   parentId.value = null
-  tableObject.currentRow = row
   const { delListApi } = methods
-  delLoading.value = true
-  await delListApi([row.id], false).finally(() => {
-    delLoading.value = false
-  })
+  await delListApi(true, [row.id])
 }
 
 // 添加子菜单事件

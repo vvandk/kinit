@@ -2,7 +2,7 @@
 import { computed, defineComponent, unref, PropType } from 'vue'
 import { ElMenu, ElScrollbar } from 'element-plus'
 import { useAppStore } from '@/store/modules/app'
-import { usePermissionStore } from '@/store/modules/permission'
+import { useRouterStore } from '@/store/modules/router'
 import { useRenderMenuItem } from './components/useRenderMenuItem'
 import { useRouter } from 'vue-router'
 import { isUrl } from '@/utils/is'
@@ -28,7 +28,7 @@ export default defineComponent({
 
     const { push, currentRoute } = useRouter()
 
-    const permissionStore = usePermissionStore()
+    const routerStore = useRouterStore()
 
     const menuMode = computed((): 'vertical' | 'horizontal' => {
       // 竖
@@ -42,7 +42,7 @@ export default defineComponent({
     })
 
     const routers = computed(() =>
-      unref(layout) === 'cutMenu' ? permissionStore.getMenuTabRouters : permissionStore.getRouters
+      unref(layout) === 'cutMenu' ? routerStore.getMenuTabRouters : routerStore.getRouters
     )
 
     const collapse = computed(() => appStore.getCollapse)

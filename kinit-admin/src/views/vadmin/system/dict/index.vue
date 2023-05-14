@@ -64,12 +64,8 @@ const updateAction = async (row: any) => {
 
 // 删除事件
 const delData = async (row: any) => {
-  tableObject.currentRow = row
   const { delListApi } = methods
-  loading.value = true
-  await delListApi([row.id], false).finally(() => {
-    loading.value = false
-  })
+  await delListApi(true, [row.id])
 }
 
 // 跳转到字典详情页面

@@ -83,7 +83,7 @@ python main.py init
 python main.py run
 ```
 
-## 其他
+## 其他操作
 
 在线文档地址(在配置文件里面设置路径或者关闭)
 
@@ -92,6 +92,7 @@ http://127.0.0.1:9000/docs
 ```
 
 Git更新ignore文件直接修改gitignore是不会生效的，需要先去掉已经托管的文件，修改完成之后再重新添加并提交。
+
 ```
 第一步：
 git rm -r --cached .
@@ -116,3 +117,172 @@ python main.py migrate --env dev
 ```
 
 生成迁移文件后，会在alembic迁移目录中的version目录中多个迁移文件
+
+## 查询数据
+
+### 查询过滤
+
+```python
+# 日期查询
+# 值的类型：str
+# 值得格式：%Y-%m-%d：2023-05-14
+字段名称=("date", 值)
+
+# 模糊查询
+# 值的类型: str
+字段名称=("like", 值)
+
+# in 查询
+# 值的类型：list
+字段名称=("in", 值)
+
+# 时间区间查询
+# 值的类型：tuple 或者 list
+字段名称=("between", 值)
+
+# 月份查询
+# 值的类型：str
+# 值的格式：%Y-%m：2023-05
+字段名称=("month", 值)
+
+# 不等于查询
+字段名称=("!=", 值)
+
+# 大于查询
+字段名称=(">", 值)
+
+# 等于 None
+字段名称=("None")
+
+# 不等于 None
+字段名称=("not None")
+```
+
+代码部分：
+
+![image-20230514113859232](D:\programming\ktianc\project\kinit-pro\images\image-20230514113859232.png)
+
+示例：
+
+查询所有用户id为1或2或 4或6，并且email不为空，并且名称包括李：
+
+```python
+users = UserDal(db).get_datas(limit=0, id=("in", [1,2,4,6]), email=("not None"), name=("like", "李"))
+```
+
+### v_join_query
+
+外键字段查询，内连接
+
+以常见问题类别表为例：
+
+首先需要在 `crud.py/IssueCategoryDal` 的 `__init__` 方法中定义 `key_models`：
+
+```python
+class IssueCategoryDal(DalBase):
+
+    def __init__(self, db: AsyncSession):
+        key_models = {
+            # 外键字段名，也可以自定义
+            "create_user": {
+                # 外键对应的orm模型
+                "model": vadminAuthModels.VadminUser,
+                # 如果对同一个模型只有一个外键关联时，下面这个 onclause 可以省略不写，一个以上时必须写，需要分清楚要查询的是哪个
+                # 这里其实可以省略不写，但是为了演示这里写出来了
+                "onclause": models.VadminIssueCategory.create_user_id == vadminAuthModels.VadminUser.id
+            }
+        }
+        super(IssueCategoryDal, self).__init__(
+            db,
+            models.VadminIssueCategory,
+            schemas.IssueCategorySimpleOut,
+            key_models
+        )
+```
+
+使用案例：
+
+```python
+async def test(self):
+    """
+    v_join_query 示例方法
+    获取用户名称包含李 创建出的常见问题类别
+    """
+    v_join_query = {
+        # 与 key_models 中定义的外键字段名定义的一样
+        "create_user": {
+            # 外键表字段名：查询值
+            "name": ("like", "李")
+        }
+    }
+    v_options = [joinedload(self.model.create_user)]
+    datas = self.get_datas(limit=0, v_join_query=v_join_query, v_options=v_options)
+```
+
+完整案例：
+
+```python
+class IssueCategoryDal(DalBase):
+
+    def __init__(self, db: AsyncSession):
+        key_models = {
+            # 外键字段名，也可以自定义
+            "create_user": {
+                # 外键对应的orm模型
+                "model": vadminAuthModels.VadminUser,
+                # 如果对同一个模型只有一个外键关联时，下面这个 onclause 可以省略不写，一个以上时必须写，需要分清楚要查询的是哪个
+                # 这里其实可以省略不写，但是为了演示这里写出来了
+                "onclause": models.VadminIssueCategory.create_user_id == vadminAuthModels.VadminUser.id
+            }
+        }
+        super(IssueCategoryDal, self).__init__(
+            db,
+            models.VadminIssueCategory,
+            schemas.IssueCategorySimpleOut,
+            key_models
+        )
+
+    async def test(self):
+        """
+        v_join_query 示例方法
+        获取用户名称包含李 创建出的常见问题类别
+        """
+        v_join_query = {
+            # 与 key_models 中定义的外键字段名定义的一样
+            "create_user": {
+                # 外键表字段名：查询值
+                "name": ("like", "李")
+            }
+        }
+        v_options = [joinedload(self.model.create_user)]
+        datas = self.get_datas(limit=0, v_join_query=v_join_query, v_options=v_options)
+```
+
+### v_or
+
+或逻辑运算查询
+
+语法：
+
+```python
+# 普通查询
+v_or = [(字段名称, 值), (字段名称, 值), ... ]
+
+# 模糊查询
+v_or = [(字段名称, ("like", 值)), (字段名称, ("like", 值)), ... ]
+
+# 组合查询
+v_or = [(字段名称, ("like", 值)), (字段名称, ("in", [值, 值, 值, ...])), ... ]
+
+# 外键查询，需要先定义 key_models
+v_or = [("fk", key_models 中定义的外键字段名, 外键表字段名称, ("like", 值)), ("fk", key_models 中定义的外键字段名, 外键表字段名称, ("like", 值)), ... ]
+```
+
+比如查询一个用户手机号为`13409090909`或者`15390909090`：
+
+```python
+v_or = [("telephone", "13409090909"), ("telephone", "15390909090") ]
+user = UserDal(db).get_data(v_or=v_or)
+```
+
+ 的version目录中多个迁移文件

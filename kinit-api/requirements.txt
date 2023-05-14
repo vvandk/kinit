@@ -39,7 +39,7 @@ idna==3.4
 importlib-metadata==5.0.0
 importlib-resources==5.10.0
 jmespath==0.10.0
-loguru==0.6.0
+loguru==0.7.0
 Mako==1.2.4
 MarkupSafe==2.1.1
 motor==3.1.1

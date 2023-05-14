@@ -6,7 +6,7 @@ import { ElButton, ElCheckbox, ElLink } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { getRoleMenusApi } from '@/api/login'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
-import { usePermissionStore } from '@/store/modules/permission'
+import { useRouterStore } from '@/store/modules/router'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
 import { UserLoginType } from '@/api/login/types'
@@ -18,7 +18,7 @@ const emit = defineEmits(['to-telephone-code'])
 
 const { required } = useValidator()
 
-const permissionStore = usePermissionStore()
+const routerStore = useRouterStore()
 
 const { currentRoute, addRoute, push } = useRouter()
 
@@ -157,12 +157,12 @@ const getMenu = async () => {
     const { wsCache } = useCache()
     const routers = res.data || []
     wsCache.set('roleRouters', routers)
-    await permissionStore.generateRoutes(routers).catch(() => {})
-    permissionStore.getAddRouters.forEach((route) => {
+    await routerStore.generateRoutes(routers).catch(() => {})
+    routerStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
     })
-    permissionStore.setIsAddRouters(true)
-    push({ path: redirect.value || permissionStore.addRouters[0].path })
+    routerStore.setIsAddRouters(true)
+    push({ path: redirect.value || routerStore.addRouters[0].path })
   }
 }
 

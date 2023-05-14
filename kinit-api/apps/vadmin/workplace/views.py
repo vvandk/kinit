@@ -19,7 +19,7 @@ app = APIRouter()
 ###########################################################
 #    工作区管理
 ###########################################################
-@app.get("/total/", summary="获取统计")
+@app.get("/total", summary="获取统计")
 async def get_total(auth: Auth = Depends(AllUserAuth())):
     data = {
         "project": 40,
@@ -29,7 +29,7 @@ async def get_total(auth: Auth = Depends(AllUserAuth())):
     return SuccessResponse(data)
 
 
-@app.get("/project/", summary="获取项目")
+@app.get("/project", summary="获取项目")
 async def get_project():
     data = [
         {
@@ -84,7 +84,7 @@ async def get_project():
     return SuccessResponse(data)
 
 
-@app.get("/dynamic/", summary="获取动态")
+@app.get("/dynamic", summary="获取动态")
 async def get_dynamic():
     data = [
         {
@@ -99,7 +99,7 @@ async def get_dynamic():
     return SuccessResponse(data)
 
 
-@app.get("/team/", summary="获取团队信息")
+@app.get("/team", summary="获取团队信息")
 async def get_team():
     data = [
         {
@@ -130,7 +130,7 @@ async def get_team():
     return SuccessResponse(data)
 
 
-@app.get("/shortcuts/", summary="获取快捷操作")
+@app.get("/shortcuts", summary="获取快捷操作")
 async def get_shortcuts():
     data = [
         {

@@ -2,7 +2,7 @@
 import { useTimeAgo } from '@/hooks/web/useTimeAgo'
 import { ElRow, ElCol, ElSkeleton, ElCard, ElDivider, ElLink } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { CountTo } from '@/components/CountTo'
 import { formatTime } from '@/utils'
 import { Highlight } from '@/components/Highlight'
@@ -20,11 +20,10 @@ import type {
   Team,
   Shortcuts
 } from '@/api/dashboard/workplace/types'
-import { useCache } from '@/hooks/web/useCache'
-import { useAppStoreWithOut } from '@/store/modules/app'
 import avatar from '@/assets/imgs/avatar.jpg'
+import { useAuthStoreWithOut } from '@/store/modules/auth'
 
-const { wsCache } = useCache()
+const authStore = useAuthStoreWithOut()
 
 const loading = ref(true)
 
@@ -97,9 +96,7 @@ getAllApi()
 
 const { t } = useI18n()
 
-const appStore = useAppStoreWithOut()
-
-const user = wsCache.get(appStore.getUserInfo)
+const user = computed(() => authStore.getUser)
 </script>
 
 <template>

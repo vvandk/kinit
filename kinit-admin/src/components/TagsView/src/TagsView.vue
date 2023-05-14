@@ -2,7 +2,7 @@
 import { onMounted, watch, computed, unref, ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouterLinkProps } from 'vue-router'
-import { usePermissionStore } from '@/store/modules/permission'
+import { useRouterStore } from '@/store/modules/router'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { useAppStore } from '@/store/modules/app'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -21,9 +21,9 @@ const { t } = useI18n()
 
 const { currentRoute, push, replace } = useRouter()
 
-const permissionStore = usePermissionStore()
+const routerStore = useRouterStore()
 
-const routers = computed(() => permissionStore.getRouters)
+const routers = computed(() => routerStore.getRouters)
 
 const tagsViewStore = useTagsViewStore()
 
@@ -108,14 +108,14 @@ const toLastView = () => {
     push(latestView)
   } else {
     if (
-      unref(currentRoute).path === permissionStore.getAddRouters[0].path ||
-      unref(currentRoute).path === permissionStore.getAddRouters[0].redirect
+      unref(currentRoute).path === routerStore.getAddRouters[0].path ||
+      unref(currentRoute).path === routerStore.getAddRouters[0].redirect
     ) {
       addTags()
       return
     }
     // You can set another route
-    push(permissionStore.getAddRouters[0].path)
+    push(routerStore.getAddRouters[0].path)
   }
 }
 

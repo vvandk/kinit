@@ -21,8 +21,8 @@ class VadminIssueCategory(BaseModel):
 
     issues = relationship("VadminIssue", back_populates='category')
 
-    user_id = Column(ForeignKey("vadmin_auth_user.id", ondelete='SET NULL'), comment="创建人")
-    user = relationship("VadminUser", foreign_keys=user_id)
+    create_user_id = Column(ForeignKey("vadmin_auth_user.id", ondelete='SET NULL'), comment="创建人")
+    create_user = relationship("VadminUser", foreign_keys=create_user_id)
 
 
 class VadminIssue(BaseModel):
@@ -37,6 +37,6 @@ class VadminIssue(BaseModel):
     view_number = Column(Integer, default=0, comment="查看次数")
     is_active = Column(Boolean, default=True, comment="是否可见")
 
-    user_id = Column(ForeignKey("vadmin_auth_user.id", ondelete='SET NULL'), comment="创建人")
-    user = relationship("VadminUser", foreign_keys=user_id)
+    create_user_id = Column(ForeignKey("vadmin_auth_user.id", ondelete='SET NULL'), comment="创建人")
+    create_user = relationship("VadminUser", foreign_keys=create_user_id)
 

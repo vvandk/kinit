@@ -16,7 +16,7 @@ class IssueCategoryPlatformOut(BaseModel):
     name: Optional[str] = None
     platform: Optional[str] = None
     is_active: Optional[bool] = None
-    user_id: Optional[int] = None
+    create_user_id: Optional[int] = None
 
     id: int
     update_datetime: DatetimeStr

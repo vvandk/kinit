@@ -39,7 +39,7 @@ import jwt
 app = APIRouter()
 
 
-@app.post("/login/", summary="手机号密码登录", description="员工登录通道，限制最多输错次数，达到最大值后将is_active=False")
+@app.post("/login", summary="手机号密码登录", description="员工登录通道，限制最多输错次数，达到最大值后将is_active=False")
 async def login_for_access_token(
         request: Request,
         data: LoginForm,
@@ -74,7 +74,7 @@ async def login_for_access_token(
         return ErrorResponse(msg=str(e))
 
 
-@app.post("/wx/login/", summary="微信服务端一键登录", description="员工登录通道")
+@app.post("/wx/login", summary="微信服务端一键登录", description="员工登录通道")
 async def wx_login_for_access_token(
         request: Request,
         data: WXLoginForm,
@@ -116,12 +116,12 @@ async def wx_login_for_access_token(
     return SuccessResponse(resp)
 
 
-@app.get("/getMenuList/", summary="获取当前用户菜单树")
+@app.get("/getMenuList", summary="获取当前用户菜单树")
 async def get_menu_list(auth: Auth = Depends(FullAdminAuth())):
     return SuccessResponse(await MenuDal(auth.db).get_routers(auth.user))
 
 
-@app.post("/token/refresh/", summary="刷新Token")
+@app.post("/token/refresh", summary="刷新Token")
 async def token_refresh(refresh: str = Body(..., title="刷新Token")):
     error_code = status.HTTP_401_UNAUTHORIZED
     try:

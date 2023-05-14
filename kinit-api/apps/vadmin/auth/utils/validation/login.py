@@ -11,6 +11,7 @@ from pydantic import BaseModel, validator
 from sqlalchemy.ext.asyncio import AsyncSession
 from application.settings import DEFAULT_AUTH_ERROR_MAX_NUMBER, DEMO
 from apps.vadmin.auth import crud, schemas
+from core.database import redis_getter
 from core.validator import vali_telephone
 from typing import Optional
 from utils.count import Count
@@ -64,7 +65,7 @@ class LoginValidation:
         result = await self.func(self, data=data, user=user, request=request)
 
         count_key = f"{data.telephone}_password_auth" if data.method == '0' else f"{data.telephone}_sms_auth"
-        count = Count(request.app.state.redis, count_key)
+        count = Count(redis_getter(request), count_key)
 
         if not result.status:
             self.result.msg = result.msg

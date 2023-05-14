@@ -71,6 +71,9 @@ const { register, elTableRef, tableObject, methods } = useTable({
   },
   defaultParams: {
     is_active: true
+  },
+  props: {
+    columns
   }
 })
 
@@ -100,20 +103,16 @@ const updateAction = async (row: any) => {
 }
 
 // 删除事件
-const delDatas = async (row: any, multiple: boolean) => {
+const delDatas = async (row: any) => {
   const { delListApi, getSelections } = methods
-  loading.value = true
   const selections = ref([] as any[])
-  if (multiple) {
+  if (row) {
+    selections.value = [row.id]
+  } else {
     selections.value = await getSelections()
     selections.value = selections.value.map((item) => item.id)
-  } else {
-    tableObject.currentRow = row
-    selections.value = [row.id]
   }
-  await delListApi(selections.value, multiple).finally(() => {
-    loading.value = false
-  })
+  await delListApi(true, selections.value)
 }
 
 const writeRef = ref<ComponentRef<typeof Write>>()
@@ -224,7 +223,7 @@ const handleCommand = (command: string) => {
   } else if (command === 'd') {
     sendPasswordToEmail()
   } else if (command === 'e') {
-    delDatas(null, true)
+    delDatas(null)
   }
 }
 </script>
@@ -256,7 +255,7 @@ const handleCommand = (command: string) => {
           <ElButton @click="sendPasswordToEmail">重置密码通知邮件</ElButton>
         </ElCol>
         <ElCol :span="1.5" v-hasPermi="['auth.user.delete']" v-if="!mobile">
-          <ElButton type="danger" @click="delDatas(null, true)">批量删除</ElButton>
+          <ElButton type="danger" @click="delDatas(null)">批量删除</ElButton>
         </ElCol>
         <ElCol :span="1.5" v-if="mobile">
           <ElDropdown trigger="click" @command="handleCommand">
@@ -325,7 +324,7 @@ const handleCommand = (command: string) => {
           v-hasPermi="['auth.user.delete']"
           link
           size="small"
-          @click="delDatas(row, false)"
+          @click="delDatas(row)"
           v-if="authStore.getUser.id !== row.id && row.id !== 1"
         >
           {{ t('exampleDemo.del') }}

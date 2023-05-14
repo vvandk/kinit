@@ -2,7 +2,7 @@
 import { ElBreadcrumb, ElBreadcrumbItem } from 'element-plus'
 import { ref, watch, computed, unref, defineComponent, TransitionGroup } from 'vue'
 import { useRouter } from 'vue-router'
-import { usePermissionStore } from '@/store/modules/permission'
+import { useRouterStore } from '@/store/modules/router'
 import { filterBreadcrumb } from './helper'
 import { filter, treeToList } from '@/utils/tree'
 import type { RouteLocationNormalizedLoaded, RouteMeta } from 'vue-router'
@@ -29,10 +29,10 @@ export default defineComponent({
 
     const levelList = ref<AppRouteRecordRaw[]>([])
 
-    const permissionStore = usePermissionStore()
+    const routerStore = useRouterStore()
 
     const menuRouters = computed(() => {
-      const routers = permissionStore.getRouters
+      const routers = routerStore.getRouters
       return filterBreadcrumb(routers)
     })
 

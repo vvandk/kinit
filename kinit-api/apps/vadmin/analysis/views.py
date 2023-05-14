@@ -17,7 +17,7 @@ app = APIRouter()
 ###########################################################
 #    图表数据
 ###########################################################
-@app.get("/banners/", summary="轮播图")
+@app.get("/banners", summary="轮播图")
 async def get_banners(auth: Auth = Depends(AllUserAuth())):
     data = [
         {
@@ -33,7 +33,7 @@ async def get_banners(auth: Auth = Depends(AllUserAuth())):
     return SuccessResponse(data)
 
 
-@app.get("/user/access/source/", summary="用户来源")
+@app.get("/user/access/source", summary="用户来源")
 async def get_user_access_source(auth: Auth = Depends(AllUserAuth())):
     data = [
         {"value": 1000, "name": 'analysis.directAccess'},
@@ -45,7 +45,7 @@ async def get_user_access_source(auth: Auth = Depends(AllUserAuth())):
     return SuccessResponse(data)
 
 
-@app.get("/weekly/user/activity/", summary="每周用户活跃量")
+@app.get("/weekly/user/activity", summary="每周用户活跃量")
 async def get_weekly_user_activity(auth: Auth = Depends(AllUserAuth())):
     data = [
         {"value": 13253, "name": 'analysis.monday'},
@@ -59,7 +59,7 @@ async def get_weekly_user_activity(auth: Auth = Depends(AllUserAuth())):
     return SuccessResponse(data)
 
 
-@app.get("/monthly/sales/", summary="每月销售额")
+@app.get("/monthly/sales", summary="每月销售额")
 async def get_monthly_sales(auth: Auth = Depends(AllUserAuth())):
     data = [
         {"estimate": 100, "actual": 120, "name": 'analysis.january'},

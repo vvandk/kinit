@@ -105,6 +105,7 @@ service.interceptors.response.use(
   },
   (error: AxiosError) => {
     let { message } = error
+    const authStore = useAuthStore()
     const status = error.response?.status
     switch (status) {
       case 400:
@@ -112,12 +113,13 @@ service.interceptors.response.use(
         break
       case 401:
         // 强制要求重新登录，因账号已冻结，账号已过期，手机号码错误，刷新token无效等问题导致
-        const authStore = useAuthStore()
         authStore.logout()
         message = '认证已过期，请重新登录'
         break
       case 403:
-        message = '拒绝访问'
+        // 强制要求重新登录，因无系统权限，而进入到系统访问等问题导致
+        authStore.logout()
+        message = '无权限访问，请联系管理员'
         break
       case 404:
         message = `请求地址出错: ${error.response?.config.url}`

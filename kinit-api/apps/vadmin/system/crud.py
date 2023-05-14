@@ -95,7 +95,7 @@ class SettingsDal(DalBase):
                 if ico.config_value == web_ico:
                     continue
                 # 将上传的ico路径替换到static/system/favicon.ico文件
-                FileManage.copy(value, os.path.join(STATIC_ROOT, "system/favicon.ico"))
+                await FileManage.async_copy(value, os.path.join(STATIC_ROOT, "system/favicon.ico"))
                 sql = update(self.model).where(self.model.config_key == "web_ico").values(config_value=web_ico)
                 await self.db.execute(sql)
             else:

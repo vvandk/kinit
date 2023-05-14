@@ -7,7 +7,7 @@
 # @desc           : 缓存
 
 from typing import List
-from core import logger
+from core.logger import logger
 from core.database import db_getter
 from apps.vadmin.system.crud import SettingsTabDal
 import json
@@ -18,7 +18,7 @@ from utils import status
 
 class Cache:
 
-    DEFAULT_TAB_NAMES = ["wx_server", "aliyun_sms", "aliyun_oss"]
+    DEFAULT_TAB_NAMES = ["wx_server", "aliyun_sms", "aliyun_oss", "web_email"]
 
     def __init__(self, rd: Redis):
         self.rd = rd

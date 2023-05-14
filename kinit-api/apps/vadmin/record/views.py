@@ -19,14 +19,14 @@ app = APIRouter()
 ###########################################################
 #    日志管理
 ###########################################################
-@app.get("/logins/", summary="获取登录日志列表")
+@app.get("/logins", summary="获取登录日志列表")
 async def get_record_login(p: LoginParams = Depends(), auth: Auth = Depends(AllUserAuth())):
     datas = await crud.LoginRecordDal(auth.db).get_datas(**p.dict())
     count = await crud.LoginRecordDal(auth.db).get_count(**p.to_count())
     return SuccessResponse(datas, count=count)
 
 
-@app.get("/operations/", summary="获取操作日志列表")
+@app.get("/operations", summary="获取操作日志列表")
 async def get_record_operation(
         p: OperationParams = Depends(),
         db: DatabaseManage = Depends(get_database),
@@ -37,7 +37,7 @@ async def get_record_operation(
     return SuccessResponse(datas, count=count)
 
 
-@app.get("/sms/send/list/", summary="获取短信发送列表")
+@app.get("/sms/send/list", summary="获取短信发送列表")
 async def get_sms_send_list(p: SMSParams = Depends(), auth: Auth = Depends(AllUserAuth())):
     datas = await crud.SMSSendRecordDal(auth.db).get_datas(**p.dict())
     count = await crud.SMSSendRecordDal(auth.db).get_count(**p.to_count())
@@ -47,6 +47,6 @@ async def get_sms_send_list(p: SMSParams = Depends(), auth: Auth = Depends(AllUs
 ###########################################################
 #    日志分析
 ###########################################################
-@app.get("/analysis/user/login/distribute/", summary="获取用户登录分布情况列表")
+@app.get("/analysis/user/login/distribute", summary="获取用户登录分布情况列表")
 async def get_user_login_distribute(auth: Auth = Depends(AllUserAuth())):
     return SuccessResponse(await crud.LoginRecordDal(auth.db).get_user_distribute())

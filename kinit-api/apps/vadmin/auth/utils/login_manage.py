@@ -11,6 +11,7 @@ from fastapi import Request
 from application import settings
 import jwt
 from apps.vadmin.auth import models
+from core.database import redis_getter
 from .validation import LoginValidation, LoginForm, LoginResult
 from utils.aliyun_sms import AliyunSMS
 
@@ -35,7 +36,7 @@ class LoginManage:
         """
         验证用户短信验证码
         """
-        rd = request.app.state.redis
+        rd = redis_getter(request)
         sms = AliyunSMS(rd, data.telephone)
         result = await sms.check_sms_code(data.password)
         if result:

@@ -15,7 +15,7 @@ from .issue_category import IssueCategorySimpleOut
 
 class Issue(BaseModel):
     category_id: Optional[int] = None
-    user_id: Optional[int] = None
+    create_user_id: Optional[int] = None
 
     title: Optional[str] = None
     content: Optional[str] = None
@@ -33,7 +33,7 @@ class IssueSimpleOut(Issue):
 
 
 class IssueListOut(IssueSimpleOut):
-    user: UserSimpleOut
+    create_user: UserSimpleOut
     category: IssueCategorySimpleOut
 
     class Config:

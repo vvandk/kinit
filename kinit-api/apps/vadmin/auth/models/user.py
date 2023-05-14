@@ -59,7 +59,7 @@ class VadminUser(BaseModel):
         self.last_login = datetime.datetime.now()
         await db.flush()
 
-    async def is_admin(self) -> bool:
+    def is_admin(self) -> bool:
         """
         获取该用户是否拥有最高权限
 

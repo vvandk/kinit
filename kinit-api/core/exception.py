@@ -47,7 +47,7 @@ def register_exception(app: FastAPI):
         print(exc.desc)
         print(exc.msg)
         return JSONResponse(
-            status_code=200,
+            status_code=exc.status_code,
             content={"message": exc.msg, "code": exc.code},
         )
 

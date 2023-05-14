@@ -4,7 +4,7 @@ import { Form } from '@/components/Form'
 import { ElButton } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { postCurrentUserResetPassword } from '@/api/vadmin/auth/user'
-import { usePermissionStore } from '@/store/modules/permission'
+import { useRouterStore } from '@/store/modules/router'
 import { useRouter } from 'vue-router'
 import type { RouteRecordRaw, RouteLocationNormalizedLoaded } from 'vue-router'
 import { getRoleMenusApi } from '@/api/login'
@@ -21,7 +21,7 @@ const { required } = useValidator()
 
 const footer = computed(() => appStore.getFooter)
 
-const permissionStore = usePermissionStore()
+const routerStore = useRouterStore()
 
 const { addRoute, push, currentRoute } = useRouter()
 
@@ -124,12 +124,12 @@ const getMenu = async () => {
     const { wsCache } = useCache()
     const routers = res.data || []
     wsCache.set('roleRouters', routers)
-    await permissionStore.generateRoutes(routers).catch(() => {})
-    permissionStore.getAddRouters.forEach((route) => {
+    await routerStore.generateRoutes(routers).catch(() => {})
+    routerStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
     })
-    permissionStore.setIsAddRouters(true)
-    push({ path: redirect.value || permissionStore.addRouters[0].path })
+    routerStore.setIsAddRouters(true)
+    push({ path: redirect.value || routerStore.addRouters[0].path })
   }
 }
 </script>

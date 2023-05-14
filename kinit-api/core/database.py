@@ -31,7 +31,6 @@ def create_async_engine_session(database_url: str):
     pool_timeout=20, # 池中没有连接最多等待的时间，否则报错
     pool_recycle=-1  # 多久之后对线程池中的线程进行一次连接的回收（重置）
 
-    :param database_type: 数据库类型
     :param database_url: 数据库地址
     :return:
     """

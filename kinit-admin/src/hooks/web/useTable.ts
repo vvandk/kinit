@@ -5,6 +5,7 @@ import { get } from 'lodash-es'
 import type { TableProps } from '@/components/Table/src/types'
 import { useI18n } from '@/hooks/web/useI18n'
 import { TableSetPropsType } from '@/types/table'
+import { isEmpty } from '@/utils/is'
 
 const { t } = useI18n()
 
@@ -34,7 +35,7 @@ interface TableObject<T = any> {
   tableData: T[]
   params: any
   loading: boolean
-  currentRow: Nullable<T>
+  currentRow: Recordable | null
 }
 
 type TableOrderChange = {
@@ -111,7 +112,7 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
     return table
   }
 
-  const delData = async (ids: string[] | number[]) => {
+  const delData = async (ids: string[] | number[] | number) => {
     if (config?.delListApi) {
       const res = await config.delListApi(ids)
       if (res) {
@@ -166,29 +167,47 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
       methods.getList()
     },
     // 删除数据
-    delListApi: async (ids: string[] | number[], multiple: boolean, message = true) => {
+    // 如果存在 ids，则直接使用 ids 中的值进行删除
+    // 如果不存在 ids，则判断 multiple 的值来进行删除
+    // 如果 multiple 为 true，则说明是多选框，获取多选框中的数据删除
+    // 如果为 false，则说明是点击按钮，则获取当前选择行数据进行删除
+    delListApi: async (
+      multiple: boolean,
+      ids: string[] | number[] | number = [],
+      message = true
+    ) => {
       const tableRef = await getTable()
-      if (multiple) {
-        if (!tableRef?.selections.length) {
-          ElMessage.warning(t('common.delNoData'))
-          return
+      let value: string[] | number[] | number = []
+      if (isEmpty(ids)) {
+        if (multiple) {
+          if (!tableRef?.selections.length) {
+            ElMessage.warning(t('common.delNoData'))
+            return
+          } else {
+            value = tableRef?.selections.map((item) => item.id)
+          }
+        } else {
+          if (!tableObject.currentRow) {
+            ElMessage.warning(t('common.delNoData'))
+            return
+          } else {
+            value = tableObject.currentRow.id
+          }
         }
       } else {
-        if (!tableObject.currentRow) {
-          ElMessage.warning(t('common.delNoData'))
-          return
-        }
+        value = ids
       }
+
       if (message) {
         ElMessageBox.confirm(t('common.delMessage'), t('common.delWarning'), {
           confirmButtonText: t('common.delOk'),
           cancelButtonText: t('common.delCancel'),
           type: 'warning'
         }).then(async () => {
-          await delData(ids)
+          await delData(value)
         })
       } else {
-        await delData(ids)
+        await delData(value)
       }
     },
     // 导出筛选列表

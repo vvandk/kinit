@@ -75,7 +75,7 @@ defineExpose({
 
 let selectAll = ref(false)
 let defaultExpandAll = ref(true)
-let checkStrictly = ref(false)
+let checkStrictly = ref(true) // 父子联动
 
 // 获取所有节点的key
 const getTreeNodeKeys = (nodes: Recordable[]): number[] => {

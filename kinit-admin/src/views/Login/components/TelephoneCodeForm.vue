@@ -12,7 +12,7 @@ import { useAuthStoreWithOut } from '@/store/modules/auth'
 import { RouteLocationNormalizedLoaded, useRouter, RouteRecordRaw } from 'vue-router'
 import { getRoleMenusApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
-import { usePermissionStore } from '@/store/modules/permission'
+import { useRouterStore } from '@/store/modules/router'
 
 const emit = defineEmits(['to-login'])
 
@@ -20,7 +20,7 @@ const { register, elFormRef, methods } = useForm()
 const { t } = useI18n()
 const { required } = useValidator()
 const { currentRoute, addRoute, push } = useRouter()
-const permissionStore = usePermissionStore()
+const routerStore = useRouterStore()
 
 const schema = reactive<FormSchema[]>([
   {
@@ -157,12 +157,12 @@ const getMenu = async () => {
     const { wsCache } = useCache()
     const routers = res.data || []
     wsCache.set('roleRouters', routers)
-    await permissionStore.generateRoutes(routers).catch(() => {})
-    permissionStore.getAddRouters.forEach((route) => {
+    await routerStore.generateRoutes(routers).catch(() => {})
+    routerStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
     })
-    permissionStore.setIsAddRouters(true)
-    push({ path: redirect.value || permissionStore.addRouters[0].path })
+    routerStore.setIsAddRouters(true)
+    push({ path: redirect.value || routerStore.addRouters[0].path })
   }
 }
 </script>

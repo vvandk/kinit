@@ -7,17 +7,17 @@ import type {
 } from './types'
 
 export const getBannersApi = (): Promise<IResponse<AnalysisBannersTypes[]>> => {
-  return request.get({ url: '/vadmin/analysis/banners/' })
+  return request.get({ url: '/vadmin/analysis/banners' })
 }
 
 export const getUserAccessSourceApi = (): Promise<IResponse<UserAccessSource[]>> => {
-  return request.get({ url: '/vadmin/analysis/user/access/source/' })
+  return request.get({ url: '/vadmin/analysis/user/access/source' })
 }
 
 export const getWeeklyUserActivityApi = (): Promise<IResponse<WeeklyUserActivity[]>> => {
-  return request.get({ url: '/vadmin/analysis/weekly/user/activity/' })
+  return request.get({ url: '/vadmin/analysis/weekly/user/activity' })
 }
 
 export const getMonthlySalesApi = (): Promise<IResponse<MonthlySales[]>> => {
-  return request.get({ url: '/vadmin/analysis/monthly/sales/' })
+  return request.get({ url: '/vadmin/analysis/monthly/sales' })
 }

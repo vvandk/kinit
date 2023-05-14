@@ -76,7 +76,7 @@ defineExpose({
 </script>
 
 <template>
-  <Form :rules="rules" @register="register">
+  <Form :rules="rules" @register="register" :labelWidth="100">
     <template #icon="form">
       <div style="display: flex; justify-content: space-between">
         <ElInput
