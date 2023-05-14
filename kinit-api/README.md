@@ -285,4 +285,3 @@ v_or = [("telephone", "13409090909"), ("telephone", "15390909090") ]
 user = UserDal(db).get_data(v_or=v_or)
 ```
 
- 的version目录中多个迁移文件
