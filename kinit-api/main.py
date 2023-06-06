@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Create Time    : 2021/10/19 15:47
+# @Creaet Time    : 2021/10/19 15:47
 # @File           : main.py
 # @IDE            : PyCharm
 # @desc           : 主程序入口
@@ -67,14 +67,14 @@ def create_app():
 
 
 @shell_app.command()
-def run():
+def run(host: str=typer.Option(default='0.0.0.0', help='监听主机IP，默认开放给本网络所有主机'), port: int=typer.Option(default=9000, help='监听端口')):
     """
     启动项目
 
     factory: 在使用 uvicorn.run() 启动 ASGI 应用程序时，可以通过设置 factory 参数来指定应用程序工厂。
     应用程序工厂是一个返回 ASGI 应用程序实例的可调用对象，它可以在启动时动态创建应用程序实例。
     """
-    uvicorn.run(app='main:create_app', host="0.0.0.0", port=9000, lifespan="on", factory=True)
+    uvicorn.run(app='main:create_app', host=host, port=port, lifespan="on", factory=True)
 
 
 @shell_app.command()
