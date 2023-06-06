@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Creaet Time    : 2021/10/19 15:47
+# @Create Time    : 2021/10/19 15:47
 # @File           : main.py
 # @IDE            : PyCharm
 # @desc           : 主程序入口
@@ -24,7 +24,6 @@ import asyncio
 from scripts.create_app.main import CreateApp
 from core.event import lifespan
 from utils.tools import import_modules
-
 
 shell_app = typer.Typer()
 
@@ -67,7 +66,10 @@ def create_app():
 
 
 @shell_app.command()
-def run(host: str=typer.Option(default='0.0.0.0', help='监听主机IP，默认开放给本网络所有主机'), port: int=typer.Option(default=9000, help='监听端口')):
+def run(
+        host: str = typer.Option(default='0.0.0.0', help='监听主机IP，默认开放给本网络所有主机'),
+        port: int = typer.Option(default=9000, help='监听端口')
+):
     """
     启动项目
 
