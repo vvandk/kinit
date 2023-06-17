@@ -3,46 +3,24 @@ import { useTimeAgo } from '@/hooks/web/useTimeAgo'
 import { ElRow, ElCol, ElSkeleton, ElCard, ElDivider, ElLink } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, computed } from 'vue'
-import { CountTo } from '@/components/CountTo'
-import { formatTime } from '@/utils'
+import { formatTime, getGreeting, getCurrentDate, getDayOfWeek } from '@/utils'
 import { Highlight } from '@/components/Highlight'
 import {
-  getCountApi,
   getProjectApi,
   getDynamicApi,
   getTeamApi,
   getShortcutsApi
 } from '@/api/dashboard/workplace'
-import type {
-  WorkplaceTotal,
-  Project,
-  Dynamic,
-  Team,
-  Shortcuts
-} from '@/api/dashboard/workplace/types'
+import type { Project, Dynamic, Team, Shortcuts } from '@/api/dashboard/workplace/types'
 import avatar from '@/assets/imgs/avatar.jpg'
-import { useAuthStoreWithOut } from '@/store/modules/auth'
+import { useAuthStore } from '@/store/modules/auth'
 
-const authStore = useAuthStoreWithOut()
+const authStore = useAuthStore()
 
 const loading = ref(true)
 
 const toLink = (link: string) => {
   window.open(link)
-}
-
-// 获取统计数
-let totalSate = reactive<WorkplaceTotal>({
-  project: 0,
-  access: 0,
-  todo: 0
-})
-
-const getCount = async () => {
-  const res = await getCountApi().catch(() => {})
-  if (res) {
-    totalSate = Object.assign(totalSate, res.data)
-  }
 }
 
 let projects = reactive<Project[]>([])
@@ -88,7 +66,7 @@ const getTeam = async () => {
 }
 
 const getAllApi = async () => {
-  await Promise.all([getCount(), getProject(), getDynamic(), getTeam()])
+  await Promise.all([getProject(), getDynamic(), getTeam()])
   loading.value = false
 }
 
@@ -113,10 +91,10 @@ const user = computed(() => authStore.getUser)
               />
               <div class="truncate">
                 <div class="text-20px text-700 truncate">
-                  {{ t('workplace.goodMorning') }}，{{ user.name }}，{{ t('workplace.happyDay') }}
+                  {{ getGreeting() }}，{{ user.name }}，{{ t('workplace.happyDay') }}
                 </div>
                 <div class="mt-10px text-14px text-gray-500">
-                  {{ t('workplace.toady') }}，20℃ - 32℃！
+                  {{ getCurrentDate() }}，{{ getDayOfWeek() }}
                 </div>
               </div>
             </div>
@@ -124,33 +102,8 @@ const user = computed(() => authStore.getUser)
           <ElCol :xl="12" :lg="12" :md="12" :sm="24" :xs="24">
             <div class="flex h-70px items-center justify-end <sm:mt-20px">
               <div class="px-8px text-right">
-                <div class="text-14px text-gray-400 mb-20px">{{ t('workplace.project') }}</div>
-                <CountTo
-                  class="text-20px"
-                  :start-val="0"
-                  :end-val="totalSate.project"
-                  :duration="2600"
-                />
-              </div>
-              <ElDivider direction="vertical" />
-              <div class="px-8px text-right">
-                <div class="text-14px text-gray-400 mb-20px">{{ t('workplace.toDo') }}</div>
-                <CountTo
-                  class="text-20px"
-                  :start-val="0"
-                  :end-val="totalSate.todo"
-                  :duration="2600"
-                />
-              </div>
-              <ElDivider direction="vertical" border-style="dashed" />
-              <div class="px-8px text-right">
-                <div class="text-14px text-gray-400 mb-20px">{{ t('workplace.access') }}</div>
-                <CountTo
-                  class="text-20px"
-                  :start-val="0"
-                  :end-val="totalSate.access"
-                  :duration="2600"
-                />
+                <div class="text-14px text-gray-400 mb-20px">最近登录时间</div>
+                <span class="text-20px">{{ user.last_login?.split(' ')[0] }}</span>
               </div>
             </div>
           </ElCol>

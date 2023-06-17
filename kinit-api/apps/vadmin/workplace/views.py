@@ -19,23 +19,13 @@ app = APIRouter()
 ###########################################################
 #    工作区管理
 ###########################################################
-@app.get("/total", summary="获取统计")
-async def get_total(auth: Auth = Depends(AllUserAuth())):
-    data = {
-        "project": 40,
-        "access": await LoginRecordDal(auth.db).get_count(),
-        "todo": 10
-    }
-    return SuccessResponse(data)
-
-
 @app.get("/project", summary="获取项目")
 async def get_project():
     data = [
         {
             "name": 'Mysql',
             "icon": 'vscode-icons:file-type-mysql',
-            "message": 'MySQL 是最流行的关系型数据库管理系统',
+            "message": '最流行的关系型数据库管理系统',
             "personal": 'kinit',
             "link": "https://www.mysql.com/",
             "time": datetime.datetime.now().strftime("%Y-%m-%d")
@@ -59,7 +49,7 @@ async def get_project():
         {
             "name": 'Element-plus',
             "icon": 'logos:element',
-            "message": '基于 Vue3，面向设计师和开发者的组件库',
+            "message": '面向设计师和开发者的组件库',
             "personal": 'kinit',
             "link": "https://element-plus.org/zh-CN/",
             "time": datetime.datetime.now().strftime("%Y-%m-%d")

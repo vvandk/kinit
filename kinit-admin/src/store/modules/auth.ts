@@ -22,6 +22,9 @@ export interface UserState {
   gender?: string
   roles?: Recordable[]
   create_datetime?: string
+  is_reset_password?: boolean
+  last_login?: string
+  last_ip?: string
 }
 
 export interface AuthState {

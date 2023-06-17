@@ -1,9 +1,3 @@
-export type WorkplaceTotal = {
-  project: number
-  access: number
-  todo: number
-}
-
 export type Project = {
   name: string
   icon: string
