@@ -79,11 +79,6 @@ service.interceptors.response.use(
           wsCache.set(appStore.getToken, `${res.data.token_type} ${res.data.access_token}`)
           wsCache.set(appStore.getRefreshToken, res.data.refresh_token)
         })
-        // .catch(() => {
-        //   const authStore = useAuthStore()
-        //   authStore.logout()
-        //   ElMessage.error('未认证，请登录')
-        // })
       }
       return response.data
     } else if (code === unauthorized_code) {
@@ -94,11 +89,6 @@ service.interceptors.response.use(
         wsCache.set(appStore.getRefreshToken, res.data.refresh_token)
         ElMessage.error('操作失败，请重试')
       })
-      // .catch(() => {
-      //   const authStore = useAuthStore()
-      //   authStore.logout()
-      //   ElMessage.error('未认证，请登录')
-      // })
     } else {
       ElMessage.error(message)
     }

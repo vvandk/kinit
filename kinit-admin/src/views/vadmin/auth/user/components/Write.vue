@@ -6,7 +6,7 @@ import { useValidator } from '@/hooks/web/useValidator'
 import { schema } from './user.data'
 import { getRoleOptionsApi } from '@/api/vadmin/auth/role'
 
-const { required, isEmail } = useValidator()
+const { required, isEmail, isTelephone } = useValidator()
 
 const props = defineProps({
   currentRow: {
@@ -20,7 +20,7 @@ const rules = reactive({
   is_active: [required()],
   is_staff: [required()],
   role_ids: [required()],
-  telephone: [required()],
+  telephone: [required(), { validator: isTelephone, trigger: 'blur' }],
   email: [required(), { validator: isEmail, trigger: 'blur' }]
 })
 
