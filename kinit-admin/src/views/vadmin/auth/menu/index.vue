@@ -97,16 +97,23 @@ const save = async () => {
       loading.value = true
       const data = await write?.getFormData()
       const res = ref({})
-      if (actionType.value === 'add') {
-        res.value = await addMenuListApi(data)
-      } else if (actionType.value === 'edit') {
-        res.value = await putMenuListApi(data)
+      try {
+        if (actionType.value === 'add') {
+          res.value = await addMenuListApi(data)
+          if (res.value) {
+            dialogVisible.value = false
+            getList()
+          }
+        } else if (actionType.value === 'edit') {
+          res.value = await putMenuListApi(data)
+          if (res.value) {
+            dialogVisible.value = false
+            getList()
+          }
+        }
+      } finally {
+        loading.value = false
       }
-      if (res.value) {
-        dialogVisible.value = false
-        getList()
-      }
-      loading.value = false
     }
   })
 }

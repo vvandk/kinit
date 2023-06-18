@@ -58,19 +58,22 @@ const handleImport = async () => {
   importLoading.value = true
   const formData = new FormData()
   formData.append('file', importFile.value)
-  const res = await postImportUserApi(formData)
-  if (res) {
-    resultTableData.value.push({
-      filename: importFile.value.name,
-      success_number: res.data.success_number,
-      error_number: res.data.error_number,
-      error_url: res.data.error_url
-    })
-    successTotalNumber.value += res.data.success_number
-    handleDelete()
-    emit('getList')
+  try {
+    const res = await postImportUserApi(formData)
+    if (res) {
+      resultTableData.value.push({
+        filename: importFile.value.name,
+        success_number: res.data.success_number,
+        error_number: res.data.error_number,
+        error_url: res.data.error_url
+      })
+      successTotalNumber.value += res.data.success_number
+      handleDelete()
+      emit('getList')
+    }
+  } finally {
+    importLoading.value = false
   }
-  importLoading.value = false
 }
 
 const downloadTemplate = async () => {

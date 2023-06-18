@@ -109,14 +109,17 @@ const save = async () => {
       const res = ref({})
       if (actionType.value === 'add') {
         res.value = await addDictDetailsListApi(data)
+        if (res.value) {
+          dialogVisible.value = false
+          getList()
+        }
       } else if (actionType.value === 'edit') {
         res.value = await putDictDetailsListApi(data)
+        if (res.value) {
+          dialogVisible.value = false
+          getList()
+        }
       }
-      if (res.value) {
-        dialogVisible.value = false
-        getList()
-      }
-      loading.value = false
     }
   })
 }

@@ -93,16 +93,23 @@ const save = async () => {
         return ElMessage.error('未获取到数据')
       }
       const res = ref({})
-      if (actionType.value === 'add') {
-        res.value = await addDictTypeListApi(data)
-      } else if (actionType.value === 'edit') {
-        res.value = await putDictTypeListApi(data)
+      try {
+        if (actionType.value === 'add') {
+          res.value = await addDictTypeListApi(data)
+          if (res.value) {
+            dialogVisible.value = false
+            getList()
+          }
+        } else if (actionType.value === 'edit') {
+          res.value = await putDictTypeListApi(data)
+          if (res.value) {
+            dialogVisible.value = false
+            getList()
+          }
+        }
+      } finally {
+        loading.value = false
       }
-      if (res.value) {
-        dialogVisible.value = false
-        getList()
-      }
-      loading.value = false
     }
   })
 }

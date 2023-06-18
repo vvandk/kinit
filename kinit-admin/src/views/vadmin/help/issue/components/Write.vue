@@ -111,18 +111,26 @@ const save = async () => {
         loading.value = false
         return ElMessage.error('未获取到数据')
       }
+      const tagsViewStore = useTagsViewStore()
       const res = ref({})
-      if (actionType.value === 'add') {
-        res.value = await addIssueApi(data)
-      } else if (actionType.value === 'edit') {
-        res.value = await putIssueApi(data)
-      }
-      loading.value = false
-      if (res.value) {
-        const tagsViewStore = useTagsViewStore()
-        // 删除当前标签页，并跳转到列表页
-        tagsViewStore.delView(unref(currentRoute))
-        push('/help/issue')
+      try {
+        if (actionType.value === 'add') {
+          res.value = await addIssueApi(data)
+          if (res.value) {
+            // 删除当前标签页，并跳转到列表页
+            tagsViewStore.delView(unref(currentRoute))
+            push('/help/issue')
+          }
+        } else if (actionType.value === 'edit') {
+          res.value = await putIssueApi(data)
+          if (res.value) {
+            // 删除当前标签页，并跳转到列表页
+            tagsViewStore.delView(unref(currentRoute))
+            push('/help/issue')
+          }
+        }
+      } finally {
+        loading.value = false
       }
     }
   })

@@ -83,16 +83,23 @@ const save = async () => {
       }
       data.menu_ids = write?.getTreeCheckedKeys()
       const res = ref({})
-      if (actionType.value === 'add') {
-        res.value = await addRoleListApi(data)
-      } else if (actionType.value === 'edit') {
-        res.value = await putRoleListApi(data)
+      try {
+        if (actionType.value === 'add') {
+          res.value = await addRoleListApi(data)
+          if (res.value) {
+            dialogVisible.value = false
+            getList()
+          }
+        } else if (actionType.value === 'edit') {
+          res.value = await putRoleListApi(data)
+          if (res.value) {
+            dialogVisible.value = false
+            getList()
+          }
+        }
+      } finally {
+        loading.value = false
       }
-      if (res.value) {
-        dialogVisible.value = false
-        getList()
-      }
-      loading.value = false
     }
   })
 }

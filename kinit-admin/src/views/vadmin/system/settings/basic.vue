@@ -92,15 +92,18 @@ const save = async () => {
         loading.value = false
         return ElMessage.error('未获取到数据')
       }
-      const res = await putSystemSettingsApi(data)
-      if (res) {
-        appStore.setTitle(data.web_title || import.meta.env.VITE_APP_TITLE)
-        appStore.setLogoImage(data.web_logo || '/static/system/logo.png')
-        appStore.setFooterContent(data.web_copyright || 'Copyright ©2022-present K')
-        appStore.setIcpNumber(data.web_icp_number || '')
-        return ElMessage.success('更新成功')
+      try {
+        const res = await putSystemSettingsApi(data)
+        if (res) {
+          appStore.setTitle(data.web_title || import.meta.env.VITE_APP_TITLE)
+          appStore.setLogoImage(data.web_logo || '/static/system/logo.png')
+          appStore.setFooterContent(data.web_copyright || 'Copyright ©2022-present K')
+          appStore.setIcpNumber(data.web_icp_number || '')
+          return ElMessage.success('更新成功')
+        }
+      } finally {
+        loading.value = false
       }
-      loading.value = false
     }
   })
 }

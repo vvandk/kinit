@@ -40,12 +40,15 @@ const save = async () => {
         loading.value = false
         return ElMessage.error('未获取到数据')
       }
-      const res = await putSystemSettingsApi(data)
-      if (res) {
-        getData()
-        return ElMessage.success('更新成功')
+      try {
+        const res = await putSystemSettingsApi(data)
+        if (res) {
+          getData()
+          return ElMessage.success('更新成功')
+        }
+      } finally {
+        loading.value = false
       }
-      loading.value = false
     }
   })
 }

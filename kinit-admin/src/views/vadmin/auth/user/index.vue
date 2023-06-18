@@ -127,23 +127,33 @@ const save = async () => {
         loading.value = false
         return ElMessage.error('未获取到数据')
       }
-      const res = ref({})
-      if (actionType.value === 'add') {
-        res.value = await addUserListApi(data)
-      } else if (actionType.value === 'edit') {
-        const user = authStore.getUser
-        res.value = await putUserListApi(data)
-        if (user.id === data.id && user.telephone !== data.telephone) {
-          dialogVisible.value = false
-          authStore.logout()
-          return ElMessage.warning('认证已过期，请您重新登陆！')
+      try {
+        const res = ref({})
+        if (actionType.value === 'add') {
+          res.value = await addUserListApi(data)
+          if (res.value) {
+            dialogVisible.value = false
+            getList()
+          }
+        } else if (actionType.value === 'edit') {
+          const user = authStore.getUser
+          const userId = data.id
+          const userTelephone = data.telephone
+          res.value = await putUserListApi(data)
+          if (res.value) {
+            dialogVisible.value = false
+            if (user.id === userId && user.telephone !== userTelephone) {
+              dialogVisible.value = false
+              authStore.logout()
+              return ElMessage.warning('认证已过期，请您重新登陆！')
+            } else {
+              getList()
+            }
+          }
         }
+      } finally {
+        loading.value = false
       }
-      if (res.value) {
-        dialogVisible.value = false
-        getList()
-      }
-      loading.value = false
     }
   })
 }

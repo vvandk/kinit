@@ -25,12 +25,15 @@ const loading = ref(false)
 
 const save = async () => {
   loading.value = true
-  const res = await putSystemSettingsApi({ web_privacy: defaultHtml.value })
-  if (res) {
-    getData()
-    return ElMessage.success('更新成功')
+  try {
+    const res = await putSystemSettingsApi({ web_privacy: defaultHtml.value })
+    if (res) {
+      getData()
+      return ElMessage.success('更新成功')
+    }
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 
 const editorConfig = {

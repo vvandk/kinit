@@ -24,12 +24,14 @@ const initPassword = async () => {
   if (ids.length <= 0) {
     return ElMessage.warning('已全部重置完成，无需重复操作')
   }
-  const res = await postUsersInitPasswordSendEmailApi(ids).finally(() => {
+  try {
+    const res = await postUsersInitPasswordSendEmailApi(ids)
+    if (res) {
+      tableData.value = res.data
+      ElMessage.success('重置成功')
+    }
+  } finally {
     loading.value = false
-  })
-  if (res) {
-    tableData.value = res.data
-    ElMessage.success('重置成功')
   }
 }
 </script>
