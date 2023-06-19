@@ -49,6 +49,7 @@ class DalBase:
             v_join_query: dict = None,
             v_or: List[tuple] = None,
             v_order: str = None,
+            v_order_field: str = None,
             v_return_none: bool = False,
             v_schema: Any = None,
             **kwargs
@@ -61,6 +62,7 @@ class DalBase:
         :param v_join_query: 外键字段查询，内连接
         :param v_or: 或逻辑查询
         :param v_order: 排序，默认正序，为 desc 是倒叙
+        :param v_order_field: 排序字段
         :param v_return_none: 是否返回空 None，否认 抛出异常，默认抛出异常
         :param v_schema: 指定使用的序列化对象
         :param kwargs: 查询参数
@@ -69,7 +71,11 @@ class DalBase:
         if data_id:
             sql = sql.where(self.model.id == data_id)
         sql = self.add_filter_condition(sql, v_options, v_join_query, v_or, **kwargs)
-        if v_order and (v_order in self.ORDER_FIELD):
+        if v_order_field and (v_order in self.ORDER_FIELD):
+            sql = sql.order_by(getattr(self.model, v_order_field).desc(), self.model.id.desc())
+        elif v_order_field:
+            sql = sql.order_by(getattr(self.model, v_order_field), self.model.id)
+        elif v_order and (v_order in self.ORDER_FIELD):
             sql = sql.order_by(self.model.create_datetime.desc())
         queryset = await self.db.execute(sql)
         data = queryset.scalars().unique().first()
