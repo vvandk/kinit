@@ -40,10 +40,7 @@ def list_dict_find(options: List[dict], key: str, value: any) -> Union[dict, Non
     """
     字典列表查找
     """
-    for item in options:
-        if item.get(key) == value:
-            return item
-    return None
+    return next((item for item in options if item.get(key) == value), None)
 
 
 def get_time_interval(start_time: str, end_time: str, interval: int, time_format: str = "%H:%M:%S") -> List:
