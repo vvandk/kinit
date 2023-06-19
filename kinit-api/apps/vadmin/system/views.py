@@ -8,19 +8,20 @@
 # UploadFile 库依赖：pip install python-multipart
 from typing import List
 from aioredis import Redis
-from fastapi import APIRouter, Depends, Body, UploadFile, Request, Form
+from fastapi import APIRouter, Depends, Body, UploadFile, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 from application.settings import ALIYUN_OSS
 from core.database import db_getter, redis_getter
 from utils.file.aliyun_oss import AliyunOSS, BucketConf
-from utils.aliyun_sms import AliyunSMS
 from utils.file.file_manage import FileManage
 from utils.response import SuccessResponse, ErrorResponse
+from utils.sms.code import CodeSMS
 from . import schemas, crud
 from core.dependencies import IdList
-from apps.vadmin.auth.utils.current import AllUserAuth, FullAdminAuth
+from apps.vadmin.auth.utils.current import AllUserAuth, FullAdminAuth, OpenAuth
 from apps.vadmin.auth.utils.validation.auth import Auth
 from .params import DictTypeParams, DictDetailParams
+from apps.vadmin.auth import crud as vadminAuthCRUD
 
 app = APIRouter()
 
@@ -127,9 +128,12 @@ async def upload_image_to_local(file: UploadFile, path: str = Form(...)):
 #    短信服务管理
 ###########################################################
 @app.post("/sms/send", summary="发送短信验证码（阿里云服务）")
-async def sms_send(telephone: str, rd: Redis = Depends(redis_getter)):
-    sms = AliyunSMS(rd, telephone)
-    return SuccessResponse(await sms.main_async(AliyunSMS.Scene.login))
+async def sms_send(telephone: str, rd: Redis = Depends(redis_getter), auth: Auth = Depends(OpenAuth())):
+    user = await vadminAuthCRUD.UserDal(auth.db).get_data(telephone=telephone, v_return_none=True)
+    if not user:
+        return ErrorResponse("手机号不存在！")
+    sms = CodeSMS(telephone, rd)
+    return SuccessResponse(await sms.main_async())
 
 
 ###########################################################

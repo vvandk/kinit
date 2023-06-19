@@ -10,7 +10,6 @@ from typing import List, Any
 from aioredis import Redis
 from fastapi import UploadFile
 from sqlalchemy.orm import joinedload
-
 from core.exception import CustomException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
@@ -18,10 +17,10 @@ from core.crud import DalBase
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.validator import vali_telephone
 from utils.file.aliyun_oss import AliyunOSS, BucketConf
-from utils.aliyun_sms import AliyunSMS
 from utils.excel.import_manage import ImportManage, FieldType
 from utils.excel.write_xlsx import WriteXlsx
 from utils.send_email import EmailSender
+from utils.sms.reset_passwd import ResetPasswordSMS
 from .params import UserParams
 from utils.tools import test_password
 from . import models, schemas
@@ -239,9 +238,9 @@ class UserDal(DalBase):
                 user["send_sms_msg"] = "重置密码失败"
                 continue
             password = user.pop("password")
-            sms = AliyunSMS(rd, user.get("telephone"))
+            sms = ResetPasswordSMS([user.get("telephone")], rd)
             try:
-                send_result = await sms.main_async(AliyunSMS.Scene.reset_password, password=password)
+                send_result = (await sms.main_async(password=password))[0]
                 user["send_sms_status"] = send_result
                 user["send_sms_msg"] = "" if send_result else "发送失败，请联系管理员"
             except CustomException as e:

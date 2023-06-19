@@ -12,8 +12,8 @@ from application import settings
 import jwt
 from apps.vadmin.auth import models
 from core.database import redis_getter
+from utils.sms.code import CodeSMS
 from .validation import LoginValidation, LoginForm, LoginResult
-from utils.aliyun_sms import AliyunSMS
 
 
 class LoginManage:
@@ -37,7 +37,7 @@ class LoginManage:
         验证用户短信验证码
         """
         rd = redis_getter(request)
-        sms = AliyunSMS(rd, data.telephone)
+        sms = CodeSMS(data.telephone, rd)
         result = await sms.check_sms_code(data.password)
         if result:
             return LoginResult(status=True, msg="验证成功")
