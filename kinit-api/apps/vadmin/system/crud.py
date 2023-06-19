@@ -136,7 +136,7 @@ class SettingsTabDal(DalBase):
             v_return_objs=True,
             hidden=hidden
         )
-        return self.generate_values(datas)
+        return self.__generate_values(datas)
 
     async def get_tab_name_values(self, tab_names: List[str], hidden: Union[bool, None] = False):
         """
@@ -152,18 +152,18 @@ class SettingsTabDal(DalBase):
             v_return_objs=True,
             hidden=hidden
         )
-        return self.generate_values(datas)
+        return self.__generate_values(datas)
 
     @classmethod
-    def generate_values(cls, datas: List[models.VadminSystemSettingsTab]):
+    def __generate_values(cls, datas: List[models.VadminSystemSettingsTab]):
         """
         生成字典值
         """
-        result = {}
-        for tab in datas:
-            tabs = {}
-            for item in tab.settings:
-                if not item.disabled:
-                    tabs[item.config_key] = item.config_value
-            result[tab.tab_name] = tabs
-        return result
+        return {
+            tab.tab_name: {
+                item.config_key: item.config_value
+                for item in tab.settings
+                if not item.disabled
+            }
+            for tab in datas
+        }
