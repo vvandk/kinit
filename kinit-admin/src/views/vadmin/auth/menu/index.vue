@@ -96,8 +96,8 @@ const save = async () => {
     if (isValid) {
       loading.value = true
       const data = await write?.getFormData()
-      const res = ref({})
       try {
+        const res = ref({})
         if (actionType.value === 'add') {
           res.value = await addMenuListApi(data)
           if (res.value) {

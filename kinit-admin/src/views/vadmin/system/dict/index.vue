@@ -56,10 +56,12 @@ const addAction = () => {
 // 编辑事件
 const updateAction = async (row: any) => {
   const res = await getDictTypeApi(row.id)
-  dialogTitle.value = '编辑'
-  tableObject.currentRow = res.data
-  dialogVisible.value = true
-  actionType.value = 'edit'
+  if (res) {
+    dialogTitle.value = '编辑'
+    tableObject.currentRow = res.data
+    dialogVisible.value = true
+    actionType.value = 'edit'
+  }
 }
 
 // 删除事件

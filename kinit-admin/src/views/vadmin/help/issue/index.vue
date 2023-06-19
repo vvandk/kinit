@@ -62,11 +62,13 @@ const searchSetSchemaList = ref([] as FormSetPropsType[])
 
 const getOptions = async () => {
   const res = await getIssueCategoryOptionsApi()
-  searchSetSchemaList.value.push({
-    field: 'category_id',
-    path: 'componentProps.options',
-    value: res.data
-  })
+  if (res) {
+    searchSetSchemaList.value.push({
+      field: 'category_id',
+      path: 'componentProps.options',
+      value: res.data
+    })
+  }
 }
 
 getOptions()

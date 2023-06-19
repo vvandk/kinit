@@ -95,11 +95,13 @@ const addAction = () => {
 // 编辑事件
 const updateAction = async (row: any) => {
   const res = await getUserApi(row.id)
-  dialogTitle.value = '编辑'
-  res.data.role_ids = res.data.roles.map((item: any) => item.id)
-  tableObject.currentRow = res.data
-  dialogVisible.value = true
-  actionType.value = 'edit'
+  if (res) {
+    dialogTitle.value = '编辑'
+    res.data.role_ids = res.data.roles.map((item: any) => item.id)
+    tableObject.currentRow = res.data
+    dialogVisible.value = true
+    actionType.value = 'edit'
+  }
 }
 
 // 删除事件

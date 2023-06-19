@@ -22,7 +22,9 @@ const tabs = ref([] as Recordable[])
 
 const getList = async () => {
   const res = await getSystemSettingsTabsApi({ classify: 'web' })
-  tabs.value = res.data
+  if (res) {
+    tabs.value = res.data
+  }
 }
 
 getList()

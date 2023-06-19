@@ -56,11 +56,13 @@ const addAction = () => {
 // 编辑事件
 const updateAction = async (row: any) => {
   const res = await getRoleApi(row.id)
-  dialogTitle.value = '编辑'
-  tableObject.currentRow = res.data
-  defaultCheckedKeys.value = res.data.menus.map((item: any) => item.id)
-  dialogVisible.value = true
-  actionType.value = 'edit'
+  if (res) {
+    dialogTitle.value = '编辑'
+    tableObject.currentRow = res.data
+    defaultCheckedKeys.value = res.data.menus.map((item: any) => item.id)
+    dialogVisible.value = true
+    actionType.value = 'edit'
+  }
 }
 
 // 删除事件
@@ -82,8 +84,8 @@ const save = async () => {
         return ElMessage.error('未获取到数据')
       }
       data.menu_ids = write?.getTreeCheckedKeys()
-      const res = ref({})
       try {
+        const res = ref({})
         if (actionType.value === 'add') {
           res.value = await addRoleListApi(data)
           if (res.value) {

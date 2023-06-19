@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { Echart } from '@/components/Echart'
 import { propTypes } from '@/utils/propTypes'
-import { EChartsOption } from 'echarts'
-import { PropType, ref, watch, reactive } from 'vue'
+import { PropType, ref, watch } from 'vue'
 import { CenterTopPropsType } from '../typers'
 
 const props = defineProps({
@@ -123,8 +122,6 @@ watch(
     deep: true
   }
 )
-
-// const lineOptions: EChartsOption = reactive()
 </script>
 
 <template>

@@ -95,10 +95,12 @@ const addAction = async () => {
 // 编辑事件
 const updateAction = async (row: any) => {
   const res = await getIssueCategoryApi(row.id)
-  dialogTitle.value = '编辑'
-  tableObject.currentRow = res.data
-  dialogVisible.value = true
-  actionType.value = 'edit'
+  if (res) {
+    dialogTitle.value = '编辑'
+    tableObject.currentRow = res.data
+    dialogVisible.value = true
+    actionType.value = 'edit'
+  }
 }
 
 // 删除事件
@@ -116,8 +118,8 @@ const save = async () => {
     if (isValid) {
       loading.value = true
       let data = await write?.getFormData()
-      const res = ref({})
       try {
+        const res = ref({})
         if (actionType.value === 'add') {
           res.value = await addIssueCategoryApi(data)
           if (res.value) {

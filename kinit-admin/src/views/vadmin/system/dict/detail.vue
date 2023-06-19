@@ -38,11 +38,13 @@ const searchSetSchemaList = ref([] as FormSetPropsType[])
 
 const getOptions = async () => {
   const res = await getDictTypeOptionsApi()
-  searchSetSchemaList.value.push({
-    field: 'dict_type_id',
-    path: 'componentProps.options',
-    value: res.data
-  })
+  if (res) {
+    searchSetSchemaList.value.push({
+      field: 'dict_type_id',
+      path: 'componentProps.options',
+      value: res.data
+    })
+  }
 }
 
 getOptions()
@@ -81,10 +83,12 @@ const addAction = () => {
 // 编辑事件
 const updateAction = async (row: any) => {
   const res = await getDictDetailsApi(row.id)
-  dialogTitle.value = '编辑'
-  tableObject.currentRow = res.data
-  dialogVisible.value = true
-  actionType.value = 'edit'
+  if (res) {
+    dialogTitle.value = '编辑'
+    tableObject.currentRow = res.data
+    dialogVisible.value = true
+    actionType.value = 'edit'
+  }
 }
 
 // 删除事件
@@ -106,19 +110,23 @@ const save = async () => {
         return ElMessage.error('未获取到数据')
       }
       data.dict_type_id = dictType
-      const res = ref({})
-      if (actionType.value === 'add') {
-        res.value = await addDictDetailsListApi(data)
-        if (res.value) {
-          dialogVisible.value = false
-          getList()
+      try {
+        const res = ref({})
+        if (actionType.value === 'add') {
+          res.value = await addDictDetailsListApi(data)
+          if (res.value) {
+            dialogVisible.value = false
+            getList()
+          }
+        } else if (actionType.value === 'edit') {
+          res.value = await putDictDetailsListApi(data)
+          if (res.value) {
+            dialogVisible.value = false
+            getList()
+          }
         }
-      } else if (actionType.value === 'edit') {
-        res.value = await putDictDetailsListApi(data)
-        if (res.value) {
-          dialogVisible.value = false
-          getList()
-        }
+      } finally {
+        loading.value = false
       }
     }
   })

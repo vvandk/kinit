@@ -111,7 +111,7 @@ const telephoneCodeLogin = async () => {
         } else {
           loading.value = false
         }
-      } catch (e: any) {
+      } finally {
         loading.value = false
       }
     }
@@ -143,7 +143,7 @@ const getSMSCode = async () => {
           ElMessage.error('发送失败，请联系管理员')
           SMSCodeStatus.value = true
         }
-      } catch (e: any) {
+      } finally {
         SMSCodeStatus.value = true
       }
     }

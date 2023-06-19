@@ -143,7 +143,7 @@ const signIn = async () => {
         } else {
           loading.value = false
         }
-      } catch (e: any) {
+      } finally {
         loading.value = false
       }
     }
