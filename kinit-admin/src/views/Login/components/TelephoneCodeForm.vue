@@ -56,6 +56,7 @@ const schema = reactive<FormSchema[]>([
     field: 'method',
     label: '登录类型',
     value: '1',
+    component: 'Input',
     ifshow: () => false
   },
   {
@@ -111,7 +112,7 @@ const telephoneCodeLogin = async () => {
         } else {
           loading.value = false
         }
-      } finally {
+      } catch (e: any) {
         loading.value = false
       }
     }
@@ -129,21 +130,17 @@ const getSMSCode = async () => {
       SMSCodeNumber.value = 60
       const { getFormData } = methods
       const formData = await getFormData<UserLoginType>()
-      try {
-        const res = await postSMSCodeApi({ telephone: formData.telephone })
-        if (res?.data) {
-          let timer = setInterval(() => {
-            SMSCodeNumber.value--
-            if (SMSCodeNumber.value < 1) {
-              SMSCodeStatus.value = true
-              clearInterval(timer)
-            }
-          }, 1000)
-        } else {
-          ElMessage.error('发送失败，请联系管理员')
-          SMSCodeStatus.value = true
-        }
-      } finally {
+      const res = await postSMSCodeApi({ telephone: formData.telephone })
+      if (res?.data) {
+        let timer = setInterval(() => {
+          SMSCodeNumber.value--
+          if (SMSCodeNumber.value < 1) {
+            SMSCodeStatus.value = true
+            clearInterval(timer)
+          }
+        }, 1000)
+      } else {
+        ElMessage.error('发送失败，请联系管理员')
         SMSCodeStatus.value = true
       }
     }

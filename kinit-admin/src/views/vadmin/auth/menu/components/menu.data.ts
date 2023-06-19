@@ -122,6 +122,7 @@ export const schema = reactive<FormSchema[]>([
     colProps: {
       span: 24
     },
+    component: 'Input',
     ifshow: (values) => values.menu_type !== '2'
   },
   {

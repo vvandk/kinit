@@ -74,6 +74,7 @@ const schema = reactive<FormSchema[]>([
     field: 'method',
     label: '登录类型',
     value: '0',
+    component: 'Input',
     ifshow: () => false
   },
   {
@@ -143,7 +144,7 @@ const signIn = async () => {
         } else {
           loading.value = false
         }
-      } finally {
+      } catch (e: any) {
         loading.value = false
       }
     }

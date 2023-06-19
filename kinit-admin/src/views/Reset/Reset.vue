@@ -110,7 +110,7 @@ const save = async () => {
         } else {
           loading.value = false
         }
-      } finally {
+      } catch (e: any) {
         loading.value = false
       }
     }
