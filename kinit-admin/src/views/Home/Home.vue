@@ -26,52 +26,56 @@ const user = authStore.getUser
 </script>
 
 <template>
-  <ElRow :gutter="20">
-    <ElCol :xs="24" :sm="12" :md="8">
-      <ElCard shadow="hover" class="pb-30px">
-        <div class="text-center">
-          <ElAvatar :size="80" :src="user.avatar ? user.avatar : avatar" />
-          <p style="font-size: 24px">{{ user.name }}</p>
-        </div>
-        <div class="pl-20px pt-30px">
-          <div class="leading-relaxed">
-            <span class="pl-10px w-80px inline-block">姓名:</span>
-            <span class="pl-10px">{{ user.name }}</span>
+  <div class="m-20px">
+    <ElRow :gutter="20">
+      <ElCol :xs="24" :sm="12" :md="8">
+        <ElCard shadow="hover" class="pb-30px">
+          <div class="text-center">
+            <ElAvatar :size="80" :src="user.avatar ? user.avatar : avatar" />
+            <p style="font-size: 24px">{{ user.name }}</p>
           </div>
-          <div class="leading-relaxed">
-            <span class="pl-10px w-80px inline-block">昵称:</span>
-            <span class="pl-10px">{{ user.nickname }}</span>
+          <div class="pl-20px pt-30px">
+            <div class="leading-relaxed">
+              <span class="pl-10px w-80px inline-block">姓名:</span>
+              <span class="pl-10px">{{ user.name }}</span>
+            </div>
+            <div class="leading-relaxed">
+              <span class="pl-10px w-80px inline-block">昵称:</span>
+              <span class="pl-10px">{{ user.nickname }}</span>
+            </div>
+            <div class="leading-relaxed">
+              <span class="pl-10px w-80px inline-block">手机号:</span>
+              <span class="pl-10px">{{ user.telephone }}</span>
+            </div>
+            <div class="leading-relaxed">
+              <span class="pl-10px w-80px inline-block">性别:</span>
+              <span class="pl-10px">{{
+                selectDictLabel(genderOptions, user.gender as string)
+              }}</span>
+            </div>
+            <div class="leading-relaxed">
+              <span class="pl-10px w-80px inline-block">角色:</span>
+              <span class="pl-10px">{{ user.roles?.map((item) => item.name).join(',') }}</span>
+            </div>
+            <div class="leading-relaxed">
+              <span class="pl-10px w-80px inline-block">创建时间:</span>
+              <span class="pl-10px">{{ user.create_datetime }}</span>
+            </div>
           </div>
-          <div class="leading-relaxed">
-            <span class="pl-10px w-80px inline-block">手机号:</span>
-            <span class="pl-10px">{{ user.telephone }}</span>
-          </div>
-          <div class="leading-relaxed">
-            <span class="pl-10px w-80px inline-block">性别:</span>
-            <span class="pl-10px">{{ selectDictLabel(genderOptions, user.gender as string) }}</span>
-          </div>
-          <div class="leading-relaxed">
-            <span class="pl-10px w-80px inline-block">角色:</span>
-            <span class="pl-10px">{{ user.roles?.map((item) => item.name).join(',') }}</span>
-          </div>
-          <div class="leading-relaxed">
-            <span class="pl-10px w-80px inline-block">创建时间:</span>
-            <span class="pl-10px">{{ user.create_datetime }}</span>
-          </div>
-        </div>
-      </ElCard>
-    </ElCol>
-    <ElCol :xs="24" :sm="12" :md="16">
-      <ElCard shadow="hover">
-        <ElTabs v-model="activeName">
-          <ElTabPane label="基本信息" name="info">
-            <InfoWrite />
-          </ElTabPane>
-          <ElTabPane label="修改密码" name="password">
-            <PasswordWrite />
-          </ElTabPane>
-        </ElTabs>
-      </ElCard>
-    </ElCol>
-  </ElRow>
+        </ElCard>
+      </ElCol>
+      <ElCol :xs="24" :sm="12" :md="16">
+        <ElCard shadow="hover">
+          <ElTabs v-model="activeName">
+            <ElTabPane label="基本信息" name="info">
+              <InfoWrite />
+            </ElTabPane>
+            <ElTabPane label="修改密码" name="password">
+              <PasswordWrite />
+            </ElTabPane>
+          </ElTabs>
+        </ElCard>
+      </ElCol>
+    </ElRow>
+  </div>
 </template>

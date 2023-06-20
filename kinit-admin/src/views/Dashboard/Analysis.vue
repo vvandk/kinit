@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElCarousel, ElCarouselItem, ElImage, ElCard } from 'element-plus'
+import { ElCarousel, ElCarouselItem, ElImage } from 'element-plus'
 import Charts from './components/Charts.vue'
 import { getBannersApi } from '@/api/dashboard/analysis'
 import { ref } from 'vue'
@@ -21,15 +21,13 @@ getBanners()
 </script>
 
 <template>
-  <div class="mb-20px" style="display: flex; justify-content: center; min-width: 1680px">
-    <ElCard shadow="never" class="w-1680px">
-      <!-- 添加 v-if 解决显示动态数据时，默认会显示一个空白元素 -->
-      <ElCarousel v-loading="loading" v-if="banners.length > 0" height="500px" :interval="5000">
-        <ElCarouselItem v-for="item in banners" :key="item.id">
-          <ElImage :src="item.image" />
-        </ElCarouselItem>
-      </ElCarousel>
-    </ElCard>
+  <div class="mb-20px">
+    <!-- 添加 v-if 解决显示动态数据时，默认会显示一个空白元素 -->
+    <ElCarousel height="500px" :interval="5000">
+      <ElCarouselItem v-for="item in banners" :key="item.id">
+        <ElImage :src="item.image" class="min-w-[1920px]" />
+      </ElCarouselItem>
+    </ElCarousel>
   </div>
   <Charts />
 </template>

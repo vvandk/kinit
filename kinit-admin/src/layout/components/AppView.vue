@@ -20,9 +20,9 @@ const getCaches = computed((): string[] => {
 </script>
 
 <template>
-  <section
+  <div
     :class="[
-      'p-[var(--app-content-padding)] w-[100%] bg-[var(--app-content-bg-color)] dark:bg-[var(--el-bg-color)]',
+      'w-[100%] bg-[var(--app-content-bg-color-new)] dark:bg-[var(--el-bg-color)] flex flex-col',
       {
         '!min-h-[calc(100%-var(--app-footer-height))]':
           ((fixedHeader && (layout === 'classic' || layout === 'topLeft')) || layout === 'top') &&
@@ -41,13 +41,13 @@ const getCaches = computed((): string[] => {
       }
     ]"
   >
-    <router-view>
+    <RouterView>
       <template #default="{ Component, route }">
-        <keep-alive :include="getCaches">
+        <KeepAlive :include="getCaches">
           <component :is="Component" :key="route.fullPath" />
-        </keep-alive>
+        </KeepAlive>
       </template>
-    </router-view>
-  </section>
+    </RouterView>
+  </div>
   <Footer v-if="footer" />
 </template>

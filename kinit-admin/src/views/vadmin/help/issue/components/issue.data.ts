@@ -117,6 +117,9 @@ export const searchSchema = reactive<FormSchema[]>([
       style: {
         width: '214px'
       }
+    },
+    formItemProps: {
+      labelWidth: '47px'
     }
   },
   {

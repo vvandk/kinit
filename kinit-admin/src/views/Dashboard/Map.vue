@@ -78,7 +78,7 @@ const setValues = async () => {
         })
       }
       // 鼠标移入标记点事件
-      circleMarker.value.on('mouseover', function (e) {
+      circleMarker.value.on('mouseover', () => {
         infoWindow.setContent(
           `<div class="description">
               <div class="name-box">
@@ -91,7 +91,7 @@ const setValues = async () => {
         infoWindow.open(map.value, center)
       })
       // 鼠标移出标记点
-      circleMarker.value.on('mouseout', function (e) {
+      circleMarker.value.on('mouseout', () => {
         infoWindow.close(map.value, center)
       })
       return circleMarker.value
