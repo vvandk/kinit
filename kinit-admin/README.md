@@ -123,9 +123,13 @@ pnpm run build:pro
 
 
 
+
+
 图2
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233201218.jpg)
+
+
 
 
 
@@ -135,9 +139,13 @@ pnpm run build:pro
 
 
 
+
+
 图4
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233229571.jpg)
+
+
 
 
 
