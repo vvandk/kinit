@@ -406,25 +406,80 @@ pnpm run build:pro
 
 ## PC端演示图
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/1.png)
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232679892.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/2.png)
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232728594.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232742716.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232757699.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232894774.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232907644.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232919754.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232947963.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232962873.jpg)
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233000595.jpg)
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/10.png)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/3.png)
+## 手机端查看后台演示图
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/6.jpg)
+<table>
+    <tr>
+        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233033005.jpg"/></td>
+        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233063697.jpg"/></td>
+	</tr>
+    <tr>
+        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233128936.jpg"/></td>
+        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233162782.jpg"/></td>
+    </tr>
+</table>
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/5.png)
+## 另一种布局演示图
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/7.jpg)
+图1
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/8.jpg)
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233189618.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/9.jpg)
 
-## 移动端演示图
+
+
+
+图2
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233201218.jpg)
+
+
+
+
+
+图3
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233211961.jpg)
+
+
+
+
+
+图4
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233229571.jpg)
+
+
+
+
+
+图5
+
+![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233241545.jpg)
+
+## 微信小程序端演示图
 
 <table>
     <tr>
