@@ -14,7 +14,7 @@ defineProps({
 </script>
 
 <template>
-  <ElCard :class="[prefixCls]" shadow="never">
+  <ElCard :class="[prefixCls]" shadow="never" class="!border-0">
     <template v-if="title" #header>
       <div class="flex items-center">
         <span class="text-16px font-700">{{ title }}</span>

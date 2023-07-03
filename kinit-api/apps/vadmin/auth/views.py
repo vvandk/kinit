@@ -8,7 +8,6 @@
 from aioredis import Redis
 from fastapi import APIRouter, Depends, Body, UploadFile, Request
 from sqlalchemy.orm import joinedload
-
 from core.database import redis_getter
 from utils.response import SuccessResponse, ErrorResponse
 from . import schemas, crud, models

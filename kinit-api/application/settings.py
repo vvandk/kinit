@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.8.4"
+VERSION = "1.9.0"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = True
@@ -55,7 +55,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 1440
 """refresh_token 过期时间，用于刷新token使用，两天"""
 REFRESH_TOKEN_EXPIRE_MINUTES = 1440 * 2
 """access_token 缓存时间，用于刷新token使用，30分钟"""
-ACCESS_TOKEN_CACHE_MINUTES = 60 * 2
+ACCESS_TOKEN_CACHE_MINUTES = 30
 
 """
 挂载临时文件目录，并添加路由访问，此路由不会在接口文档中显示
@@ -134,3 +134,9 @@ MIDDLEWARES = [
     "core.middleware.register_demo_env_middleware" if DEMO else None,
     "core.middleware.register_jwt_refresh_middleware"
 ]
+
+"""
+定时任务配置
+"""
+# 发布/订阅通道，与定时任务程序相互关联，请勿随意更改
+SUBSCRIBE = 'kinit_queue'

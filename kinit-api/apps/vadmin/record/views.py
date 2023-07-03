@@ -6,12 +6,14 @@
 # @desc           : 主要接口文件
 
 from fastapi import APIRouter, Depends
+from motor.motor_asyncio import AsyncIOMotorDatabase
+
 from utils.response import SuccessResponse
 from . import crud, schemas
 from apps.vadmin.auth.utils.current import AllUserAuth
 from apps.vadmin.auth.utils.validation.auth import Auth
-from core.mongo import get_database, DatabaseManage
 from .params import LoginParams, OperationParams, SMSParams
+from core.database import mongo_getter
 
 app = APIRouter()
 
@@ -29,11 +31,11 @@ async def get_record_login(p: LoginParams = Depends(), auth: Auth = Depends(AllU
 @app.get("/operations", summary="获取操作日志列表")
 async def get_record_operation(
         p: OperationParams = Depends(),
-        db: DatabaseManage = Depends(get_database),
+        db: AsyncIOMotorDatabase = Depends(mongo_getter),
         auth: Auth = Depends(AllUserAuth())
 ):
-    count = await db.get_count("operation_record", **p.to_count())
-    datas = await db.get_datas("operation_record", v_schema=schemas.OpertionRecordSimpleOut, **p.dict())
+    count = await crud.OperationRecordDal(db).get_count(**p.to_count())
+    datas = await crud.OperationRecordDal(db).get_datas(**p.dict())
     return SuccessResponse(datas, count=count)
 
 

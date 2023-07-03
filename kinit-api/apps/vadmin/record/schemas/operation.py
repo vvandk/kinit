@@ -11,9 +11,10 @@
 
 from typing import Optional, List
 from pydantic import BaseModel
+from core.data_types import DatetimeStr, ObjectIdStr
 
 
-class OpertionRecord(BaseModel):
+class OperationRecord(BaseModel):
     telephone: Optional[str] = None
     user_id: Optional[str] = None
     user_name: Optional[str] = None
@@ -29,10 +30,10 @@ class OpertionRecord(BaseModel):
     tags: Optional[List[str]] = None
     process_time: Optional[str] = None
     params: Optional[str] = None
-    create_datetime: Optional[str] = None
 
 
-class OpertionRecordSimpleOut(OpertionRecord):
+class OperationRecordSimpleOut(OperationRecord):
+    create_datetime: DatetimeStr
 
     class Config:
         orm_mode = True

@@ -1,0 +1,32 @@
+# Editor directories and files
+.idea/
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+logs/*
+!logs/.gitkeep
+temp/*
+!temp/.gitkeep
+!static/.gitkeep
+!alembic/versions/.gitkeep
+
+# dotenv
+.env
+
+# virtualenv
+venv/
+ENV/
+
+# Spyder project settings
+.spyderproject
+
+# Rope project settings
+.ropeproject
+*.db
+.DS_Store
+__pycache__
+!migrations/__init__.py
+*.pyc

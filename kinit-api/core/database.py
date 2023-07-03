@@ -14,9 +14,10 @@ from aioredis import Redis
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
 from sqlalchemy.orm import sessionmaker
-from application.settings import SQLALCHEMY_DATABASE_URL, REDIS_DB_ENABLE
+from application.settings import SQLALCHEMY_DATABASE_URL, REDIS_DB_ENABLE, MONGO_DB_ENABLE
 from fastapi import Request
 from core.exception import CustomException
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 
 def create_async_engine_session(database_url: str):
@@ -93,10 +94,22 @@ async def db_getter():
 
 def redis_getter(request: Request) -> Redis:
     """
-    获取关系数据库
+    获取 redis 数据库对象
 
-    数据库依赖项，它将在单个请求中使用，然后在请求完成后将其关闭。
+    全局挂载，使用一个数据库对象
     """
     if not REDIS_DB_ENABLE:
         raise CustomException("请先配置Redis数据库链接并启用！", desc="请启用 application/settings.py: REDIS_DB_ENABLE")
     return request.app.state.redis
+
+
+def mongo_getter(request: Request) -> AsyncIOMotorDatabase:
+    """
+    获取 mongo 数据库对象
+
+    全局挂载，使用一个数据库对象
+    """
+    if not MONGO_DB_ENABLE:
+        raise CustomException(msg="请先开启 MongoDB 数据库连接！", desc="请启用 application/settings.py: MONGO_DB_ENABLE")
+    return request.app.state.mongo
+

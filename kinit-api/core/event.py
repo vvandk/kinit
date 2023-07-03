@@ -8,8 +8,8 @@
 
 
 from fastapi import FastAPI
+from motor.motor_asyncio import AsyncIOMotorClient
 from application.settings import REDIS_DB_URL, MONGO_DB_URL, MONGO_DB_NAME, EVENTS
-from core.mongo import db
 from utils.cache import Cache
 import aioredis
 from contextlib import asynccontextmanager
@@ -82,11 +82,13 @@ async def connect_mongo(app: FastAPI, status: bool):
     :return:
     """
     if status:
+        client: AsyncIOMotorClient = AsyncIOMotorClient(MONGO_DB_URL, maxPoolSize=10, minPoolSize=10)
+        app.state.mongo_client = client
+        app.state.mongo = client[MONGO_DB_NAME]
         print("Connecting to Mongo")
-        await db.connect_to_database(path=MONGO_DB_URL, db_name=MONGO_DB_NAME)
     else:
         print("Mongo connection closed")
-        await db.close_database_connection()
+        app.state.mongo_client.close()
 
 
 

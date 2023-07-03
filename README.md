@@ -19,13 +19,14 @@
 
 Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
-- 后端采用 Python 语言现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + [SQLAlchemy](https://www.sqlalchemy.org/) 异步操作 [MySQL](https://www.mysql.com/) 数据库。
-- PC端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)等主流技术开发。
-- 移动端采用 [uni-app](https://uniapp.dcloud.net.cn/component/)，[Vue2](https://v2.cn.vuejs.org/v2/guide/)，[uView 2](https://www.uviewui.com/components/intro.html)为主要技术开发
-- 新加入 [Typer](https://typer.tiangolo.com/) 命令行应用，简单化数据初始化，数据表模型迁移。
+- 后端采用 Python 语言现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + [SQLAlchemy](https://www.sqlalchemy.org/) 异步操作 [MySQL](https://www.mysql.com/) 数据库；
+- PC端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)等主流技术开发；
+- 移动端采用 [uni-app](https://uniapp.dcloud.net.cn/component/)，[Vue2](https://v2.cn.vuejs.org/v2/guide/)，[uView 2](https://www.uviewui.com/components/intro.html)为主要技术开发；
+- 后端加入 [Typer](https://typer.tiangolo.com/) 命令行应用，简单化数据初始化，数据表模型迁移等操作；
+- 新加入定时任务功能，采用 [APScheduler](https://github.com/agronholm/apscheduler) 定时任务框架 + [Redis](https://redis.io/)  消息队列 + [MongoDB](https://www.mongodb.com/) 持久存储；
 - 权限认证使用[（哈希）密码和 JWT Bearer 令牌的 OAuth2](https://fastapi.tiangolo.com/zh/tutorial/security/oauth2-jwt/)，支持多终端认证系统。
 - 支持加载动态权限菜单，多方式轻松权限控制，按钮级别权限控制。
-- 已加入常见的`Redis`、`MYSQL`、`MongoDB`数据库异步操作。
+- 已加入常见的 [MySQL](https://www.mysql.com/) + [MongoDB](https://www.mongodb.com/) + [Redis](https://redis.io/)  数据库异步操作。
 - 开箱即用的中后台解决方案，可以用来作为新项目的启动模版，也可用于学习参考。并且时刻关注着最新技术动向，尽可能的第一时间更新。
 - 与 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 前端框架时刻保持同步更新。
 
@@ -119,6 +120,8 @@ github地址：https://github.com/vvandk/kinit
 
 - [x] 命令行操作：新加入 `Typer` 命令行应用，简单化数据初始化，数据表模型迁移。
 
+- [x] 定时任务：在线操作（添加、修改、删除)任务调度包含查看任务执行结果日志。
+
 ## 移动端内置功能
 
 - [x] 登录认证：支持用户使用手机号+密码方式登录，微信手机号一键登录方式。
@@ -133,10 +136,9 @@ github地址：https://github.com/vvandk/kinit
 
 ## TODO
 
-- [ ] 考虑支持多机部署方案，如果接口使用多机，那么用户是否支持统一认证
-- [ ] **自动化编排服务：使用docker-compose部署项目**
-- [ ] **定时任务：定时执行数据库备份**
-- [ ] **可视化低代码表单：接入低代码表单，https://vform666.com/vform3.html?from=element_plus**
+- [ ] 多租户方案
+- [ ] 自动化编排服务：使用docker-compose部署项目
+- [ ] 可视化低代码表单：接入低代码表单，[vform3](https://vform666.com/vform3.html?from=element_plus)
 
 ##  前序准备
 
@@ -145,7 +147,8 @@ github地址：https://github.com/vvandk/kinit
 - [Python3](https://www.python.org/downloads/windows/)：熟悉 python3 基础语法
 - [FastAPI](https://fastapi.tiangolo.com/zh/) - 熟悉后台接口 Web 框架.
 - [Typer](https://typer.tiangolo.com/) - 熟悉命令行工具的使用
-- [MySQL](https://www.mysql.com/) 和 [MongoDB](https://www.mongodb.com/) - 熟悉数据存储数据库
+- [MySQL](https://www.mysql.com/) 和 [MongoDB](https://www.mongodb.com/) 和 [Redis](https://redis.io/)  - 熟悉数据存储数据库
+- [iP查询接口文档](https://user.ip138.com/ip/doc)：IP查询第三方服务，有1000次的免费次数
 
 ### PC端
 
@@ -157,30 +160,23 @@ github地址：https://github.com/vvandk/kinit
 - [Vue-Router-Next](https://gitee.com/link?target=https%3A%2F%2Fnext.router.vuejs.org%2F) - 熟悉 vue-router 基本使用
 - [Element-Plus](https://gitee.com/link?target=https%3A%2F%2Felement-plus.org%2F) - element-plus 基本使用
 - [Mock.js](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fnuysoft%2FMock) - mockjs 基本语法
+- [vue3-json-viewer](https://gitee.com/isfive/vue3-json-viewer)：简单易用的json内容展示组件,适配vue3和vite。
+- [SortableJS/vue.draggable.next](https://github.com/SortableJS/vue.draggable.next)：Vue 组件 （Vue.js 3.0） 允许拖放和与视图模型数组同步。
+- [高德地图API (amap.com)](https://lbs.amap.com/api/jsapi-v2/guide/webcli/map-vue1)：地图 JSAPI 2.0 是高德开放平台免费提供的第四代 Web 地图渲染引擎。
 
 ### 移动端
 
 - [uni-app](https://uniapp.dcloud.net.cn/component/) - 熟悉 uni-app 基本语法
 - [Vue2](https://v2.cn.vuejs.org/v2/guide/) - 熟悉 Vue 基础语法
 - [uView UI 2](https://www.uviewui.com/components/intro.html)：uView UI 组件的基本使用
-
-### 依赖包
-
-#### PC端
-
-- [vue3-json-viewer](https://gitee.com/isfive/vue3-json-viewer)：简单易用的json内容展示组件,适配vue3和vite。
-- [vue3-slide-verify](https://github.com/monoplasty/vue3-slide-verify)：滑块验证码插件 vue3 + typescript。
-- [SortableJS/vue.draggable.next](https://github.com/SortableJS/vue.draggable.next)：Vue 组件 （Vue.js 3.0） 允许拖放和与视图模型数组同步。
-- [高德地图API (amap.com)](https://lbs.amap.com/api/jsapi-v2/guide/webcli/map-vue1)：地图 JSAPI 2.0 是高德开放平台免费提供的第四代 Web 地图渲染引擎， 以 WebGL 为主要绘图手段，本着“更轻、更快、更易用”的服务原则，广泛采用了各种前沿技术，交互体验、视觉体验大幅提升，同时提供了众多新增能力和特性。
-
-#### 移动端
-
 - [uni-read-pages](https://github.com/SilurianYang/uni-read-pages) ：自动读取 `pages.json` 所有配置。
 - [uni-simple-router](https://hhyang.cn/v2/start/quickstart.html) ：在uni-app中使用vue-router的方式进行跳转路由，路由拦截。
 
-#### 后端
+### 定时任务
 
-- [iP查询接口文档](https://user.ip138.com/ip/doc)：IP查询第三方服务，有1000次的免费次数
+- [Python3](https://www.python.org/downloads/windows/) -熟悉 python3 基础语法
+- [APScheduler](https://github.com/agronholm/apscheduler) - 熟悉定时任务框架
+- [MongoDB](https://www.mongodb.com/) 和 [Redis](https://redis.io/)  - 熟悉数据存储数据库
 
 ## 安装和使用
 
@@ -323,6 +319,12 @@ Redis (推荐使用最新稳定版)
    # 微信小程序配置
    wx_server_app_id
    wx_server_app_secret
+   
+   # 邮箱配置
+   email_access
+   email_password
+   email_server
+   email_port
    ```
 
 6. 启动
@@ -353,6 +355,51 @@ pnpm run dev
 ```
 pnpm run build:pro
 ```
+
+### 定时任务
+
+1. 安装依赖
+
+   ```
+   # 安装依赖库
+   pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+   
+   # 第三方源：
+   1. 阿里源： https://mirrors.aliyun.com/pypi/simple/
+   ```
+
+2. 修改项目数据库配置信息
+
+   在 `application/config` 目录中
+
+   - development.py：开发环境
+
+   - production.py：生产环境
+
+   ```python
+   """
+   MongoDB 数据库配置
+   
+   与接口是同一个数据库
+   """
+   MONGO_DB_NAME = "数据库名称"
+   MONGO_DB_URL = f"mongodb://用户名:密码@地址:端口/?authSource={MONGO_DB_NAME}"
+   
+   
+   """
+   Redis 数据库配置
+   
+   与接口是同一个数据库
+   """
+   REDIS_DB_URL = "redis://:密码@地址:端口/数据库名称"
+   ```
+
+3. 启动
+
+   ```
+   python3 main.py
+   ```
+
 
 ### 访问项目
 

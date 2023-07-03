@@ -7,13 +7,14 @@
 # @desc           : 数据库 增删改查操作
 import random
 from typing import List
-
 # sqlalchemy 查询操作：https://segmentfault.com/a/1190000016767008
 # sqlalchemy 关联查询：https://www.jianshu.com/p/dfad7c08c57a
 # sqlalchemy 关联查询详细：https://blog.csdn.net/u012324798/article/details/103940527
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 from . import models, schemas
 from core.crud import DalBase
+from core.mongo_manage import MongoManage
 
 
 class LoginRecordDal(DalBase):
@@ -72,3 +73,9 @@ class SMSSendRecordDal(DalBase):
 
     def __init__(self, db: AsyncSession):
         super(SMSSendRecordDal, self).__init__(db, models.VadminSMSSendRecord, schemas.SMSSendRecordSimpleOut)
+
+
+class OperationRecordDal(MongoManage):
+
+    def __init__(self, db: AsyncIOMotorDatabase):
+        super(OperationRecordDal, self).__init__(db, "operation_record", schemas.OperationRecordSimpleOut)

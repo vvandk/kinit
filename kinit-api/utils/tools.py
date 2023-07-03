@@ -104,4 +104,4 @@ if __name__ == '__main__':
     # print(generate_invitation_code())
     # print(int(datetime.datetime.now().timestamp()))
     # print(datetime.datetime.today() + datetime.timedelta(days=7))
-    print(generate_string())
+    print(generate_string(15))

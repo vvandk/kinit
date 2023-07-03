@@ -63,7 +63,7 @@ class DalBase:
         :param v_or: 或逻辑查询
         :param v_order: 排序，默认正序，为 desc 是倒叙
         :param v_order_field: 排序字段
-        :param v_return_none: 是否返回空 None，否认 抛出异常，默认抛出异常
+        :param v_return_none: 是否返回空 None，否则抛出异常，默认抛出异常
         :param v_schema: 指定使用的序列化对象
         :param kwargs: 查询参数
         """
