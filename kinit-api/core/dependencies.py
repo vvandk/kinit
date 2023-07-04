@@ -47,7 +47,7 @@ class Paging(QueryParams):
     """
     列表分页
     """
-    def __init__(self, page: int = 1, limit: int = 10, v_order_field: str = "id", v_order: str = None):
+    def __init__(self, page: int = 1, limit: int = 10, v_order_field: str = None, v_order: str = None):
         super().__init__()
         self.page = page
         self.limit = limit

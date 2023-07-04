@@ -18,6 +18,7 @@ class TaskParams(QueryParams):
         self.name = ("like", name)
         self.group = group
         self._id = ("ObjectId", _id)
+        self.v_order = "desc"
 
 
 class TaskRecordParams(QueryParams):
@@ -28,3 +29,4 @@ class TaskRecordParams(QueryParams):
         super().__init__(params)
         self.job_id = ("like", job_id)
         self.name = ("like", name)
+        self.v_order = "desc"
