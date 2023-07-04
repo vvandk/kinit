@@ -23,3 +23,4 @@ class OperationParams(QueryParams):
         self.summary = ("like", summary)
         self.telephone = ("like", telephone)
         self.request_method = request_method
+        self.v_order = "desc"
