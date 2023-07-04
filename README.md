@@ -11,15 +11,15 @@
 <div align="center"><h3 align="center">Kinit 是一套开箱即用的中后台解决方案，可以作为新项目的启动模版！</h3></div>
 <div align="center"><h3 align="center">前后端分离架构，开箱即用，紧随前沿技术！</h3></div>
 
-<div align="center"><h3 align="center">既然已经决定了，那就要努力把它做好！</h3></div>
+<div align="center"><h3 align="center">高性能，高效率，高颜值，易扩展</h3></div>
 
-<div align="center"><h3 align="center">文采不够，技术来凑！</h3></div>
+<div align="center"><h3 align="center">长期维护，积极更新！</h3></div>
 
 ## 介绍
 
 Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
-- 后端采用 Python 语言现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + [SQLAlchemy](https://www.sqlalchemy.org/) 异步操作 [MySQL](https://www.mysql.com/) 数据库；
+- 后端采用现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + 自动生成交互式API文档 + （强制类型约束）[Pydantic](https://docs.pydantic.dev/1.10/) + （高效率）[SQLAlchemy](https://www.sqlalchemy.org/) ；
 - PC端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)等主流技术开发；
 - 移动端采用 [uni-app](https://uniapp.dcloud.net.cn/component/)，[Vue2](https://v2.cn.vuejs.org/v2/guide/)，[uView 2](https://www.uviewui.com/components/intro.html)为主要技术开发；
 - 后端加入 [Typer](https://typer.tiangolo.com/) 命令行应用，简单化数据初始化，数据表模型迁移等操作；
@@ -462,6 +462,8 @@ pnpm run build:pro
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232757699.jpg)
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232894774.jpg)
+
+![1688392266702](https://gitee.com/ktianc/kinit/raw/master/images/new/1688392266702.jpg)
 
 ![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232907644.jpg)
 
