@@ -9,12 +9,14 @@ const slots = useSlots()
 const props = defineProps({
   modelValue: propTypes.bool.def(false),
   title: propTypes.string.def('Dialog'),
+  top: propTypes.string.def('8vh'),
   fullscreen: propTypes.bool.def(true),
-  maxHeight: propTypes.oneOfType([String, Number]).def('500px')
+  height: propTypes.oneOfType([String, Number]).def('500px'),
+  width: propTypes.oneOfType([String, Number]).def('700px')
 })
 
 const getBindValue = computed(() => {
-  const delArr: string[] = ['fullscreen', 'title', 'maxHeight']
+  const delArr: string[] = ['fullscreen', 'title', 'height', 'top', 'width']
   const attrs = useAttrs()
   const obj = { ...attrs, ...props }
   for (const key in obj) {
@@ -31,7 +33,7 @@ const toggleFull = () => {
   isFullscreen.value = !unref(isFullscreen)
 }
 
-const dialogHeight = ref(isNumber(props.maxHeight) ? `${props.maxHeight}px` : props.maxHeight)
+const dialogHeight = ref(isNumber(props.height) ? `${props.height}px` : props.height)
 
 watch(
   () => isFullscreen.value,
@@ -41,7 +43,7 @@ watch(
       const windowHeight = document.documentElement.offsetHeight
       dialogHeight.value = `${windowHeight - 55 - 60 - (slots.footer ? 63 : 0)}px`
     } else {
-      dialogHeight.value = isNumber(props.maxHeight) ? `${props.maxHeight}px` : props.maxHeight
+      dialogHeight.value = isNumber(props.height) ? `${props.height}px` : props.height
     }
   },
   {
@@ -64,6 +66,8 @@ const dialogStyle = computed(() => {
     lock-scroll
     draggable
     :close-on-click-modal="false"
+    :top="top"
+    :width="width"
   >
     <template #header>
       <div class="flex justify-between">
