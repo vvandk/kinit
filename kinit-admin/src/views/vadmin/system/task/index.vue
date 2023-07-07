@@ -30,6 +30,7 @@ import { Dialog } from '@/components/Dialog'
 import { useCache } from '@/hooks/web/useCache'
 import { useRouter } from 'vue-router'
 import Write from './components/Write.vue'
+import CronExpression from './components/CronExpression.vue'
 
 const { wsCache } = useCache()
 const { t } = useI18n()
@@ -67,6 +68,7 @@ watch(
   }
 )
 
+const cronDialogVisible = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const loading = ref(false)
@@ -98,7 +100,6 @@ getOptions()
 // 跳转到调度日志页面
 const toRecord = (row: any) => {
   if (row) {
-    console.log(row)
     push(`/system/record/task?job_id=${row._id}`)
   } else {
     push(`/system/record/task`)
@@ -205,7 +206,7 @@ const save = async () => {
 
 // 生成 cron 表达式
 const generateCronExpression = () => {
-  ElMessage.info('下一个版本更新')
+  cronDialogVisible.value = true
 }
 
 getList()
@@ -225,7 +226,7 @@ getList()
         <ElCol :span="1.5">
           <ElButton type="primary" @click="addAction">添加定时任务</ElButton>
           <ElButton type="primary" @click="toRecord(null)">调度日志</ElButton>
-          <ElButton type="primary" @click="generateCronExpression">生成 Cron 表达式</ElButton>
+          <ElButton type="primary" @click="generateCronExpression">快速生成 Cron 表达式</ElButton>
         </ElCol>
       </ElRow>
       <RightToolbar
@@ -284,6 +285,10 @@ getList()
         </ElButton>
         <ElButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</ElButton>
       </template>
+    </Dialog>
+
+    <Dialog v-model="cronDialogVisible" title="快速生成 Cron 表达式" width="920px" height="680px">
+      <CronExpression />
     </Dialog>
   </ContentWrap>
 </template>

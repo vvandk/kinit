@@ -113,6 +113,8 @@ class ScheduledTask:
                 logger.info(content)
                 print(content)
                 getattr(self, operation)(**task)
+            else:
+                print("意外", message)
 
     def start_mongo(self) -> None:
         """
