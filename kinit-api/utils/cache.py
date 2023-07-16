@@ -25,7 +25,7 @@ class Cache:
     def __init__(self, rd: Redis):
         self.rd = rd
 
-    async def __get_tab_name_values(self, tab_names: List[str], hidden: bool | None = False):
+    async def __get_tab_name_values(self, tab_names: List[str]):
         """
         获取系统配置标签下的标签信息
         """
@@ -36,8 +36,7 @@ class Cache:
         sql = select(model).where(
             model.is_delete == False,
             model.tab_name.in_(tab_names),
-            model.disabled == False,
-            model.hidden == hidden
+            model.disabled == False
             ).options(*[load for load in v_options])
         queryset = await session.execute(sql)
         datas = queryset.scalars().unique().all()
@@ -66,7 +65,7 @@ class Cache:
 
         if not tab_names:
             tab_names = self.DEFAULT_TAB_NAMES
-        datas = await self.__get_tab_name_values(tab_names, None)
+        datas = await self.__get_tab_name_values(tab_names)
 
         for k, v in datas.items():
             await self.rd.client().set(k, json.dumps(v))
