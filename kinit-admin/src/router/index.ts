@@ -16,7 +16,25 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
       hidden: true,
       title: '首页',
       noTagsView: true
-    }
+    },
+    children: [
+      {
+        path: 'home',
+        name: 'Home',
+        component: () => import('@/views/Home/Home.vue'),
+        meta: {
+          affix: false,
+          alwaysShow: true,
+          breadcrumb: true,
+          canTo: true,
+          hidden: true,
+          icon: null,
+          noCache: true,
+          noTagsView: false,
+          title: '个人主页'
+        }
+      }
+    ]
   },
   {
     path: '/login',
@@ -93,6 +111,7 @@ const router = createRouter({
 
 export const resetRouter = (): void => {
   const resetWhiteNameList = [
+    'Home',
     'Login',
     'NoFind',
     'Root',

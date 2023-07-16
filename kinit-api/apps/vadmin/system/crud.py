@@ -128,7 +128,7 @@ class SettingsTabDal(DalBase):
     def __init__(self, db: AsyncSession):
         super(SettingsTabDal, self).__init__(db, models.VadminSystemSettingsTab, schemas.SettingsTabSimpleOut)
 
-    async def get_classify_tab_values(self, classify: List[str], hidden: Union[bool, None] = False):
+    async def get_classify_tab_values(self, classify: List[str], hidden: bool | None = False):
         """
         获取系统配置分类下的标签信息
         """
@@ -144,7 +144,7 @@ class SettingsTabDal(DalBase):
         )
         return self.__generate_values(datas)
 
-    async def get_tab_name_values(self, tab_names: List[str], hidden: Union[bool, None] = False):
+    async def get_tab_name_values(self, tab_names: List[str], hidden: bool | None = False):
         """
         获取系统配置标签下的标签信息
         """

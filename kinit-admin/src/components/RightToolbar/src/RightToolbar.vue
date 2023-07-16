@@ -124,7 +124,7 @@ const mobile = appStore.getMobile
           </draggable>
         </ElScrollbar>
         <template #reference>
-          <ElButton link :icon="settings">{{ mobile ? '' : '字段设置' }}</ElButton>
+          <ElButton link :icon="settings">{{ mobile ? '' : '字段显隐' }}</ElButton>
         </template>
       </ElPopover>
     </ElCol>

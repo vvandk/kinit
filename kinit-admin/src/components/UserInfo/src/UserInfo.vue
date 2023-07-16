@@ -29,7 +29,7 @@ const loginOut = () => {
 }
 
 const toHome = () => {
-  push('/system/home')
+  push('/home')
 }
 
 const toGitee = () => {
