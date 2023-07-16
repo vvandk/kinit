@@ -61,7 +61,7 @@ class FileManage(FileBase):
         file_dir = AsyncPath(TEMP_DIR) / date
         if not await file_dir.exists():
             await file_dir.mkdir(parents=True, exist_ok=True)
-        filename = file_dir / str(int(datetime.datetime.now().timestamp())) + file.filename
+        filename = file_dir / (str(int(datetime.datetime.now().timestamp())) + file.filename)
         await filename.write_bytes(await file.read())
         return str(filename)
 
