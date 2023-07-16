@@ -367,12 +367,7 @@ const handleCommand = (command: string) => {
       </template>
     </Dialog>
 
-    <Dialog
-      v-model="importDialogVisible"
-      :title="importDialogTitle"
-      width="750px"
-      maxHeight="550px"
-    >
+    <Dialog v-model="importDialogVisible" :title="importDialogTitle" width="750px" height="550px">
       <Import @get-list="getList" />
     </Dialog>
 
@@ -380,7 +375,7 @@ const handleCommand = (command: string) => {
       v-model="passwordDialogVisible"
       :title="passwordDialogTitle"
       width="1000px"
-      maxHeight="550px"
+      height="550px"
     >
       <PasswordSendSMS
         v-if="passwordDialogType === 'sms'"

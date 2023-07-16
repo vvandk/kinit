@@ -174,7 +174,7 @@ export const schema = reactive<FormSchema[]>([
       style: {
         width: '100%'
       },
-      placeholder: 'cron 表达式，六位或七位，分别表示秒、分钟、小时、天、月、星期几、年'
+      placeholder: 'cron 表达式，六位或七位，分别表示秒、分钟、小时、天、月、星期几、年(可选)'
     },
     ifshow: (values) => values.exec_strategy === 'cron'
   },

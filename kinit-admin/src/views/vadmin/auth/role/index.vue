@@ -196,7 +196,7 @@ watch(
       </template>
     </Table>
 
-    <Dialog v-model="dialogVisible" :title="dialogTitle" width="700px" maxHeight="600px">
+    <Dialog v-model="dialogVisible" :title="dialogTitle" width="700px" height="600px">
       <Write
         ref="writeRef"
         :current-row="tableObject.currentRow"
