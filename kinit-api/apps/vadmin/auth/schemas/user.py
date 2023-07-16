@@ -22,7 +22,7 @@ class User(BaseModel):
     nickname: Optional[str] = None
     avatar: Optional[str] = None
     is_active: Optional[bool] = True
-    is_staff: Optional[bool] = False
+    is_staff: Optional[bool] = True
     gender: Optional[str] = "0"
     is_wx_server_openid: Optional[bool] = False
 

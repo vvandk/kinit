@@ -77,6 +77,7 @@ const handleImport = async () => {
 }
 
 const downloadTemplate = async () => {
+  ElMessage.info('正在下载请稍等！')
   const res = await getImportTemplateApi()
   if (res) {
     const a = document.createElement('a')
@@ -90,6 +91,7 @@ const downloadTemplate = async () => {
 }
 
 const downloadErrorFile = async (row: Recordable) => {
+  ElMessage.info('正在下载请稍等！')
   const a = document.createElement('a')
   a.style.display = 'none'
   a.href = row.error_url

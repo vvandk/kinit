@@ -57,15 +57,18 @@ class ImportManage:
         if file.content_type not in cls.file_type:
             raise CustomException(msg="文件类型必须为xlsx类型", code=status.HTTP_ERROR)
 
-    async def get_table_data(self) -> None:
+    async def get_table_data(self, header_row: int = 1, data_row: int = 2) -> None:
         """
         获取表格数据与表头
+
+        :param header_row: 表头在第几行
+        :param data_row: 数据开始行
         """
         self.__filename = await FileManage.save_tmp_file(self.file)
         es = ExcelManage()
-        es.open_sheet(self.__filename, read_only=True)
-        self.__table_header = es.get_header(1, len(self.headers), asterisk=True)
-        self.__table_data = es.readlines(min_row=2, max_col=len(self.headers))
+        es.open_sheet(file=self.__filename, read_only=True)
+        self.__table_header = es.get_header(header_row, len(self.headers), asterisk=True)
+        self.__table_data = es.readlines(min_row=data_row, max_col=len(self.headers))
         es.close()
 
     def check_table_data(self) -> None:
