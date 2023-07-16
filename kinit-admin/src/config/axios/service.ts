@@ -32,6 +32,18 @@ service.interceptors.request.use(
     ) {
       config.data = qs.stringify(config.data)
     }
+    // post put 参数处理
+    if (
+      (config.method === 'post' || config.method === 'put') &&
+      (config.headers as any)['Content-Type'] === 'application/json'
+    ) {
+      for (const key in config.data) {
+        // 参数处理
+        if (config.data[key] === '') {
+          config.data[key] = null
+        }
+      }
+    }
     // get参数编码
     if (config.method === 'get' && config.params) {
       let url = config.url as string
