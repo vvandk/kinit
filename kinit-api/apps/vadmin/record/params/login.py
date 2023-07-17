@@ -17,8 +17,15 @@ class LoginParams(QueryParams):
     """
     列表分页
     """
-    def __init__(self, ip: str = None, address: str = None, telephone: str = None, status: bool = None,
-                 platform: str = None, params: Paging = Depends()):
+    def __init__(
+            self,
+            ip: str = None,
+            address: str = None,
+            telephone: str = None,
+            status: bool = None,
+            platform: str = None,
+            params: Paging = Depends()
+    ):
         super().__init__(params)
         self.ip = ("like", ip)
         self.telephone = ("like", telephone)

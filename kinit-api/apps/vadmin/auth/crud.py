@@ -6,7 +6,7 @@
 # @IDE            : PyCharm
 # @desc           : 增删改查
 
-from typing import List, Any
+from typing import Any
 from aioredis import Redis
 from fastapi import UploadFile
 from sqlalchemy.orm import joinedload
@@ -61,7 +61,7 @@ class UserDal(DalBase):
         password = data.telephone[5:12] if settings.DEFAULT_PASSWORD == "0" else settings.DEFAULT_PASSWORD
         data.password = self.model.get_password_hash(password)
         data.avatar = data.avatar if data.avatar else settings.DEFAULT_AVATAR
-        obj = self.model(**data.dict(exclude={'role_ids'}))
+        obj = self.model(**data.model_dump(exclude={'role_ids'}))
         if data.role_ids:
             roles = await RoleDal(self.db).get_datas(limit=0, id=("in", data.role_ids), v_return_objs=True)
             for role in roles:
@@ -206,7 +206,7 @@ class UserDal(DalBase):
             "error_url": im.generate_error_url()
         }
 
-    async def init_password(self, ids: List[int]):
+    async def init_password(self, ids: list[int]):
         """
         初始化所选用户密码
         将用户密码改为系统默认密码，并将初始化密码状态改为false
@@ -226,7 +226,7 @@ class UserDal(DalBase):
         await self.db.flush()
         return result
 
-    async def init_password_send_sms(self, ids: List[int], rd: Redis):
+    async def init_password_send_sms(self, ids: list[int], rd: Redis):
         """
         初始化所选用户密码并发送通知短信
         将用户密码改为系统默认密码，并将初始化密码状态改为false
@@ -248,7 +248,7 @@ class UserDal(DalBase):
                 user["send_sms_msg"] = e.msg
         return result
 
-    async def init_password_send_email(self, ids: List[int], rd: Redis):
+    async def init_password_send_email(self, ids: list[int], rd: Redis):
         """
         初始化所选用户密码并发送通知邮件
         将用户密码改为系统默认密码，并将初始化密码状态改为false
@@ -301,7 +301,7 @@ class UserDal(DalBase):
         await self.flush(user)
         return True
     
-    async def delete_datas(self, ids: List[int], v_soft: bool = False, **kwargs):
+    async def delete_datas(self, ids: list[int], v_soft: bool = False, **kwargs):
         """
         删除多个用户，软删除
         删除后清空所关联的角色
@@ -330,7 +330,7 @@ class RoleDal(DalBase):
             v_schema: Any = None
     ):
         """创建数据"""
-        obj = self.model(**data.dict(exclude={'menu_ids'}))
+        obj = self.model(**data.model_dump(exclude={'menu_ids'}))
         menus = await MenuDal(db=self.db).get_datas(limit=0, id=("in", data.menu_ids), v_return_objs=True)
         if data.menu_ids:
             for menu in menus:
@@ -370,9 +370,9 @@ class RoleDal(DalBase):
         """获取选择数据，全部数据"""
         sql = select(self.model)
         queryset = await self.db.execute(sql)
-        return [schemas.RoleSelectOut.from_orm(i).dict() for i in queryset.scalars().all()]
+        return [schemas.RoleSelectOut.model_validate(i).model_dump() for i in queryset.scalars().all()]
 
-    async def delete_datas(self, ids: List[int], v_soft: bool = False, **kwargs):
+    async def delete_datas(self, ids: list[int], v_soft: bool = False, **kwargs):
         """
         删除多个角色，硬删除
         如果存在用户关联则无法删除
@@ -442,7 +442,7 @@ class MenuDal(DalBase):
         menus = self.generate_router_tree(datas, roots)
         return self.menus_order(menus)
 
-    def generate_router_tree(self, menus: List[models.VadminMenu], nodes: filter, name: str = "") -> list:
+    def generate_router_tree(self, menus: list[models.VadminMenu], nodes: filter, name: str = "") -> list:
         """
         生成路由树
 
@@ -452,16 +452,16 @@ class MenuDal(DalBase):
         """
         data = []
         for root in nodes:
-            router = schemas.RouterOut.from_orm(root)
+            router = schemas.RouterOut.model_validate(root)
             router.name = name + "".join(name.capitalize() for name in router.path.split("/"))
             router.meta = schemas.Meta(title=root.title, icon=root.icon, hidden=root.hidden, alwaysShow=root.alwaysShow)
             if root.menu_type == "0":
                 sons = filter(lambda i: i.parent_id == root.id, menus)
                 router.children = self.generate_router_tree(menus, sons, router.name)
-            data.append(router.dict())
+            data.append(router.model_dump())
         return data
 
-    def generate_tree_list(self, menus: List[models.VadminMenu], nodes: filter) -> list:
+    def generate_tree_list(self, menus: list[models.VadminMenu], nodes: filter) -> list:
         """
         生成菜单树列表
 
@@ -470,14 +470,14 @@ class MenuDal(DalBase):
         """
         data = []
         for root in nodes:
-            router = schemas.TreeListOut.from_orm(root)
+            router = schemas.TreeListOut.model_validate(root)
             if root.menu_type == "0" or root.menu_type == "1":
                 sons = filter(lambda i: i.parent_id == root.id, menus)
                 router.children = self.generate_tree_list(menus, sons)
-            data.append(router.dict())
+            data.append(router.model_dump())
         return data
 
-    def generate_tree_options(self, menus: List[models.VadminMenu], nodes: filter) -> list:
+    def generate_tree_options(self, menus: list[models.VadminMenu], nodes: filter) -> list:
         """
         生成菜单树选择项
 
@@ -504,7 +504,7 @@ class MenuDal(DalBase):
                 item[children] = sorted(item[children], key=lambda menu: menu[order])
         return result
 
-    async def delete_datas(self, ids: List[int], v_soft: bool = False, **kwargs):
+    async def delete_datas(self, ids: list[int], v_soft: bool = False, **kwargs):
         """
         删除多个菜单
         如果存在角色关联则无法删除

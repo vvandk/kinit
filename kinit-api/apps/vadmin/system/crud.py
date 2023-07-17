@@ -12,11 +12,10 @@
 import json
 import os
 from enum import Enum
-from typing import List, Union, Any
+from typing import Any
 from aioredis import Redis
 from fastapi.encoders import jsonable_encoder
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from pymongo.results import InsertOneResult, UpdateResult
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
@@ -34,7 +33,7 @@ class DictTypeDal(DalBase):
     def __init__(self, db: AsyncSession):
         super(DictTypeDal, self).__init__(db, models.VadminDictType, schemas.DictTypeSimpleOut)
 
-    async def get_dicts_details(self, dict_types: List[str]) -> dict:
+    async def get_dicts_details(self, dict_types: list[str]) -> dict:
         """
         获取多个字典类型下的字典元素列表
         """
@@ -51,14 +50,14 @@ class DictTypeDal(DalBase):
                 data[obj.dict_type] = []
                 continue
             else:
-                data[obj.dict_type] = [schemas.DictDetailsSimpleOut.from_orm(i).dict() for i in obj.details]
+                data[obj.dict_type] = [schemas.DictDetailsSimpleOut.model_validate(i).model_dump() for i in obj.details]
         return data
 
     async def get_select_datas(self):
         """获取选择数据，全部数据"""
         sql = select(self.model)
         queryset = await self.db.execute(sql)
-        return [schemas.DictTypeSelectOut.from_orm(i).dict() for i in queryset.scalars().all()]
+        return [schemas.DictTypeSelectOut.model_validate(i).model_dump() for i in queryset.scalars().all()]
 
 
 class DictDetailsDal(DalBase):
@@ -128,7 +127,7 @@ class SettingsTabDal(DalBase):
     def __init__(self, db: AsyncSession):
         super(SettingsTabDal, self).__init__(db, models.VadminSystemSettingsTab, schemas.SettingsTabSimpleOut)
 
-    async def get_classify_tab_values(self, classify: List[str], hidden: bool | None = False):
+    async def get_classify_tab_values(self, classify: list[str], hidden: bool | None = False):
         """
         获取系统配置分类下的标签信息
         """
@@ -144,7 +143,7 @@ class SettingsTabDal(DalBase):
         )
         return self.__generate_values(datas)
 
-    async def get_tab_name_values(self, tab_names: List[str], hidden: bool | None = False):
+    async def get_tab_name_values(self, tab_names: list[str], hidden: bool | None = False):
         """
         获取系统配置标签下的标签信息
         """
@@ -161,7 +160,7 @@ class SettingsTabDal(DalBase):
         return self.__generate_values(datas)
 
     @classmethod
-    def __generate_values(cls, datas: List[models.VadminSystemSettingsTab]):
+    def __generate_values(cls, datas: list[models.VadminSystemSettingsTab]):
         """
         生成字典值
         """
@@ -398,7 +397,7 @@ class TaskDal(MongoManage):
         """
         创建任务
         """
-        data_dict = data.dict()
+        data_dict = data.model_dump()
         is_active = data_dict.pop('is_active')
         insert_result = await super().create_data(data_dict)
         obj = await self.get_task(insert_result.inserted_id, v_schema=schemas.TaskSimpleOut)
@@ -422,7 +421,7 @@ class TaskDal(MongoManage):
         """
         更新任务
         """
-        data_dict = data.dict()
+        data_dict = data.model_dump()
         is_active = data_dict.pop('is_active')
         await super(TaskDal, self).put_data(_id, data)
         obj: dict = await self.get_task(_id, v_schema=schemas.TaskSimpleOut)

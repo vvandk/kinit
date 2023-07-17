@@ -6,53 +6,48 @@
 # @IDE            : PyCharm
 # @desc           : pydantic 模型，用于数据库序列化操作
 
-# pydantic 验证数据：https://blog.csdn.net/qq_44291044/article/details/104693526
 
-
-from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from core.data_types import DatetimeStr
 
 
 class DictType(BaseModel):
     dict_name: str
     dict_type: str
-    disabled: Optional[bool] = False
-    remark: Optional[str] = None
+    disabled: bool | None = False
+    remark: str | None = None
 
 
 class DictTypeSimpleOut(DictType):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     create_datetime: DatetimeStr
     update_datetime: DatetimeStr
 
-    class Config:
-        orm_mode = True
-
 
 class DictTypeSelectOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     dict_name: str
     disabled: bool
-
-    class Config:
-        orm_mode = True
 
 
 class DictDetails(BaseModel):
     label: str
     value: str
-    disabled: Optional[bool] = False
-    is_default: Optional[bool] = False
-    remark: Optional[str] = None
-    order: Optional[int] = None
+    disabled: bool | None = False
+    is_default: bool | None = False
+    remark: str | None = None
+    order: int | None = None
     dict_type_id: int
 
 
 class DictDetailsSimpleOut(DictDetails):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     create_datetime: DatetimeStr
     update_datetime: DatetimeStr
 
-    class Config:
-        orm_mode = True

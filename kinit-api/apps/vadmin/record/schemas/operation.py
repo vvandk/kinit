@@ -6,34 +6,30 @@
 # @IDE            : PyCharm
 # @desc           : pydantic 模型，用于数据库序列化操作
 
-# pydantic 验证数据：https://blog.csdn.net/qq_44291044/article/details/104693526
 
-
-from typing import Optional, List
-from pydantic import BaseModel
-from core.data_types import DatetimeStr, ObjectIdStr
+from pydantic import BaseModel, ConfigDict
+from core.data_types import DatetimeStr
 
 
 class OperationRecord(BaseModel):
-    telephone: Optional[str] = None
-    user_id: Optional[str] = None
-    user_name: Optional[str] = None
-    status_code: Optional[int] = None
-    client_ip: Optional[str] = None
-    request_method: Optional[str] = None
-    api_path: Optional[str] = None
-    system: Optional[str] = None
-    browser: Optional[str] = None
-    summary: Optional[str] = None
-    route_name: Optional[str] = None
-    description: Optional[str] = None
-    tags: Optional[List[str]] = None
-    process_time: Optional[str] = None
-    params: Optional[str] = None
+    telephone: str | None = None
+    user_id: int | None = None
+    user_name: str | None = None
+    status_code: int | None = None
+    client_ip: str | None = None
+    request_method: str | None = None
+    api_path: str | None = None
+    system: str | None = None
+    browser: str | None = None
+    summary: str | None = None
+    route_name: str | None = None
+    description: str | None = None
+    tags: list[str] | None = None
+    process_time: float | None = None
+    params: str | None = None
 
 
 class OperationRecordSimpleOut(OperationRecord):
-    create_datetime: DatetimeStr
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
+    create_datetime: DatetimeStr

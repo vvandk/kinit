@@ -6,7 +6,6 @@
 # @desc           : 主要接口文件
 
 # UploadFile 库依赖：pip install python-multipart
-from typing import List
 from aioredis import Redis
 from fastapi import APIRouter, Depends, Body, UploadFile, Form
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -17,7 +16,6 @@ from utils.file.aliyun_oss import AliyunOSS, BucketConf
 from utils.file.file_manage import FileManage
 from utils.response import SuccessResponse, ErrorResponse
 from utils.sms.code import CodeSMS
-from utils.tools import generate_string
 from . import schemas, crud
 from core.dependencies import IdList
 from apps.vadmin.auth.utils.current import AllUserAuth, FullAdminAuth, OpenAuth
@@ -53,7 +51,7 @@ async def delete_dict_types(ids: IdList = Depends(), auth: Auth = Depends(AllUse
 @app.post("/dict/types/details", summary="获取多个字典类型下的字典元素列表")
 async def post_dicts_details(
         auth: Auth = Depends(AllUserAuth()),
-        dict_types: List[str] = Body(None, title="字典元素列表", description="查询字典元素列表")
+        dict_types: list[str] = Body(None, title="字典元素列表", description="查询字典元素列表")
 ):
     datas = await crud.DictTypeDal(auth.db).get_dicts_details(dict_types)
     return SuccessResponse(datas)

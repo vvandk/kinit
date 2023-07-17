@@ -21,6 +21,7 @@ class Auth(BaseModel):
     db: AsyncSession
 
     class Config:
+        # 接收任意类型
         arbitrary_types_allowed = True
 
 
@@ -49,7 +50,6 @@ class AuthValidation:
                 status_code=status.HTTP_403_FORBIDDEN
             )
         try:
-            # TODO token解析失败问题解决
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
             telephone: str = payload.get("sub")
             exp: int = payload.get("exp")

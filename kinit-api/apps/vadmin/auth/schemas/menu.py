@@ -6,72 +6,60 @@
 # @IDE            : PyCharm
 # @desc           : pydantic 模型，用于数据库序列化操作
 
-# pydantic 验证数据：https://blog.csdn.net/qq_44291044/article/details/104693526
 
-
-from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from core.data_types import DatetimeStr
 
 
 class Menu(BaseModel):
     title: str
-    icon: Optional[str] = None
-    component: Optional[str] = None
-    redirect: Optional[str] = None
-    path: Optional[str] = None
+    icon: str | None = None
+    component: str | None = None
+    redirect: str | None = None
+    path: str | None = None
     disabled: bool = False
     hidden: bool = False
-    order: Optional[int] = None
-    perms: Optional[str] = None
-    parent_id: Optional[int] = None
+    order: int | None = None
+    perms: str | None = None
+    parent_id: int | None = None
     menu_type: str
-    alwaysShow: Optional[bool] = True
+    alwaysShow: bool | None = True
 
 
 class MenuSimpleOut(Menu):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     create_datetime: DatetimeStr
     update_datetime: DatetimeStr
 
-    class Config:
-        orm_mode = True
-
 
 class Meta(BaseModel):
     title: str
-    icon: Optional[str] = None
+    icon: str | None = None
     hidden: bool = False
-    noCache: Optional[bool] = False
-    breadcrumb: Optional[bool] = True
-    affix: Optional[bool] = False
-    noTagsView: Optional[bool] = False
-    canTo: Optional[bool] = False
-    alwaysShow: Optional[bool] = True
+    noCache: bool | None = False
+    breadcrumb: bool | None = True
+    affix: bool | None = False
+    noTagsView: bool | None = False
+    canTo: bool | None = False
+    alwaysShow: bool | None = True
 
 
 # 路由展示
 class RouterOut(BaseModel):
-    name: Optional[str] = None
-    component: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str | None = None
+    component: str | None = None
     path: str
-    redirect: Optional[str] = None
-    meta: Optional[Meta] = None
-    order: Optional[int] = None
-    children: List['RouterOut'] = []
-
-    class Config:
-        orm_mode = True
-
-
-RouterOut.update_forward_refs()
+    redirect: str | None = None
+    meta: Meta | None = None
+    order: int | None = None
+    children: list[dict] = []
 
 
 class TreeListOut(MenuSimpleOut):
-    children: List['TreeListOut'] = []
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-
-
-RouterOut.update_forward_refs()
+    children: list[dict] = []

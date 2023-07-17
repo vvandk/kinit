@@ -17,8 +17,13 @@ class OperationParams(QueryParams):
     """
     列表分页
     """
-    def __init__(self, summary: str = None, telephone: str = None, request_method: str = None,
-                 params: Paging = Depends()):
+    def __init__(
+            self,
+            summary: str = None,
+            telephone: str = None,
+            request_method: str = None,
+            params: Paging = Depends()
+    ):
         super().__init__(params)
         self.summary = ("like", summary)
         self.telephone = ("like", telephone)

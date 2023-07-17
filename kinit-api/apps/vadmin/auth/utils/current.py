@@ -5,7 +5,6 @@
 # @IDE            : PyCharm
 # @desc           : 获取认证后的信息工具
 
-from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from apps.vadmin.auth.crud import UserDal
@@ -76,7 +75,7 @@ class FullAdminAuth(AuthValidation):
     如果有权限，那么会验证该用户是否包括权限列表中的其中一个权限
     """
 
-    def __init__(self, permissions: Optional[List[str]] = None):
+    def __init__(self, permissions: list[str] | None = None):
         if permissions:
             self.permissions = set(permissions)
         else:

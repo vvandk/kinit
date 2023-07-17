@@ -17,7 +17,14 @@ class RoleParams(QueryParams):
     """
     列表分页
     """
-    def __init__(self, name: str = None, role_key: str = None, disabled: bool = None, params: Paging = Depends()):
+
+    def __init__(
+            self,
+            name: str | None = None,
+            role_key: str | None = None,
+            disabled: bool | None = None,
+            params: Paging = Depends()
+    ):
         super().__init__(params)
         self.name = ("like", name)
         self.role_key = ("like", role_key)

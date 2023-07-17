@@ -16,24 +16,22 @@ https://api.ip138.com/ip/?ip=58.16.180.3&datatype=jsonp&token=cc87f3c77747bccbaa
 aiohttp 异步请求文档：https://docs.aiohttp.org/en/stable/client_quickstart.html
 """
 from aiohttp import TCPConnector
-
 from application.settings import IP_PARSE_TOKEN, IP_PARSE_ENABLE
 import aiohttp
 from core.logger import logger
 from pydantic import BaseModel
-from typing import Optional
 
 
 class IPLocationOut(BaseModel):
-    ip: Optional[str] = None
-    address: Optional[str] = None
-    country: Optional[str] = None
-    province: Optional[str] = None
-    city: Optional[str] = None
-    county: Optional[str] = None
-    operator: Optional[str] = None
-    postal_code: Optional[str] = None
-    area_code: Optional[str] = None
+    ip: str | None = None
+    address: str | None = None
+    country: str | None = None
+    province: str | None = None
+    city: str | None = None
+    county: str | None = None
+    operator: str | None = None
+    postal_code: str | None = None
+    area_code: str | None = None
 
 
 class IPManage:

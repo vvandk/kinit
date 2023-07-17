@@ -8,38 +8,36 @@
 
 
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from core.data_types import DatetimeStr
 from apps.vadmin.auth.schemas import UserSimpleOut
 
 
 class IssueCategory(BaseModel):
-    name: Optional[str] = None
-    platform: Optional[str] = None
-    is_active: Optional[bool] = None
+    name: str | None = None
+    platform: str | None = None
+    is_active: bool | None = None
 
-    create_user_id: Optional[int] = None
+    create_user_id: int | None = None
 
 
 class IssueCategorySimpleOut(IssueCategory):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     update_datetime: DatetimeStr
     create_datetime: DatetimeStr
 
-    class Config:
-        orm_mode = True
-
 
 class IssueCategoryListOut(IssueCategorySimpleOut):
-    create_user: UserSimpleOut
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
+    create_user: UserSimpleOut
 
 
 class IssueCategoryOptionsOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     label: str = Field(alias='name')
     value: int = Field(alias='id')
 
-    class Config:
-        orm_mode = True

@@ -14,7 +14,6 @@ import datetime
 import hashlib
 import os.path
 import random
-from typing import List
 import xlsxwriter
 from application.settings import TEMP_DIR, TEMP_URL
 
@@ -45,7 +44,7 @@ class WriteXlsx:
         self.wb = xlsxwriter.Workbook(self.filename)
         self.sheet = self.wb.add_worksheet(self.sheet_name)
 
-    def generate_template(self, headers: List[dict] = None, max_row: int = 101) -> None:
+    def generate_template(self, headers: list[dict] = None, max_row: int = 101) -> None:
         """
         生成模板
         :param headers: 表头

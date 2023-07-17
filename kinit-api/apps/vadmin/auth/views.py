@@ -87,7 +87,7 @@ async def post_user_current_update_avatar(file: UploadFile, auth: Auth = Depends
 
 @app.get("/user/admin/current/info", summary="获取当前管理员信息")
 async def get_user_admin_current_info(auth: Auth = Depends(FullAdminAuth())):
-    result = schemas.UserOut.from_orm(auth.user).dict()
+    result = schemas.UserOut.model_validate(auth.user).model_dump()
     result["permissions"] = list(FullAdminAuth.get_user_permissions(auth.user))
     return SuccessResponse(result)
 

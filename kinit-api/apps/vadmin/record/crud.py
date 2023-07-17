@@ -6,7 +6,6 @@
 # @IDE            : PyCharm
 # @desc           : 数据库 增删改查操作
 import random
-from typing import List
 # sqlalchemy 查询操作：https://segmentfault.com/a/1190000016767008
 # sqlalchemy 关联查询：https://www.jianshu.com/p/dfad7c08c57a
 # sqlalchemy 关联查询详细：https://blog.csdn.net/u012324798/article/details/103940527
@@ -22,7 +21,7 @@ class LoginRecordDal(DalBase):
     def __init__(self, db: AsyncSession):
         super(LoginRecordDal, self).__init__(db, models.VadminLoginRecord, schemas.LoginRecordSimpleOut)
 
-    async def get_user_distribute(self) -> List[dict]:
+    async def get_user_distribute(self) -> list[dict]:
         """
         获取用户登录分布情况
         高德经纬度查询：https://lbs.amap.com/tools/picker

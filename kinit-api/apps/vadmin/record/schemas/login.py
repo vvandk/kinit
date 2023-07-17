@@ -6,38 +6,33 @@
 # @IDE            : PyCharm
 # @desc           : pydantic 模型，用于数据库序列化操作
 
-# pydantic 验证数据：https://blog.csdn.net/qq_44291044/article/details/104693526
-
-
-from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from core.data_types import DatetimeStr
 
 
 class LoginRecord(BaseModel):
     telephone: str
     status: bool
-    ip: Optional[str] = None
-    address: Optional[str] = None
-    browser: Optional[str] = None
-    system: Optional[str] = None
-    response: Optional[str] = None
-    request: Optional[str] = None
-    postal_code: Optional[str] = None
-    area_code: Optional[str] = None
-    country: Optional[str] = None
-    province: Optional[str] = None
-    city: Optional[str] = None
-    county: Optional[str] = None
-    operator: Optional[str] = None
-    platform: Optional[str] = None
-    login_method: Optional[str] = None
+    ip: str | None = None
+    address: str | None = None
+    browser: str | None = None
+    system: str | None = None
+    response: str | None = None
+    request: str | None = None
+    postal_code: str | None = None
+    area_code: str | None = None
+    country: str | None = None
+    province: str | None = None
+    city: str | None = None
+    county: str | None = None
+    operator: str | None = None
+    platform: str | None = None
+    login_method: str | None = None
 
 
 class LoginRecordSimpleOut(LoginRecord):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     create_datetime: DatetimeStr
     update_datetime: DatetimeStr
-
-    class Config:
-        orm_mode = True

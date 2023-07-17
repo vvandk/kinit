@@ -7,7 +7,7 @@
 # @desc           : 登录验证装饰器
 
 from fastapi import Request
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 from application.settings import DEFAULT_AUTH_ERROR_MAX_NUMBER, DEMO
 from apps.vadmin.auth import crud, schemas
@@ -23,21 +23,21 @@ class LoginForm(BaseModel):
     method: str = '0'  # 认证方式，0：密码登录，1：短信登录，2：微信一键登录
     platform: str = '0'  # 登录平台，0：PC端管理系统，1：移动端管理系统
 
-    # validators
-    _normalize_telephone = validator('telephone', allow_reuse=True)(vali_telephone)
+    # 重用验证器：https://docs.pydantic.dev/dev-v2/usage/validators/#reuse-validators
+    normalize_telephone = field_validator('telephone')(vali_telephone)
 
 
 class WXLoginForm(BaseModel):
-    telephone: Optional[str] = None
+    telephone: str | None = None
     code: str
     method: str = '2'  # 认证方式，0：密码登录，1：短信登录，2：微信一键登录
     platform: str = '1'  # 登录平台，0：PC端管理系统，1：移动端管理系统
 
 
 class LoginResult(BaseModel):
-    status: Optional[bool] = False
-    user: Optional[schemas.UserOut] = None
-    msg: Optional[str] = None
+    status: bool | None = False
+    user: schemas.UserOut | None = None
+    msg: str | None = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -85,6 +85,6 @@ class LoginValidation:
                 await count.delete()
             self.result.msg = "OK"
             self.result.status = True
-            self.result.user = schemas.UserSimpleOut.from_orm(user)
+            self.result.user = schemas.UserSimpleOut.model_validate(user)
             await user.update_login_info(db, request.client.host)
         return self.result

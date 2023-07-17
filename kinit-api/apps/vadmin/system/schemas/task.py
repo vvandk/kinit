@@ -6,28 +6,27 @@
 # @IDE            : PyCharm
 # @desc           : 简要说明
 
-from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from core.data_types import DatetimeStr, ObjectIdStr
 
 
 class Task(BaseModel):
     name: str
-    group: Optional[str] = None
+    group: str | None = None
     job_class: str
     exec_strategy: str
     expression: str
-    is_active: Optional[bool] = True  # 临时字段，不在表中创建
-    remark: Optional[str] = None
-    start_date: Optional[DatetimeStr] = None
-    end_date: Optional[DatetimeStr] = None
+    is_active: bool | None = True  # 临时字段，不在表中创建
+    remark: str | None = None
+    start_date: DatetimeStr | None = None
+    end_date: DatetimeStr | None = None
 
 
 class TaskSimpleOut(Task):
+    model_config = ConfigDict(from_attributes=True)
+
     id: ObjectIdStr = Field(..., alias='_id')
     create_datetime: DatetimeStr
     update_datetime: DatetimeStr
-    last_run_datetime: Optional[DatetimeStr] = None # 临时字段，不在表中创建
+    last_run_datetime: DatetimeStr | None = None  # 临时字段，不在表中创建
 
-    class Config:
-        orm_mode = True

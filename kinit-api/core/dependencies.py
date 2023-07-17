@@ -10,7 +10,6 @@
 类依赖项-官方文档：https://fastapi.tiangolo.com/zh/tutorial/dependencies/classes-as-dependencies/
 """
 
-from typing import List
 from fastapi import Body
 import copy
 
@@ -24,7 +23,7 @@ class QueryParams:
             self.v_order = params.v_order
             self.v_order_field = params.v_order_field
 
-    def dict(self, exclude: List[str] = None) -> dict:
+    def dict(self, exclude: list[str] = None) -> dict:
         result = copy.deepcopy(self.__dict__)
         if exclude:
             for item in exclude:
@@ -34,7 +33,7 @@ class QueryParams:
                     pass
         return result
 
-    def to_count(self, exclude: List[str] = None) -> dict:
+    def to_count(self, exclude: list[str] = None) -> dict:
         params = self.dict(exclude=exclude)
         del params["page"]
         del params["limit"]
@@ -59,5 +58,5 @@ class IdList:
     """
     id 列表
     """
-    def __init__(self, ids: List[int] = Body(..., title="ID 列表")):
+    def __init__(self, ids: list[int] = Body(..., title="ID 列表")):
         self.ids = ids

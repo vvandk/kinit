@@ -19,7 +19,7 @@
 # https://www.osgeo.cn/sqlalchemy/orm/loading_relationships.html?highlight=selectinload#sqlalchemy.orm.joinedload
 
 import datetime
-from typing import List, Set
+from typing import Set
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func, delete, update, or_
@@ -47,7 +47,7 @@ class DalBase:
             data_id: int = None,
             v_options: list = None,
             v_join_query: dict = None,
-            v_or: List[tuple] = None,
+            v_or: list[tuple] = None,
             v_order: str = None,
             v_order_field: str = None,
             v_return_none: bool = False,
@@ -82,7 +82,7 @@ class DalBase:
         if not data and v_return_none:
             return None
         if data and v_schema:
-            return v_schema.from_orm(data).dict()
+            return v_schema.model_validate(data).model_dump()
         if data:
             return data
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="未找到此数据")
@@ -93,7 +93,7 @@ class DalBase:
             limit: int = 10,
             v_options: list = None,
             v_join_query: dict = None,
-            v_or: List[tuple] = None,
+            v_or: list[tuple] = None,
             v_order: str = None,
             v_order_field: str = None,
             v_return_objs: bool = False,
@@ -131,7 +131,7 @@ class DalBase:
             return queryset.scalars().unique().all()
         return [await self.out_dict(i, v_schema=v_schema) for i in queryset.scalars().unique().all()]
 
-    async def get_count(self, v_options: list = None, v_join_query: dict = None, v_or: List[tuple] = None, **kwargs):
+    async def get_count(self, v_options: list = None, v_join_query: dict = None, v_or: list[tuple] = None, **kwargs):
         """
         获取数据总数
 
@@ -156,7 +156,7 @@ class DalBase:
         if isinstance(data, dict):
             obj = self.model(**data)
         else:
-            obj = self.model(**data.dict())
+            obj = self.model(**data.model_dump())
         await self.flush(obj)
         return await self.out_dict(obj, v_options, v_return_obj, v_schema)
 
@@ -183,7 +183,7 @@ class DalBase:
         await self.flush(obj)
         return await self.out_dict(obj, None, v_return_obj, v_schema)
 
-    async def delete_datas(self, ids: List[int], v_soft: bool = False, **kwargs):
+    async def delete_datas(self, ids: list[int], v_soft: bool = False, **kwargs):
         """
         删除多条数据
         :param ids: 数据集
@@ -200,13 +200,14 @@ class DalBase:
             )
         else:
             await self.db.execute(delete(self.model).where(self.model.id.in_(ids)))
+        await self.flush()
 
     def add_filter_condition(
             self,
             sql: select,
             v_options: list = None,
             v_join_query: dict = None,
-            v_or: List[tuple] = None,
+            v_or: list[tuple] = None,
             **kwargs
     ) -> select:
         """
@@ -245,7 +246,7 @@ class DalBase:
             sql = sql.options(*[load for load in v_options])
         return sql
 
-    def __or_filter(self, sql: select, v_or: List[tuple], v_join_left: Set[str], v_join: Set[str]):
+    def __or_filter(self, sql: select, v_or: list[tuple], v_join_left: Set[str], v_join: Set[str]):
         """
         或逻辑操作
         :param sql:
@@ -337,5 +338,5 @@ class DalBase:
         if v_return_obj:
             return obj
         if v_schema:
-            return v_schema.from_orm(obj).dict()
-        return self.schema.from_orm(obj).dict()
+            return v_schema.model_validate(obj).model_dump()
+        return self.schema.model_validate(obj).model_dump()

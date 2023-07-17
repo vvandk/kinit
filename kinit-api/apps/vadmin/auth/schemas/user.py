@@ -6,33 +6,32 @@
 # @IDE            : PyCharm
 # @desc           : pydantic 模型，用于数据库序列化操作
 
-# pydantic 验证数据：https://blog.csdn.net/qq_44291044/article/details/104693526
 
+from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic_core.core_schema import FieldValidationInfo
 
-from typing import List, Optional
-from pydantic import BaseModel, root_validator
 from core.data_types import Telephone, DatetimeStr, Email
 from .role import RoleSimpleOut
 
 
 class User(BaseModel):
-    name: Optional[str] = None
+    name: str | None = None
     telephone: Telephone
-    email: Optional[Email] = None
-    nickname: Optional[str] = None
-    avatar: Optional[str] = None
-    is_active: Optional[bool] = True
-    is_staff: Optional[bool] = True
-    gender: Optional[str] = "0"
-    is_wx_server_openid: Optional[bool] = False
+    email: Email | None = None
+    nickname: str | None = None
+    avatar: str | None = None
+    is_active: bool | None = True
+    is_staff: bool | None = True
+    gender: str | None = "0"
+    is_wx_server_openid: bool | None = False
 
 
 class UserIn(User):
     """
     创建用户
     """
-    role_ids: Optional[List[int]] = []
-    password: Optional[str] = ""
+    role_ids: list[int] = []
+    password: str | None = ""
 
 
 class UserUpdateBaseInfo(BaseModel):
@@ -41,53 +40,50 @@ class UserUpdateBaseInfo(BaseModel):
     """
     name: str
     telephone: Telephone
-    email: Optional[Email] = None
-    nickname: Optional[str] = None
-    gender: Optional[str] = "0"
+    email: Email | None = None
+    nickname: str | None = None
+    gender: str | None = "0"
 
 
 class UserUpdate(User):
     """
     更新用户详细信息
     """
-    name: Optional[str] = None
+    name: str | None = None
     telephone: Telephone
-    email: Optional[Email] = None
-    nickname: Optional[str] = None
-    avatar: Optional[str] = None
-    is_active: Optional[bool] = True
-    is_staff: Optional[bool] = False
-    gender: Optional[str] = "0"
-    role_ids: Optional[List[int]] = []
+    email: Email | None = None
+    nickname: str | None = None
+    avatar: str | None = None
+    is_active: bool | None = True
+    is_staff: bool | None = False
+    gender: str | None = "0"
+    role_ids: list[int] = []
 
 
 class UserSimpleOut(User):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     update_datetime: DatetimeStr
     create_datetime: DatetimeStr
 
-    is_reset_password: Optional[bool] = None
-    last_login: Optional[DatetimeStr] = None
-    last_ip: Optional[str] = None
-
-    class Config:
-        orm_mode = True
+    is_reset_password: bool | None = None
+    last_login: DatetimeStr | None = None
+    last_ip: str | None = None
 
 
 class UserOut(UserSimpleOut):
-    roles: Optional[List[RoleSimpleOut]] = []
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
+    roles: list[RoleSimpleOut] = []
 
 
 class ResetPwd(BaseModel):
     password: str
     password_two: str
 
-    @root_validator
-    def check_passwords_match(cls, values):
-        pw1, pw2 = values.get('password'), values.get('password_two')
-        if pw1 is not None and pw2 is not None and pw1 != pw2:
+    @field_validator('password_two')
+    def check_passwords_match(cls, v, info: FieldValidationInfo):
+        if 'password' in info.data and v != info.data['password']:
             raise ValueError('两次密码不一致!')
-        return values
+        return v

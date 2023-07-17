@@ -20,11 +20,11 @@ class UserParams(QueryParams):
 
     def __init__(
             self,
-            name: str = None,
-            telephone: str = None,
-            email: str = None,
-            is_active: bool | str = None,
-            is_staff: bool | str = None,
+            name: str | None = None,
+            telephone: str | None = None,
+            email: str | None = None,
+            is_active: bool | None = None,
+            is_staff: bool | None = None,
             params: Paging = Depends()
     ):
         super().__init__(params)
