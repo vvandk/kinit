@@ -146,6 +146,21 @@ export const schema = reactive<FormSchema[]>([
     value: '0'
   },
   {
+    field: '',
+    label: '默认密码',
+    colProps: {
+      span: 12
+    },
+    component: 'Text',
+    componentProps: {
+      style: {
+        width: '100%'
+      }
+    },
+    value: '手机号后六位',
+    ifshow: (values) => values.id === undefined
+  },
+  {
     field: 'is_staff',
     label: '工作人员',
     colProps: {
