@@ -116,9 +116,7 @@ const getIconName = computed(() =>
       height: inherit;
       background-color: transparent;
       border-radius: inherit;
-      transition:
-        width 0.5s ease-in-out,
-        background 0.25s;
+      transition: width 0.5s ease-in-out;
 
       &[data-score='0'] {
         width: 20%;
