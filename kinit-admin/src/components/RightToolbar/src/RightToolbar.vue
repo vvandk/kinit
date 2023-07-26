@@ -107,7 +107,7 @@ const mobile = appStore.getMobile
           >
         </div>
         <ElScrollbar max-height="400px">
-          <draggable :list="columns" item-key="field">
+          <draggable :list="columns" item-key="field" handle=".cursor-move">
             <template #item="{ element }">
               <div>
                 <span class="cursor-move mr-10px">
