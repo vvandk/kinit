@@ -29,7 +29,7 @@ class FileBase:
             path = path[1:]
         if path[-1] == "/":
             path = path[:-1]
-        full_date = datetime.datetime.now().date()
+        full_date = int(datetime.datetime.now().timestamp())
         _filename = str(int(datetime.datetime.now().timestamp())) + str(uuid.uuid4())[:8]
         return f"{path}/{full_date}/{_filename}{os.path.splitext(filename)[-1]}"
 
@@ -38,7 +38,9 @@ class FileBase:
         """
         验证文件是否符合格式
 
-        :params max_size: 文件最大值，单位 MB
+        :param file: 文件
+        :param max_size: 文件最大值，单位 MB
+        :param mime_types: 支持的文件类型
         """
         if max_size:
             size = len(await file.read()) / 1024 / 1024
