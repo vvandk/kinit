@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.10.2"
+VERSION = "1.10.3"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = True
@@ -45,7 +45,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 """
 OAUTH_ENABLE = True
 """登录认证视图"""
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/", auto_error=False) if OAUTH_ENABLE else lambda: ""
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/api/login", auto_error=True) if OAUTH_ENABLE else lambda: ""
 """安全的随机密钥，该密钥将用于对 JWT 令牌进行签名"""
 SECRET_KEY = 'vgb0tnl9d58+6n-6h-ea&u^1#s0ccp!794=kbvqacjq75vzps$'
 """用于设定 JWT 令牌签名算法"""

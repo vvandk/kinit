@@ -6,7 +6,6 @@
 # @IDE            : PyCharm
 # @desc           : 登录记录模型
 import json
-
 from application.settings import LOGIN_LOG_RECORD
 from apps.vadmin.auth.utils.validation import LoginForm, WXLoginForm
 from utils.ip_manage import IPManage
@@ -14,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.db_base import BaseModel
 from sqlalchemy import Column, String, Boolean, TEXT
 from fastapi import Request
+from starlette.requests import Request as StarletteRequest
 from user_agents import parse
 
 
@@ -45,7 +45,7 @@ class VadminLoginRecord(BaseModel):
             db: AsyncSession,
             data: LoginForm | WXLoginForm,
             status: bool,
-            req: Request,
+            req: Request | StarletteRequest,
             resp: dict
     ):
         """
@@ -57,13 +57,17 @@ class VadminLoginRecord(BaseModel):
         header = {}
         for k, v in req.headers.items():
             header[k] = v
-        body = json.loads((await req.body()).decode())
+        if isinstance(req, StarletteRequest):
+            form = (await req.form()).multi_items()
+            params = json.dumps({"form": form, "headers": header})
+        else:
+            body = json.loads((await req.body()).decode())
+            params = json.dumps({"body": body, "headers": header})
         user_agent = parse(req.headers.get("user-agent"))
         system = f"{user_agent.os.family} {user_agent.os.version_string}"
         browser = f"{user_agent.browser.family} {user_agent.browser.version_string}"
         ip = IPManage(req.client.host)
         location = await ip.parse()
-        params = json.dumps({"body": body, "headers": header})
         obj = VadminLoginRecord(
             **location.dict(),
             telephone=data.telephone if data.telephone else data.code,
