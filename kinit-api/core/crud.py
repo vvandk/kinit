@@ -32,7 +32,6 @@ from typing import Any
 
 
 class DalBase:
-
     # 倒叙
     ORDER_FIELD = ["desc", "descending"]
 
@@ -63,7 +62,7 @@ class DalBase:
         :param v_or: 或逻辑查询
         :param v_order: 排序，默认正序，为 desc 是倒叙
         :param v_order_field: 排序字段
-        :param v_return_none: 是否返回空 None，否则抛出异常，默认抛出异常
+        :param v_return_none: 是否返回空 None，否认 抛出异常，默认抛出异常
         :param v_schema: 指定使用的序列化对象
         :param kwargs: 查询参数
         """
@@ -100,7 +99,7 @@ class DalBase:
             v_start_sql: Any = None,
             v_schema: Any = None,
             **kwargs
-    ):
+    ) -> list:
         """
         获取数据列表
         :param page: 页码
@@ -131,7 +130,13 @@ class DalBase:
             return queryset.scalars().unique().all()
         return [await self.out_dict(i, v_schema=v_schema) for i in queryset.scalars().unique().all()]
 
-    async def get_count(self, v_options: list = None, v_join_query: dict = None, v_or: list[tuple] = None, **kwargs):
+    async def get_count(
+            self,
+            v_options: list = None,
+            v_join_query: dict = None,
+            v_or: list[tuple] = None,
+            **kwargs
+    ) -> int:
         """
         获取数据总数
 
@@ -212,38 +217,57 @@ class DalBase:
     ) -> select:
         """
         添加过滤条件，以及内连接过滤条件
+
+        当外键模型在查询模型中存在多个外键时，则需要添加onclause属性
         :param sql:
         :param v_options: 指示应使用select在预加载中加载给定的属性。
         :param v_join_query: 外键字段查询，内连接
         :param v_or: 或逻辑
         :param kwargs: 关键词参数
         """
+        v_select_from: Set[str] = set()
         v_join: Set[str] = set()
         v_join_left: Set[str] = set()
         if v_join_query:
             for key, value in v_join_query.items():
                 foreign_key = self.key_models.get(key)
-                conditions = []
-                self.__dict_filter(conditions, foreign_key.get("model"), **value)
+                conditions = self.__dict_filter(foreign_key.get("model"), **value)
                 if conditions:
                     sql = sql.where(*conditions)
                     v_join.add(key)
+
         if v_or:
             sql = self.__or_filter(sql, v_or, v_join_left, v_join)
-        for item in v_join:
-            foreign_key = self.key_models.get(item)
-            # 当外键模型在查询模型中存在多个外键时，则需要添加onclause属性
-            sql = sql.join(foreign_key.get("model"), onclause=foreign_key.get("onclause"))
-        for item in v_join_left:
-            foreign_key = self.key_models.get(item)
-            # 当外键模型在查询模型中存在多个外键时，则需要添加onclause属性
-            sql = sql.outerjoin(foreign_key.get("model"), onclause=foreign_key.get("onclause"))
-        conditions = []
-        self.__dict_filter(conditions, self.model, **kwargs)
+
+        sql = self.__generate_join_conditions(sql, v_join, "join", v_select_from)
+        sql = self.__generate_join_conditions(sql, v_join_left, "outerjoin", v_select_from)
+
+        # 多对多关系查询使用
+        for item in v_select_from:
+            sql = sql.select_from(item)
+
+        conditions = self.__dict_filter(self.model, **kwargs)
         if conditions:
             sql = sql.where(*conditions)
         if v_options:
             sql = sql.options(*[load for load in v_options])
+        return sql
+
+    def __generate_join_conditions(self, sql, model_keys: Set[str], join_type: str, v_select_from: []):
+        """
+        生成 join 条件
+        """
+        for item in model_keys:
+            foreign_key = self.key_models.get(item)
+            join = foreign_key.get("join", None)
+            model = foreign_key.get("model")
+            if join:
+                v_select_from.add(model)
+                model = join
+            if join_type == "join":
+                sql = sql.join(model, onclause=foreign_key.get("onclause"))
+            elif join_type == "outerjoin":
+                sql = sql.outerjoin(model, onclause=foreign_key.get("onclause"))
         return sql
 
     def __or_filter(self, sql: select, v_or: list[tuple], v_join_left: Set[str], v_join: Set[str]):
@@ -259,14 +283,13 @@ class DalBase:
             if len(item) == 2:
                 model = self.model
                 condition = {item[0]: item[1]}
-                self.__dict_filter(or_list, model, **condition)
+                or_list.extend(self.__dict_filter(model, **condition))
             elif len(item) == 4 and item[0] == "fk":
                 model = self.key_models.get(item[1]).get("model")
                 condition = {item[2]: item[3]}
-                conditions = []
-                self.__dict_filter(conditions, model, **condition)
+                conditions = self.__dict_filter(model, **condition)
                 if conditions:
-                    or_list = or_list + conditions
+                    or_list.extend(conditions)
                     v_join_left.add(item[1])
                     if item[1] in v_join:
                         v_join.remove(item[1])
@@ -276,12 +299,14 @@ class DalBase:
             sql = sql.where(or_(i for i in or_list))
         return sql
 
-    def __dict_filter(self, conditions: list, model, **kwargs):
+    @staticmethod
+    def __dict_filter(model, **kwargs):
         """
         字典过滤
         :param model:
         :param kwargs:
         """
+        conditions = []
         for field, value in kwargs.items():
             if value is not None and value != "":
                 attr = getattr(model, field)
@@ -309,10 +334,13 @@ class DalBase:
                             conditions.append(attr != value[1])
                         elif value[0] == ">":
                             conditions.append(attr > value[1])
+                        elif value[0] == "<=":
+                            conditions.append(attr <= value[1])
                         else:
                             raise CustomException("SQL查询语法错误")
                 else:
                     conditions.append(attr == value)
+        return conditions
 
     async def flush(self, obj: Any = None):
         """
@@ -323,6 +351,7 @@ class DalBase:
         await self.db.flush()
         if obj:
             await self.db.refresh(obj)
+        return obj
 
     async def out_dict(self, obj: Any, v_options: list = None, v_return_obj: bool = False, v_schema: Any = None):
         """
