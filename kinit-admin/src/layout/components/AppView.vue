@@ -20,7 +20,7 @@ const getCaches = computed((): string[] => {
 </script>
 
 <template>
-  <div
+  <section
     :class="[
       'w-[100%] bg-[var(--app-content-bg-color-new)] dark:bg-[var(--el-bg-color)] flex flex-col',
       {
@@ -48,6 +48,6 @@ const getCaches = computed((): string[] => {
         </KeepAlive>
       </template>
     </RouterView>
-  </div>
+  </section>
   <Footer v-if="footer" />
 </template>

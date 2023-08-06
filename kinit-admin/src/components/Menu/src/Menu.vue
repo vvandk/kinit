@@ -80,25 +80,28 @@ export default defineComponent({
 
     const renderMenu = () => {
       return (
-        <ElMenu
-          defaultActive={unref(activeMenu)}
-          mode={unref(menuMode)}
-          collapse={
-            unref(layout) === 'top' || unref(layout) === 'cutMenu' ? false : unref(collapse)
-          }
-          uniqueOpened={unref(layout) === 'top' ? false : unref(uniqueOpened)}
-          backgroundColor="var(--left-menu-bg-color)"
-          textColor="var(--left-menu-text-color)"
-          activeTextColor="var(--left-menu-text-active-color)"
-          onSelect={menuSelect}
-        >
-          {{
-            default: () => {
-              const { renderMenuItem } = useRenderMenuItem(unref(menuMode))
-              return renderMenuItem(unref(routers))
+        <ElScrollbar>
+          <ElMenu
+            defaultActive={unref(activeMenu)}
+            mode={unref(menuMode)}
+            collapse={
+              unref(layout) === 'top' || unref(layout) === 'cutMenu' ? false : unref(collapse)
             }
-          }}
-        </ElMenu>
+            uniqueOpened={unref(layout) === 'top' ? false : unref(uniqueOpened)}
+            backgroundColor="var(--left-menu-bg-color)"
+            textColor="var(--left-menu-text-color)"
+            activeTextColor="var(--left-menu-text-active-color)"
+            onSelect={menuSelect}
+            ellipsis={false}
+          >
+            {{
+              default: () => {
+                const { renderMenuItem } = useRenderMenuItem(unref(menuMode))
+                return renderMenuItem(unref(routers))
+              }
+            }}
+          </ElMenu>
+        </ElScrollbar>
       )
     }
 
