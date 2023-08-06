@@ -116,7 +116,7 @@ getData()
     <template #web_logo="form">
       <ElUpload
         class="main-image-uploader"
-        action="/api/vadmin/system/upload/image/to/local/"
+        action="/api/vadmin/system/upload/image/to/local"
         :data="{ path: 'system' }"
         :show-file-list="false"
         :before-upload="beforeLogoImageUpload"
@@ -135,7 +135,7 @@ getData()
     <template #web_ico="form">
       <ElUpload
         class="main-image-uploader"
-        action="/api/vadmin/system/upload/image/to/local/"
+        action="/api/vadmin/system/upload/image/to/local"
         :data="{ path: 'system' }"
         :show-file-list="false"
         :before-upload="beforeICOImageUpload"
