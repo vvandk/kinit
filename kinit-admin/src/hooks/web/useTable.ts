@@ -173,7 +173,7 @@ export const useTable = <T = any>(config?: UseTableConfig<T>) => {
     // 如果为 false，则说明是点击按钮，则获取当前选择行数据进行删除
     delListApi: async (
       multiple: boolean,
-      ids: string[] | number[] | number = [],
+      ids: string[] | number[] | number | string = [],
       message = true
     ) => {
       const tableRef = await getTable()

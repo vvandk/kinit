@@ -11,7 +11,9 @@ from fastapi import UploadFile
 from pydantic import BaseModel
 import oss2  # 安装依赖库：pip install oss2
 from oss2.models import PutObjectResult
+from core.exception import CustomException
 from core.logger import logger
+from utils import status
 from utils.file.compress.cpressJPG import compress_jpg_png
 from utils.file.file_manage import FileManage
 from utils.file.file_base import FileBase
@@ -45,15 +47,19 @@ class AliyunOSS(FileBase):
         self.bucket = oss2.Bucket(auth, bucket.endpoint, bucket.bucket)
         self.baseUrl = bucket.baseUrl
 
-    async def upload_image(self, path: str, file: UploadFile, compress: bool = False) -> str:
+    async def upload_image(self, path: str, file: UploadFile, compress: bool = False, max_size: int = 10) -> str:
         """
         上传图片
 
         :param path: path由包含文件后缀，不包含Bucket名称组成的Object完整路径，例如abc/efg/123.jpg。
         :param file: 文件对象
         :param compress: 是否压缩该文件
+        :param max_size: 图片文件最大值，单位 MB，默认 10MB
         :return: 上传后的文件oss链接
         """
+        # 验证图片类型
+        await self.validate_file(file, max_size, self.IMAGE_ACCEPT)
+        # 生成文件路径
         path = self.generate_path(path, file.filename)
         if compress:
             # 压缩图片
@@ -63,14 +69,23 @@ class AliyunOSS(FileBase):
                 file_data = f.read()
         else:
             file_data = await file.read()
-        result = self.bucket.put_object(path, file_data)
-        assert isinstance(result, PutObjectResult)
-        if result.status != 200:
-            logger.error(f"图片上传到OSS失败，状态码：{result.status}")
-            print("图片上传路径", path)
-            print(f"图片上传到OSS失败，状态码：{result.status}")
-            return ""
-        return self.baseUrl + path
+        return await self.__upload_file_to_oss(path, file_data)
+
+    async def upload_video(self, path: str, file: UploadFile, max_size: int = 100) -> str:
+        """
+        上传视频
+
+        :param path: path由包含文件后缀，不包含Bucket名称组成的Object完整路径，例如abc/efg/123.jpg。
+        :param file: 文件对象
+        :param max_size: 视频文件最大值，单位 MB，默认 100MB
+        :return: 上传后的文件oss链接
+        """
+        # 验证图片类型
+        await self.validate_file(file, max_size, self.VIDEO_ACCEPT)
+        # 生成文件路径
+        path = self.generate_path(path, file.filename)
+        file_data = await file.read()
+        return await self.__upload_file_to_oss(path, file_data)
 
     async def upload_file(self, path: str, file: UploadFile) -> str:
         """
@@ -82,9 +97,19 @@ class AliyunOSS(FileBase):
         """
         path = self.generate_path(path, file.filename)
         file_data = await file.read()
+        return await self.__upload_file_to_oss(path, file_data)
+
+    async def __upload_file_to_oss(self, path: str, file_data: bytes) -> str:
+        """
+        上传文件到OSS
+
+        :param path: path由包含文件后缀，不包含Bucket名称组成的Object完整路径，例如abc/efg/123.jpg。
+        :param file_data: 文件数据
+        :return: 上传后的文件oss链接
+        """
         result = self.bucket.put_object(path, file_data)
         assert isinstance(result, PutObjectResult)
         if result.status != 200:
             logger.error(f"文件上传到OSS失败，状态码：{result.status}")
-            return ""
+            raise CustomException("上传文件失败", code=status.HTTP_ERROR)
         return self.baseUrl + path

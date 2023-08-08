@@ -6,6 +6,9 @@ import { propTypes } from '@/utils/propTypes'
 import { isNumber } from '@/utils/is'
 import { ElMessage } from 'element-plus'
 import { useLocaleStore } from '@/store/modules/locale'
+import { uploadImageToOSS, uploadVideoToOSS } from '@/api/vadmin/system/files'
+
+// editor 官方文档：https://www.wangeditor.com/v5/getting-started.html
 
 const localeStore = useLocaleStore()
 
@@ -79,7 +82,48 @@ const editorConfig = computed((): IEditorConfig => {
       },
       autoFocus: false,
       scroll: true,
-      uploadImgShowBase64: true
+      uploadImgShowBase64: true,
+      MENU_CONF: {
+        uploadImage: {
+          // 自定义上传图片
+          // 官方文档：https://www.wangeditor.com/v5/menu-config.html#%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%8A%E4%BC%A0
+          async customUpload(file: File, insertFn: InsertImageType) {
+            // 上传图片前的检查
+            if (!['image/jpeg', 'image/gif', 'image/png'].includes(file.type)) {
+              return ElMessage.error(`${file.name}上传失败：上传图片只能是 JPG/GIF/PNG/ 格式!`)
+            }
+            if (!(file.size / 1024 / 1024 < 2)) {
+              return ElMessage.error(`${file.name}上传失败：上传图片大小不能超过 2MB!`)
+            }
+
+            // 自己实现上传，并得到图片 url
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('path', 'editor/image')
+            const res = await uploadImageToOSS(formData)
+            insertFn(res.data, '', res.data)
+          }
+        },
+        uploadVideo: {
+          // 自定义上传视频
+          // 官方文档：https://www.wangeditor.com/v5/menu-config.html#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8A%9F%E8%83%BD-1
+          async customUpload(file: File, insertFn: InsertVideoType) {
+            // 上传视频前的检查
+            if (!['video/mp4', 'video/mpeg'].includes(file.type)) {
+              return ElMessage.error(`${file.name}上传失败：上传视频只能是 mp4/mpeg/ 格式!`)
+            }
+            if (!(file.size / 1024 / 1024 < 5)) {
+              return ElMessage.error(`${file.name}上传失败：上传视频大小不能超过 5MB!`)
+            }
+            // 自己实现上传，并得到视频 url
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('path', 'editor/video')
+            const res = await uploadVideoToOSS(formData)
+            insertFn(res.data, '')
+          }
+        }
+      }
     },
     props.editorConfig || {}
   )

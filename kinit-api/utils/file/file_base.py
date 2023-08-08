@@ -17,7 +17,7 @@ from utils import status
 class FileBase:
 
     IMAGE_ACCEPT = ["image/png", "image/jpeg", "image/gif", "image/x-icon"]
-    VIDEO_ACCEPT = ["audio/mp4", "video/mp4", "video/mpeg"]
+    VIDEO_ACCEPT = ["video/mp4", "video/mpeg"]
     ALL_ACCEPT = [*IMAGE_ACCEPT, *VIDEO_ACCEPT]
 
     @classmethod

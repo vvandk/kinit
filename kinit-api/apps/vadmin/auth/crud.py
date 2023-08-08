@@ -282,8 +282,6 @@ class UserDal(DalBase):
         更新当前用户头像
         """
         result = await AliyunOSS(BucketConf(**settings.ALIYUN_OSS)).upload_image("avatar", file)
-        if not result:
-            raise CustomException(msg="上传失败", code=status.HTTP_ERROR)
         user.avatar = result
         await self.flush(user)
         return result

@@ -113,8 +113,18 @@ async def get_dict_detail(data_id: int, auth: Auth = Depends(AllUserAuth())):
 @app.post("/upload/image/to/oss", summary="上传图片到阿里云OSS")
 async def upload_image_to_oss(file: UploadFile, path: str = Form(...)):
     result = await AliyunOSS(BucketConf(**ALIYUN_OSS)).upload_image(path, file)
-    if not result:
-        return ErrorResponse(msg="上传失败")
+    return SuccessResponse(result)
+
+
+@app.post("/upload/video/to/oss", summary="上传视频到阿里云OSS")
+async def upload_video_to_oss(file: UploadFile, path: str = Form(...)):
+    result = await AliyunOSS(BucketConf(**ALIYUN_OSS)).upload_video(path, file)
+    return SuccessResponse(result)
+
+
+@app.post("/upload/file/to/oss", summary="上传文件到阿里云OSS")
+async def upload_file_to_oss(file: UploadFile, path: str = Form(...)):
+    result = await AliyunOSS(BucketConf(**ALIYUN_OSS)).upload_file(path, file)
     return SuccessResponse(result)
 
 
