@@ -6,7 +6,7 @@ import { propTypes } from '@/utils/propTypes'
 import { isNumber } from '@/utils/is'
 import { ElMessage } from 'element-plus'
 import { useLocaleStore } from '@/store/modules/locale'
-import { uploadImageToOSS, uploadVideoToOSS } from '@/api/vadmin/system/files'
+import { uploadImageToOSSApi, uploadVideoToOSSApi } from '@/api/vadmin/system/files'
 
 // editor 官方文档：https://www.wangeditor.com/v5/getting-started.html
 
@@ -100,7 +100,7 @@ const editorConfig = computed((): IEditorConfig => {
             const formData = new FormData()
             formData.append('file', file)
             formData.append('path', 'editor/image')
-            const res = await uploadImageToOSS(formData)
+            const res = await uploadImageToOSSApi(formData)
             insertFn(res.data, '', res.data)
           }
         },
@@ -119,7 +119,7 @@ const editorConfig = computed((): IEditorConfig => {
             const formData = new FormData()
             formData.append('file', file)
             formData.append('path', 'editor/video')
-            const res = await uploadVideoToOSS(formData)
+            const res = await uploadVideoToOSSApi(formData)
             insertFn(res.data, '')
           }
         }

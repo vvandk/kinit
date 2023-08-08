@@ -159,7 +159,7 @@ service.interceptors.response.use(
 const refreshToken = (): Promise<IResponse> => {
   const appStore = useAppStore()
   const data = wsCache.get(appStore.getRefreshToken)
-  return request.post({ url: '/auth/token/refresh/', data })
+  return request.post({ url: '/auth/token/refresh', data })
 }
 
 export { service }
