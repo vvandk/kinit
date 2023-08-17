@@ -77,6 +77,7 @@ const toDetail = (row: any) => {
 
 // 复制字典类型
 const toCopy = async (value: string) => {
+  // 复制功能打包部署到线上后，需要线上地址使用 https 才可使用
   const { copy } = useClipboard()
   await copy(value)
   return ElMessage.success('复制成功')
