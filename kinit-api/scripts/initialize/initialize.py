@@ -7,13 +7,14 @@
 # @desc           : 简要说明
 
 from enum import Enum
+from sqlalchemy import insert
 from core.database import db_getter
 from utils.excel.excel_manage import ExcelManage
 from application.settings import BASE_DIR, VERSION
 import os
 from apps.vadmin.auth import models as auth_models
 from apps.vadmin.system import models as system_models
-from sqlalchemy.sql.schema import Table
+from apps.vadmin.help import models as help_models
 import subprocess
 
 
@@ -76,20 +77,16 @@ class InitializeData:
         """
         生成数据
 
-        @params table_name: 表名
-        @params model: 数据表模型
+        :param table_name: 表名
+        :param model: 数据表模型
         """
         async_session = db_getter()
         db = await async_session.__anext__()
-        if isinstance(model, Table):
-            for data in self.datas.get(table_name):
-                await db.execute(model.insert().values(**data))
-        else:
-            for data in self.datas.get(table_name):
-                db.add(model(**data))
-        print(f"{table_name} 表数据已生成")
+        datas = self.datas.get(table_name)
+        await db.execute(insert(model), datas)
         await db.flush()
         await db.commit()
+        print(f"{table_name} 表数据已生成")
 
     async def generate_menu(self):
         """
@@ -113,7 +110,7 @@ class InitializeData:
         """
         生成用户
         """
-        await self.__generate_data("vadmin_auth_user_roles", auth_models.vadmin_user_roles)
+        await self.__generate_data("vadmin_auth_user_roles", auth_models.vadmin_auth_user_roles)
 
     async def generate_system_tab(self):
         """
@@ -139,6 +136,18 @@ class InitializeData:
         """
         await self.__generate_data("vadmin_system_dict_details", system_models.VadminDictDetails)
 
+    async def generate_help_issue_category(self):
+        """
+        生成常见问题类别数据
+        """
+        await self.__generate_data("vadmin_help_issue_category", help_models.VadminIssueCategory)
+
+    async def generate_help_issue(self):
+        """
+        生成常见问题详情数据
+        """
+        await self.__generate_data("vadmin_help_issue", help_models.VadminIssue)
+
     async def run(self, env: Environment = Environment.pro):
         """
         执行初始化工作
@@ -152,4 +161,6 @@ class InitializeData:
         await self.generate_dict_type()
         await self.generate_system_config()
         await self.generate_dict_details()
+        await self.generate_help_issue_category()
+        await self.generate_help_issue()
         print(f"环境：{env} {VERSION} 数据已初始化完成")

@@ -19,7 +19,7 @@
 
 Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
-- 后端采用现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + 自动生成交互式API文档 + （强制类型约束）[Pydantic](https://docs.pydantic.dev/1.10/) + （高效率）[SQLAlchemy](https://www.sqlalchemy.org/) ；
+- 后端采用现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + 自动生成交互式API文档 + （强制类型约束）[Pydantic](https://docs.pydantic.dev/1.10/) + （高效率）[SQLAlchemy 2.0]([SQLAlchemy Documentation — SQLAlchemy 2.0 Documentation](https://docs.sqlalchemy.org/en/20/index.html)) ；
 - PC端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)等主流技术开发；
 - 移动端采用 [uni-app](https://uniapp.dcloud.net.cn/component/)，[Vue2](https://v2.cn.vuejs.org/v2/guide/)，[uView 2](https://www.uviewui.com/components/intro.html)为主要技术开发；
 - 后端加入 [Typer](https://typer.tiangolo.com/) 命令行应用，简单化数据初始化，数据表模型迁移等操作；
@@ -34,23 +34,13 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin)：一套基于vue3、element-plus、typescript4、vite3的后台集成方案
 
-[RuoYi 若依官方网站](http://www.ruoyi.vip/)：RuoYi 是一个后台管理系统，基于经典技术组合（Spring Boot、Apache Shiro、MyBatis、Thymeleaf）主要目的让开发者注重专注业务，降低技术难度，从而节省人力成本，缩短项目周期，提高软件安全质量。
+[RuoYi 若依官方网站](http://www.ruoyi.vip/)：RuoYi 是一个优秀的 Java 后台管理系统
 
-[django-vue-admin](https://gitee.com/liqianglog/django-vue-admin)：基于RBAC模型的权限控制的一整套基础开发平台，前后端分离，后端采用 django+django-rest-framework，前端采用 vue+ElementUI。
+[django-vue-admin](https://gitee.com/liqianglog/django-vue-admin)：django-vue-admin 是一个优秀的基于 Django 开发后台管理系统
 
 [Ant Design Pro](https://preview.pro.ant.design/dashboard/analysis)：开箱即用的中台前端/设计解决方案
 
-[Gin-Vue-Admin](https://demo.gin-vue-admin.com)：基于vite+vue3+gin搭建的开发基础平台（支持TS,JS混用），集成jwt鉴权，权限管理，动态路由，显隐可控组件，分页封装，多点登录拦截，资源权限，上传下载，代码生成器，表单生成器等开发必备功能。
-
-[Vben Admin](https://doc.vvbin.cn/guide/introduction.html)：Vue Vben Admin 是一个免费开源的中后台模版。使用了最新的`vue3`,`vite2`,`TypeScript`等主流技术开发，开箱即用的中后台前端解决方案，也可用于学习参考。
-
-[中华人民共和国行政区划 (github.com)](https://github.com/modood/Administrative-divisions-of-China)：省级（省份）、 地级（城市）、 县级（区县）、 乡级（乡镇街道）、 村级（村委会居委会） ，中国省市区镇村二级三级四级五级联动地址数据。
-
-[Vue Admin Plus](https://vue-admin-beautiful.com/admin-plus/#/index)：vue-admin-better是github开源admin中最优秀的集成框架之一，它是国内首个基于vue3.0的开源admin项目，同时支持电脑，手机，平板，默认分支使用vue3.x+antdv开发，master分支使用的是vue2.x+element开发。
-
 [小诺开源技术 (xiaonuo.vip)](https://www.xiaonuo.vip/)：国内首个国密前后端分离快速开发平台
-
-[my-web](https://gitee.com/newgateway/my-web)：MyWeb 是一个企业级中后台前端/设计解决方案的的项目工程模板，它可以帮助你快速搭建企业级中后台产品原型
 
 ## 在线体验
 
@@ -134,18 +124,13 @@ github地址：https://github.com/vvandk/kinit
 
 - [x] 我的基础功能：编辑资料、头像修改、密码修改、常见问题、关于我们等
 
-## TODO
-
-- [ ] 多租户方案
-- [ ] 自动化编排服务：使用docker-compose部署项目
-- [ ] 可视化低代码表单：接入低代码表单，[vform3](https://vform666.com/vform3.html?from=element_plus)
-
 ##  前序准备
 
 ### 后端技术
 
 - [Python3](https://www.python.org/downloads/windows/)：熟悉 python3 基础语法
-- [FastAPI](https://fastapi.tiangolo.com/zh/) - 熟悉后台接口 Web 框架.
+- [FastAPI](https://fastapi.tiangolo.com/zh/) - 熟悉后台接口 Web 框架
+- [SQLAlchemy 2.0](https://docs.sqlalchemy.org/en/20/index.html) - 数据数据库操作
 - [Typer](https://typer.tiangolo.com/) - 熟悉命令行工具的使用
 - [MySQL](https://www.mysql.com/) 和 [MongoDB](https://www.mongodb.com/) 和 [Redis](https://redis.io/)  - 熟悉数据存储数据库
 - [iP查询接口文档](https://user.ip138.com/ip/doc)：IP查询第三方服务，有1000次的免费次数

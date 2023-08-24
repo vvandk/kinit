@@ -1,33 +1,26 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Create Time    : 2021/10/18 22:18
+# @Update Time    : 2023/8/21 22:18
 # @File           : crud.py
 # @IDE            : PyCharm
 # @desc           : 数据库 增删改查操作
 
-# sqlalchemy 查询操作：https://segmentfault.com/a/1190000016767008
-# sqlalchemy 查询操作（官方文档）: https://www.osgeo.cn/sqlalchemy/orm/queryguide.html
-# sqlalchemy 增删改操作：https://www.osgeo.cn/sqlalchemy/tutorial/orm_data_manipulation.html#updating-orm-objects
-# SQLAlchemy lazy load和eager load: https://www.jianshu.com/p/dfad7c08c57a
-# Mysql中内连接,左连接和右连接的区别总结:https://www.cnblogs.com/restartyang/articles/9080993.html
-# SQLAlchemy INNER JOIN 内连接
-# selectinload 官方文档：
-# https://www.osgeo.cn/sqlalchemy/orm/loading_relationships.html?highlight=selectinload#sqlalchemy.orm.selectinload
-# SQLAlchemy LEFT OUTER JOIN 左连接
-# joinedload 官方文档：
-# https://www.osgeo.cn/sqlalchemy/orm/loading_relationships.html?highlight=selectinload#sqlalchemy.orm.joinedload
+# sqlalchemy 官方文档：https://docs.sqlalchemy.org/en/20/index.html
+# sqlalchemy 查询操作（官方文档）: https://docs.sqlalchemy.org/en/20/orm/queryguide/select.html
+# sqlalchemy 增删改操作：https://docs.sqlalchemy.org/en/20/orm/queryguide/dml.html
+# sqlalchemy 1.x 语法迁移到 2.x :https://docs.sqlalchemy.org/en/20/changelog/migration_20.html#migration-20-query-usage
 
 import datetime
-from typing import Set
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import func, delete, update, or_
-from sqlalchemy.future import select
+from sqlalchemy import func, delete, update, BinaryExpression, ScalarResult, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import InstrumentedAttribute
+from sqlalchemy.orm.strategy_options import _AbstractLoad
 from starlette import status
 from core.exception import CustomException
-from sqlalchemy.sql.selectable import Select
+from sqlalchemy.sql.selectable import Select as SelectType
 from typing import Any
 
 
@@ -35,124 +28,200 @@ class DalBase:
     # 倒叙
     ORDER_FIELD = ["desc", "descending"]
 
-    def __init__(self, db: AsyncSession, model: Any, schema: Any, key_models: dict = None):
+    def __init__(self, db: AsyncSession, model: Any, schema: Any):
         self.db = db
         self.model = model
         self.schema = schema
-        self.key_models = key_models
 
     async def get_data(
             self,
             data_id: int = None,
-            v_options: list = None,
-            v_join_query: dict = None,
-            v_or: list[tuple] = None,
+            v_start_sql: SelectType = None,
+            v_select_from: list[Any] = None,
+            v_join: list[list[str | InstrumentedAttribute, BinaryExpression | None]] = None,
+            v_outerjoin: list[list[str | InstrumentedAttribute, BinaryExpression | None]] = None,
+            v_options: list[_AbstractLoad] = None,
+            v_where: list[BinaryExpression] = None,
             v_order: str = None,
             v_order_field: str = None,
             v_return_none: bool = False,
             v_schema: Any = None,
             **kwargs
-    ):
+    ) -> Any:
         """
         获取单个数据，默认使用 ID 查询，否则使用关键词查询
 
         :param data_id: 数据 ID
-        :param v_options: 指示应使用select在预加载中加载给定的属性。
-        :param v_join_query: 外键字段查询，内连接
-        :param v_or: 或逻辑查询
+        :param v_start_sql: 初始 sql
+        :param v_select_from: 用于指定查询从哪个表开始，通常与 .join() 等方法一起使用。
+        :param v_join: 创建内连接（INNER JOIN）操作，返回两个表中满足连接条件的交集。
+        :param v_outerjoin: 用于创建外连接（OUTER JOIN）操作，返回两个表中满足连接条件的并集，包括未匹配的行，并用 NULL 值填充。
+        :param v_options: 用于为查询添加附加选项，如预加载、延迟加载等。
+        :param v_where: 当前表查询条件，原始表达式
         :param v_order: 排序，默认正序，为 desc 是倒叙
         :param v_order_field: 排序字段
         :param v_return_none: 是否返回空 None，否认 抛出异常，默认抛出异常
         :param v_schema: 指定使用的序列化对象
         :param kwargs: 查询参数
+        :return: 默认返回 ORM 对象，如果存在 v_schema 则会返回 v_schema 结果
         """
-        sql = select(self.model).where(self.model.is_delete == False)
+        if not isinstance(v_start_sql, SelectType):
+            v_start_sql = select(self.model).where(self.model.is_delete == False)
+
         if data_id:
-            sql = sql.where(self.model.id == data_id)
-        sql = self.add_filter_condition(sql, v_options, v_join_query, v_or, **kwargs)
-        if v_order_field and (v_order in self.ORDER_FIELD):
-            sql = sql.order_by(getattr(self.model, v_order_field).desc(), self.model.id.desc())
-        elif v_order_field:
-            sql = sql.order_by(getattr(self.model, v_order_field), self.model.id)
-        elif v_order and (v_order in self.ORDER_FIELD):
-            sql = sql.order_by(self.model.create_datetime.desc())
-        queryset = await self.db.execute(sql)
-        data = queryset.scalars().unique().first()
+            v_start_sql = v_start_sql.where(self.model.id == data_id)
+
+        queryset: ScalarResult = await self.filter_core(
+            v_start_sql=v_start_sql,
+            v_select_from=v_select_from,
+            v_join=v_join,
+            v_outerjoin=v_outerjoin,
+            v_options=v_options,
+            v_where=v_where,
+            v_order=v_order,
+            v_order_field=v_order_field,
+            v_return_sql=False,
+            **kwargs
+        )
+
+        if v_options:
+            data = queryset.unique().first()
+        else:
+            data = queryset.first()
+
         if not data and v_return_none:
             return None
+
         if data and v_schema:
             return v_schema.model_validate(data).model_dump()
+
         if data:
             return data
+
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="未找到此数据")
 
     async def get_datas(
             self,
             page: int = 1,
             limit: int = 10,
-            v_options: list = None,
-            v_join_query: dict = None,
-            v_or: list[tuple] = None,
+            v_start_sql: SelectType = None,
+            v_select_from: list[Any] = None,
+            v_join: list[list[str | InstrumentedAttribute, BinaryExpression | None]] = None,
+            v_outerjoin: list[list[str | InstrumentedAttribute, BinaryExpression | None]] = None,
+            v_options: list[_AbstractLoad] = None,
+            v_where: list[BinaryExpression] = None,
             v_order: str = None,
             v_order_field: str = None,
+            v_return_count: bool = False,
+            v_return_scalars: bool = False,
             v_return_objs: bool = False,
-            v_start_sql: Any = None,
             v_schema: Any = None,
             **kwargs
-    ) -> list:
+    ) -> list[Any] | ScalarResult | tuple:
         """
         获取数据列表
+
         :param page: 页码
         :param limit: 当前页数据量
-        :param v_options: 指示应使用select在预加载中加载给定的属性。
-        :param v_join_query: 外键字段查询
-        :param v_or: 或逻辑查询
+        :param v_start_sql: 初始 sql
+        :param v_select_from: 用于指定查询从哪个表开始，通常与 .join() 等方法一起使用。
+        :param v_join: 创建内连接（INNER JOIN）操作，返回两个表中满足连接条件的交集。
+        :param v_outerjoin: 用于创建外连接（OUTER JOIN）操作，返回两个表中满足连接条件的并集，包括未匹配的行，并用 NULL 值填充。
+        :param v_options: 用于为查询添加附加选项，如预加载、延迟加载等。
+        :param v_where: 当前表查询条件，原始表达式
         :param v_order: 排序，默认正序，为 desc 是倒叙
         :param v_order_field: 排序字段
+        :param v_return_count: 默认为 False，是否返回 count 过滤后的数据总数，不会影响其他返回结果，会一起返回为一个数组
+        :param v_return_scalars: 返回scalars后的结果
         :param v_return_objs: 是否返回对象
-        :param v_start_sql: 初始 sql
         :param v_schema: 指定使用的序列化对象
-        :param kwargs: 查询参数
+        :param kwargs: 查询参数，使用的是自定义表达式
+        :return: 返回值优先级：v_return_scalars > v_return_objs > v_schema
         """
-        if not isinstance(v_start_sql, Select):
-            v_start_sql = select(self.model).where(self.model.is_delete == False)
-        sql = self.add_filter_condition(v_start_sql, v_options, v_join_query, v_or, **kwargs)
-        if v_order_field and (v_order in self.ORDER_FIELD):
-            sql = sql.order_by(getattr(self.model, v_order_field).desc(), self.model.id.desc())
-        elif v_order_field:
-            sql = sql.order_by(getattr(self.model, v_order_field), self.model.id)
-        elif v_order in self.ORDER_FIELD:
-            sql = sql.order_by(self.model.id.desc())
+        sql: SelectType = await self.filter_core(
+            v_start_sql=v_start_sql,
+            v_select_from=v_select_from,
+            v_join=v_join,
+            v_outerjoin=v_outerjoin,
+            v_options=v_options,
+            v_where=v_where,
+            v_order=v_order,
+            v_order_field=v_order_field,
+            v_return_sql=True,
+            **kwargs
+        )
+
+        count = 0
+        if v_return_count:
+            count_sql = select(func.count()).select_from(sql.alias())
+            count_queryset = await self.db.execute(count_sql)
+            count = count_queryset.one()[0]
+
         if limit != 0:
             sql = sql.offset((page - 1) * limit).limit(limit)
-        queryset = await self.db.execute(sql)
+
+        queryset = await self.db.scalars(sql)
+
+        if v_return_scalars:
+            if v_return_count:
+                return queryset, count
+            return queryset
+
+        if v_options:
+            result = queryset.unique().all()
+        else:
+            result = queryset.all()
+
         if v_return_objs:
-            return queryset.scalars().unique().all()
-        return [await self.out_dict(i, v_schema=v_schema) for i in queryset.scalars().unique().all()]
+            if v_return_count:
+                return list(result), count
+            return list(result)
+
+        datas = [await self.out_dict(i, v_schema=v_schema) for i in result]
+        if v_return_count:
+            return datas, count
+        return datas
 
     async def get_count(
             self,
-            v_options: list = None,
-            v_join_query: dict = None,
-            v_or: list[tuple] = None,
+            v_select_from: list[Any] = None,
+            v_join: list[list[str | InstrumentedAttribute, BinaryExpression | None]] = None,
+            v_outerjoin: list[list[str | InstrumentedAttribute, BinaryExpression | None]] = None,
+            v_where: list[BinaryExpression] = None,
             **kwargs
     ) -> int:
         """
         获取数据总数
 
-        :param v_options: 指示应使用select在预加载中加载给定的属性。
-        :param v_join_query: 外键字段查询
-        :param v_or: 或逻辑查询
+        :param v_select_from: 用于指定查询从哪个表开始，通常与 .join() 等方法一起使用。
+        :param v_join: 创建内连接（INNER JOIN）操作，返回两个表中满足连接条件的交集。
+        :param v_outerjoin: 用于创建外连接（OUTER JOIN）操作，返回两个表中满足连接条件的并集，包括未匹配的行，并用 NULL 值填充。
+        :param v_where: 当前表查询条件，原始表达式
         :param kwargs: 查询参数
         """
-        sql = select(func.count(self.model.id).label('total')).where(self.model.is_delete == False)
-        sql = self.add_filter_condition(sql, v_options, v_join_query, v_or, **kwargs)
+        v_start_sql = select(func.count(self.model.id))
+        sql = await self.filter_core(
+            v_start_sql=v_start_sql,
+            v_select_from=v_select_from,
+            v_join=v_join,
+            v_outerjoin=v_outerjoin,
+            v_where=v_where,
+            v_return_sql=True,
+            **kwargs
+        )
         queryset = await self.db.execute(sql)
-        return queryset.one()['total']
+        return queryset.one()[0]
 
-    async def create_data(self, data, v_options: list = None, v_return_obj: bool = False, v_schema: Any = None):
+    async def create_data(
+            self,
+            data,
+            v_options: list[_AbstractLoad] = None,
+            v_return_obj: bool = False,
+            v_schema: Any = None
+    ) -> Any:
         """
-        创建数据
+        创建单个数据
+
         :param data: 创建数据
         :param v_options: 指示应使用select在预加载中加载给定的属性。
         :param v_schema: ，指定使用的序列化对象
@@ -165,14 +234,25 @@ class DalBase:
         await self.flush(obj)
         return await self.out_dict(obj, v_options, v_return_obj, v_schema)
 
+    # async def create_datas(self, datas: list[dict]) -> None:
+    #     """
+    #     批量创建数据，暂不启用
+    #     SQLAlchemy 2.0 批量插入不支持 MySQL 返回对象：
+    #     https://docs.sqlalchemy.org/en/20/orm/queryguide/dml.html#getting-new-objects-with-returning
+    #
+    #     :param datas: 字典数据列表
+    #     """
+    #     await self.db.execute(insert(self.model), datas)
+    #     await self.db.flush()
+
     async def put_data(
             self,
             data_id: int,
             data: Any,
-            v_options: list = None,
+            v_options: list[_AbstractLoad] = None,
             v_return_obj: bool = False,
             v_schema: Any = None
-    ):
+    ) -> Any:
         """
         更新单个数据
         :param data_id: 修改行数据的 ID
@@ -188,7 +268,7 @@ class DalBase:
         await self.flush(obj)
         return await self.out_dict(obj, None, v_return_obj, v_schema)
 
-    async def delete_datas(self, ids: list[int], v_soft: bool = False, **kwargs):
+    async def delete_datas(self, ids: list[int], v_soft: bool = False, **kwargs) -> None:
         """
         删除多条数据
         :param ids: 数据集
@@ -207,100 +287,152 @@ class DalBase:
             await self.db.execute(delete(self.model).where(self.model.id.in_(ids)))
         await self.flush()
 
-    def add_filter_condition(
-            self,
-            sql: select,
-            v_options: list = None,
-            v_join_query: dict = None,
-            v_or: list[tuple] = None,
-            **kwargs
-    ) -> select:
+    async def flush(self, obj: Any = None) -> Any:
         """
-        添加过滤条件，以及内连接过滤条件
+        刷新到数据库
+        """
+        if obj:
+            self.db.add(obj)
+        await self.db.flush()
+        if obj:
+            await self.db.refresh(obj)
+        return obj
 
-        当外键模型在查询模型中存在多个外键时，则需要添加onclause属性
-        :param sql:
+    async def out_dict(
+            self,
+            obj: Any,
+            v_options: list[_AbstractLoad] = None,
+            v_return_obj: bool = False,
+            v_schema: Any = None
+    ) -> Any:
+        """
+        序列化
+        :param obj:
         :param v_options: 指示应使用select在预加载中加载给定的属性。
-        :param v_join_query: 外键字段查询，内连接
-        :param v_or: 或逻辑
+        :param v_return_obj: ，是否返回对象
+        :param v_schema: ，指定使用的序列化对象
+        :return:
+        """
+        if v_options:
+            obj = await self.get_data(obj.id, v_options=v_options)
+        if v_return_obj:
+            return obj
+        if v_schema:
+            return v_schema.model_validate(obj).model_dump()
+        return self.schema.model_validate(obj).model_dump()
+
+    async def filter_core(
+            self,
+            v_start_sql: SelectType = None,
+            v_select_from: list[Any] = None,
+            v_join: list[list[str | InstrumentedAttribute, BinaryExpression | None]] = None,
+            v_outerjoin: list[list[str | InstrumentedAttribute, BinaryExpression | None]] = None,
+            v_options: list[_AbstractLoad] = None,
+            v_where: list[BinaryExpression] = None,
+            v_order: str = None,
+            v_order_field: str = None,
+            v_return_sql: bool = False,
+            **kwargs
+    ) -> ScalarResult | SelectType:
+        """
+        数据过滤核心功能
+
+        :param v_start_sql: 初始 sql
+        :param v_select_from: 用于指定查询从哪个表开始，通常与 .join() 等方法一起使用。
+        :param v_join: 创建内连接（INNER JOIN）操作，返回两个表中满足连接条件的交集。
+        :param v_outerjoin: 用于创建外连接（OUTER JOIN）操作，返回两个表中满足连接条件的并集，包括未匹配的行，并用 NULL 值填充。
+        :param v_options: 用于为查询添加附加选项，如预加载、延迟加载等。
+        :param v_where: 当前表查询条件，原始表达式
+        :param v_order: 排序，默认正序，为 desc 是倒叙
+        :param v_order_field: 排序字段
+        :param v_return_sql: 是否直接返回 sql
+        :return: 返回过滤后的总数居 或 sql
+        """
+        if not isinstance(v_start_sql, SelectType):
+            v_start_sql = select(self.model).where(self.model.is_delete == False)
+
+        sql = self.add_relation(
+            v_start_sql=v_start_sql,
+            v_select_from=v_select_from,
+            v_join=v_join,
+            v_outerjoin=v_outerjoin,
+            v_options=v_options
+        )
+
+        if v_where:
+            sql = sql.where(*v_where)
+
+        sql = self.add_filter_condition(sql, **kwargs)
+
+        if v_order_field and (v_order in self.ORDER_FIELD):
+            sql = sql.order_by(getattr(self.model, v_order_field).desc(), self.model.id.desc())
+        elif v_order_field:
+            sql = sql.order_by(getattr(self.model, v_order_field), self.model.id)
+        elif v_order in self.ORDER_FIELD:
+            sql = sql.order_by(self.model.id.desc())
+
+        if v_return_sql:
+            return sql
+
+        queryset = await self.db.scalars(sql)
+
+        return queryset
+
+    def add_relation(
+            self,
+            v_start_sql: SelectType,
+            v_select_from: list[Any] = None,
+            v_join: list[list[str | InstrumentedAttribute, BinaryExpression | None]] = None,
+            v_outerjoin: list[list[str | InstrumentedAttribute, BinaryExpression | None]] = None,
+            v_options: list[_AbstractLoad] = None,
+    ) -> SelectType:
+        """
+        :param v_start_sql: 初始 sql
+        :param v_select_from: 用于指定查询从哪个表开始，通常与 .join() 等方法一起使用。
+        :param v_join: 创建内连接（INNER JOIN）操作，返回两个表中满足连接条件的交集。
+        :param v_outerjoin: 用于创建外连接（OUTER JOIN）操作，返回两个表中满足连接条件的并集，包括未匹配的行，并用 NULL 值填充。
+        :param v_options: 用于为查询添加附加选项，如预加载、延迟加载等。
+        """
+        if v_select_from:
+            v_start_sql = v_start_sql.select_from(*v_select_from)
+
+        if v_join:
+            for relation in v_join:
+                table = relation[0]
+                if isinstance(table, str):
+                    table = getattr(self.model, table)
+                if len(relation) == 2:
+                    v_start_sql = v_start_sql.join(table, relation[1])
+                else:
+                    v_start_sql = v_start_sql.join(table)
+
+        if v_outerjoin:
+            for relation in v_outerjoin:
+                table = relation[0]
+                if isinstance(table, str):
+                    table = getattr(self.model, table)
+                if len(relation) == 2:
+                    v_start_sql = v_start_sql.outerjoin(table, relation[1])
+                else:
+                    v_start_sql = v_start_sql.outerjoin(table)
+
+        if v_options:
+            v_start_sql = v_start_sql.options(*v_options)
+
+        return v_start_sql
+
+    def add_filter_condition(self, sql: SelectType, **kwargs) -> SelectType:
+        """
+        添加过滤条件
+        :param sql:
         :param kwargs: 关键词参数
         """
-        v_select_from: Set[str] = set()
-        v_join: Set[str] = set()
-        v_join_left: Set[str] = set()
-        if v_join_query:
-            for key, value in v_join_query.items():
-                foreign_key = self.key_models.get(key)
-                conditions = self.__dict_filter(foreign_key.get("model"), **value)
-                if conditions:
-                    sql = sql.where(*conditions)
-                    v_join.add(key)
-
-        if v_or:
-            sql = self.__or_filter(sql, v_or, v_join_left, v_join)
-
-        sql = self.__generate_join_conditions(sql, v_join, "join", v_select_from)
-        sql = self.__generate_join_conditions(sql, v_join_left, "outerjoin", v_select_from)
-
-        # 多对多关系查询使用
-        for item in v_select_from:
-            sql = sql.select_from(item)
-
-        conditions = self.__dict_filter(self.model, **kwargs)
+        conditions = self.__dict_filter(**kwargs)
         if conditions:
             sql = sql.where(*conditions)
-        if v_options:
-            sql = sql.options(*[load for load in v_options])
         return sql
 
-    def __generate_join_conditions(self, sql, model_keys: Set[str], join_type: str, v_select_from: []):
-        """
-        生成 join 条件
-        """
-        for item in model_keys:
-            foreign_key = self.key_models.get(item)
-            join = foreign_key.get("join", None)
-            model = foreign_key.get("model")
-            if join:
-                v_select_from.add(model)
-                model = join
-            if join_type == "join":
-                sql = sql.join(model, onclause=foreign_key.get("onclause"))
-            elif join_type == "outerjoin":
-                sql = sql.outerjoin(model, onclause=foreign_key.get("onclause"))
-        return sql
-
-    def __or_filter(self, sql: select, v_or: list[tuple], v_join_left: Set[str], v_join: Set[str]):
-        """
-        或逻辑操作
-        :param sql:
-        :param v_or: 或逻辑
-        :param v_join_left: 左连接
-        :param v_join: 内连接
-        """
-        or_list = []
-        for item in v_or:
-            if len(item) == 2:
-                model = self.model
-                condition = {item[0]: item[1]}
-                or_list.extend(self.__dict_filter(model, **condition))
-            elif len(item) == 4 and item[0] == "fk":
-                model = self.key_models.get(item[1]).get("model")
-                condition = {item[2]: item[3]}
-                conditions = self.__dict_filter(model, **condition)
-                if conditions:
-                    or_list.extend(conditions)
-                    v_join_left.add(item[1])
-                    if item[1] in v_join:
-                        v_join.remove(item[1])
-            else:
-                raise CustomException(msg="v_or 获取查询属性失败，语法错误！")
-        if or_list:
-            sql = sql.where(or_(i for i in or_list))
-        return sql
-
-    @staticmethod
-    def __dict_filter(model, **kwargs):
+    def __dict_filter(self, **kwargs) -> list[BinaryExpression]:
         """
         字典过滤
         :param model:
@@ -309,7 +441,7 @@ class DalBase:
         conditions = []
         for field, value in kwargs.items():
             if value is not None and value != "":
-                attr = getattr(model, field)
+                attr = getattr(self.model, field)
                 if isinstance(value, tuple):
                     if len(value) == 1:
                         if value[0] == "None":
@@ -341,31 +473,3 @@ class DalBase:
                 else:
                     conditions.append(attr == value)
         return conditions
-
-    async def flush(self, obj: Any = None):
-        """
-        刷新到数据库
-        """
-        if obj:
-            self.db.add(obj)
-        await self.db.flush()
-        if obj:
-            await self.db.refresh(obj)
-        return obj
-
-    async def out_dict(self, obj: Any, v_options: list = None, v_return_obj: bool = False, v_schema: Any = None):
-        """
-        序列化
-        :param obj:
-        :param v_options: 指示应使用select在预加载中加载给定的属性。
-        :param v_return_obj: ，是否返回对象
-        :param v_schema: ，指定使用的序列化对象
-        :return:
-        """
-        if v_options:
-            obj = await self.get_data(obj.id, v_options=v_options)
-        if v_return_obj:
-            return obj
-        if v_schema:
-            return v_schema.model_validate(obj).model_dump()
-        return self.schema.model_validate(obj).model_dump()

@@ -126,7 +126,7 @@ async def wx_login_for_access_token(
         return ErrorResponse(msg=str(e))
 
     # 更新登录时间
-    await user.update_login_info(db, request.client.host)
+    await UserDal(db).update_login_info(user, request.client.host)
 
     # 登录成功创建 token
     access_token = LoginManage.create_token({"sub": user.telephone, "is_refresh": False})

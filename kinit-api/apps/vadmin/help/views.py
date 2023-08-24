@@ -27,8 +27,12 @@ async def get_issue_categorys(p: params.IssueCategoryParams = Depends(), auth: A
     model = models.VadminIssueCategory
     options = [joinedload(model.create_user)]
     schema = schemas.IssueCategoryListOut
-    datas = await crud.IssueCategoryDal(auth.db).get_datas(**p.dict(), v_options=options, v_schema=schema)
-    count = await crud.IssueCategoryDal(auth.db).get_count(**p.to_count())
+    datas, count = await crud.IssueCategoryDal(auth.db).get_datas(
+        **p.dict(),
+        v_options=options,
+        v_schema=schema,
+        v_return_count=True
+    )
     return SuccessResponse(datas, count=count)
 
 
@@ -67,6 +71,7 @@ async def get_issue_category_platform(platform: str, db: AsyncSession = Depends(
     options = [joinedload(model.issues)]
     schema = schemas.IssueCategoryPlatformOut
     result = await crud.IssueCategoryDal(db).get_datas(
+        limit=0,
         platform=platform,
         is_active=True,
         v_schema=schema,
@@ -83,8 +88,12 @@ async def get_issues(p: params.IssueParams = Depends(), auth: Auth = Depends(All
     model = models.VadminIssue
     options = [joinedload(model.create_user), joinedload(model.category)]
     schema = schemas.IssueListOut
-    datas = await crud.IssueDal(auth.db).get_datas(**p.dict(), v_options=options, v_schema=schema)
-    count = await crud.IssueDal(auth.db).get_count(**p.to_count())
+    datas, count = await crud.IssueDal(auth.db).get_datas(
+        **p.dict(),
+        v_options=options,
+        v_schema=schema,
+        v_return_count=True
+    )
     return SuccessResponse(datas, count=count)
 
 

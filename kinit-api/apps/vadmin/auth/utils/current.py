@@ -5,10 +5,11 @@
 # @IDE            : PyCharm
 # @desc           : 获取认证后的信息工具
 
+from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from apps.vadmin.auth.crud import UserDal
-from apps.vadmin.auth.models import VadminUser
+from apps.vadmin.auth.models import VadminUser, VadminRole
 from core.exception import CustomException
 from utils import status
 from .validation import AuthValidation
@@ -28,7 +29,7 @@ class OpenAuth(AuthValidation):
     async def __call__(
             self,
             request: Request,
-            token: str = Depends(settings.oauth2_scheme),
+            token: Annotated[str, Depends(settings.oauth2_scheme)],
             db: AsyncSession = Depends(db_getter)
     ):
         """
@@ -93,7 +94,7 @@ class FullAdminAuth(AuthValidation):
         if not settings.OAUTH_ENABLE:
             return Auth(db=db)
         telephone = self.validate_token(request, token)
-        options = [joinedload(VadminUser.roles), joinedload("roles.menus")]
+        options = [joinedload(VadminUser.roles).subqueryload(VadminRole.menus)]
         user = await UserDal(db).get_data(telephone=telephone, v_return_none=True, v_options=options, is_staff=True)
         result = await self.validate_user(request, user, db)
         permissions = self.get_user_permissions(user)

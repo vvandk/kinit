@@ -18,7 +18,7 @@ class CreateApp:
 
     def __init__(self, path: str):
         """
-        @params path: app 路径，根目录为apps，填写apps后面路径即可，例子：vadmin/auth
+        :param path: app 路径，根目录为apps，填写apps后面路径即可，例子：vadmin/auth
         """
         self.app_path = os.path.join(self.APPS_ROOT, path)
         self.path = path
@@ -46,7 +46,7 @@ class CreateApp:
         """
         创建 python 包
 
-        @params path: 绝对路径
+        :param path: 绝对路径
         """
         if self.exist(path):
             return

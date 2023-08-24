@@ -7,7 +7,7 @@
 # @desc           : 简要说明
 
 
-from .m2m import vadmin_user_roles, vadmin_role_menus
+from .m2m import vadmin_auth_user_roles, vadmin_auth_role_menus
 from .menu import VadminMenu
 from .role import VadminRole
 from .user import VadminUser

@@ -43,7 +43,9 @@ class EmailSender:
         try:
             self.server.login(self.email, self.password)
         except smtplib.SMTPAuthenticationError:
-            raise CustomException("邮箱服务器认证失败！")
+            raise CustomException("邮件发送失败，邮箱服务器认证失败！")
+        except AttributeError:
+            raise CustomException("邮件发送失败，邮箱服务器认证失败！")
 
     async def send_email(self, to_emails: List[str], subject: str, body: str, attachments: List[str] = None):
         """

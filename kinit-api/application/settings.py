@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "1.10.5"
+VERSION = "2.0.0"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = True
@@ -44,8 +44,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 如果是与认证关联性比较强的接口，则无法使用
 """
 OAUTH_ENABLE = True
-"""登录认证视图"""
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/api/login", auto_error=True) if OAUTH_ENABLE else lambda: ""
+"""
+配置 OAuth2 密码流认证方式
+官方文档：https://fastapi.tiangolo.com/zh/tutorial/security/first-steps/#fastapi-oauth2passwordbearer
+auto_error:(bool) 可选参数，默认为 True。当验证失败时，如果设置为 True，FastAPI 将自动返回一个 401 未授权的响应，如果设置为 False，你需要自己处理身份验证失败的情况。
+这里的 auto_error 设置为 False 是因为存在 OpenAuth：开放认证，无认证也可以访问，
+如果设置为 True，那么 FastAPI 会自动报错，即无认证时 OpenAuth 会失效，所以不能使用 True。
+"""
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/api/login", auto_error=False) if OAUTH_ENABLE else lambda: ""
 """安全的随机密钥，该密钥将用于对 JWT 令牌进行签名"""
 SECRET_KEY = 'vgb0tnl9d58+6n-6h-ea&u^1#s0ccp!794=kbvqacjq75vzps$'
 """用于设定 JWT 令牌签名算法"""

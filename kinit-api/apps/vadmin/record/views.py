@@ -7,9 +7,8 @@
 
 from fastapi import APIRouter, Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase
-
 from utils.response import SuccessResponse
-from . import crud, schemas
+from . import crud
 from apps.vadmin.auth.utils.current import AllUserAuth
 from apps.vadmin.auth.utils.validation.auth import Auth
 from .params import LoginParams, OperationParams, SMSParams
@@ -23,8 +22,7 @@ app = APIRouter()
 ###########################################################
 @app.get("/logins", summary="获取登录日志列表")
 async def get_record_login(p: LoginParams = Depends(), auth: Auth = Depends(AllUserAuth())):
-    datas = await crud.LoginRecordDal(auth.db).get_datas(**p.dict())
-    count = await crud.LoginRecordDal(auth.db).get_count(**p.to_count())
+    datas, count = await crud.LoginRecordDal(auth.db).get_datas(**p.dict(), v_return_count=True)
     return SuccessResponse(datas, count=count)
 
 
@@ -41,8 +39,7 @@ async def get_record_operation(
 
 @app.get("/sms/send/list", summary="获取短信发送列表")
 async def get_sms_send_list(p: SMSParams = Depends(), auth: Auth = Depends(AllUserAuth())):
-    datas = await crud.SMSSendRecordDal(auth.db).get_datas(**p.dict())
-    count = await crud.SMSSendRecordDal(auth.db).get_count(**p.to_count())
+    datas, count = await crud.SMSSendRecordDal(auth.db).get_datas(**p.dict(), v_return_count=True)
     return SuccessResponse(datas, count=count)
 
 

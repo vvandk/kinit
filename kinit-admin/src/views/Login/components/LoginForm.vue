@@ -2,7 +2,7 @@
 import { reactive, ref, unref, watch } from 'vue'
 import { Form } from '@/components/Form'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElButton, ElCheckbox, ElLink } from 'element-plus'
+import { ElButton, ElLink } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { getRoleMenusApi } from '@/api/login'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
@@ -106,7 +106,7 @@ const schema = reactive<FormSchema[]>([
 ])
 
 const iconSize = 30
-const remember = ref(false)
+// const remember = ref(false)
 const { register, elFormRef, methods } = useForm()
 const loading = ref(false)
 const iconColor = '#999'
@@ -189,7 +189,7 @@ const toTelephoneSignIn = () => {
 
     <template #tool>
       <div class="flex justify-between items-center w-[100%]">
-        <ElCheckbox v-model="remember" :label="t('login.remember')" size="small" />
+        <!-- <ElCheckbox v-model="remember" :label="t('login.remember')" size="small" /> -->
         <ElLink type="primary" :underline="false">{{ t('login.forgetPassword') }}</ElLink>
       </div>
     </template>

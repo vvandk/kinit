@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
 # @version        : 1.0
-# @Create Time    : 2021/10/18 22:19 
+# @Update Time    : 2023/8/18 9:00
 # @File           : database.py
 # @IDE            : PyCharm
 # @desc           : SQLAlchemy 部分
 
 """
 导入 SQLAlchemy 部分
-安装： pip install sqlalchemy
-中文文档：https://www.osgeo.cn/sqlalchemy/
+安装： pip install sqlalchemy[asyncio]
+官方文档：https://docs.sqlalchemy.org/en/20/intro.html#installation
 """
+from typing import AsyncGenerator
 from aioredis import Redis
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.ext.declarative import declared_attr, declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker, AsyncAttrs
+from sqlalchemy.orm import DeclarativeBase, declared_attr
 from application.settings import SQLALCHEMY_DATABASE_URL, REDIS_DB_ENABLE, MONGO_DB_ENABLE
 from fastapi import Request
 from core.exception import CustomException
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 
-def create_async_engine_session(database_url: str):
+def create_async_engine_session(database_url: str) -> async_sessionmaker[AsyncSession]:
     """
     创建数据库会话
 
@@ -35,7 +35,7 @@ def create_async_engine_session(database_url: str):
     :param database_url: 数据库地址
     :return:
     """
-    engine = create_async_engine(
+    async_engine = create_async_engine(
         database_url,
         echo=False,
         pool_pre_ping=True,
@@ -44,18 +44,30 @@ def create_async_engine_session(database_url: str):
         max_overflow=5,
         connect_args={}
     )
-    return sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=True, class_=AsyncSession)
+    return async_sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=async_engine,
+        expire_on_commit=True,
+        class_=AsyncSession
+    )
 
 
-class Base:
-    """将表名改为小写"""
+class Base(AsyncAttrs, DeclarativeBase):
+    """
+    创建基本映射类
+    稍后，我们将继承该类，创建每个 ORM 模型
+    """
 
-    @declared_attr
-    def __tablename__(self):
-        # 如果有自定义表名就取自定义，没有就取小写类名
-        table_name = self.__tablename__
+    @declared_attr.directive
+    def __tablename__(cls) -> str:
+        """
+        将表名改为小写
+        如果有自定义表名就取自定义，没有就取小写类名
+        """
+        table_name = cls.__tablename__
         if not table_name:
-            model_name = self.__name__
+            model_name = cls.__name__
             ls = []
             for index, char in enumerate(model_name):
                 if char.isupper() and index != 0:
@@ -65,29 +77,16 @@ class Base:
         return table_name
 
 
-"""
-创建基本映射类
-稍后，我们将继承该类，创建每个 ORM 模型
-"""
-Model = declarative_base(name='Model', cls=Base)
-
-""" 附上两个SQLAlchemy教程
-
-Python3+SQLAlchemy+Sqlite3实现ORM教程
-    https://www.cnblogs.com/jiangxiaobo/p/12350561.html
-
-SQLAlchemy基础知识 Autoflush和Autocommit
-    https://www.jianshu.com/p/b219c3dd4d1e
-"""
-
-
-async def db_getter():
+async def db_getter() -> AsyncGenerator[AsyncSession, None]:
     """
     获取主数据库
 
     数据库依赖项，它将在单个请求中使用，然后在请求完成后将其关闭。
+
+    函数的返回类型被注解为 AsyncGenerator[int, None]，其中 AsyncSession 是生成的值的类型，而 None 表示异步生成器没有终止条件。
     """
     async with create_async_engine_session(SQLALCHEMY_DATABASE_URL)() as session:
+        # 创建一个新的事务，半自动 commit
         async with session.begin():
             yield session
 

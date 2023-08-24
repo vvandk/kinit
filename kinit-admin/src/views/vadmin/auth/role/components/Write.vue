@@ -75,7 +75,7 @@ defineExpose({
 
 let selectAll = ref(false)
 let defaultExpandAll = ref(true)
-let checkStrictly = ref(true) // 父子联动
+let checkStrictly = ref(false) // 父子联动，有bug
 
 // 获取所有节点的key
 const getTreeNodeKeys = (nodes: Recordable[]): number[] => {
@@ -119,7 +119,7 @@ function handleCheckedTreeNodeAll() {
             label="全选/全不选"
             size="large"
           />
-          <ElCheckbox v-model="checkStrictly" label="父子联动" size="large" />
+          <!-- <ElCheckbox v-model="checkStrictly" label="父子联动" size="large" /> -->
         </div>
         <div class="max-h-390px border p-10px overflow-auto">
           <ElTree

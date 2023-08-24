@@ -5,10 +5,8 @@
 # @File           : crud.py
 # @IDE            : PyCharm
 # @desc           : 数据库 增删改查操作
+
 import random
-# sqlalchemy 查询操作：https://segmentfault.com/a/1190000016767008
-# sqlalchemy 关联查询：https://www.jianshu.com/p/dfad7c08c57a
-# sqlalchemy 关联查询详细：https://blog.csdn.net/u012324798/article/details/103940527
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 from . import models, schemas

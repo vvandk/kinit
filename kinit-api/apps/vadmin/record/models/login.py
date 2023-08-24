@@ -6,12 +6,15 @@
 # @IDE            : PyCharm
 # @desc           : 登录记录模型
 import json
+
+from sqlalchemy.orm import Mapped, mapped_column
+
 from application.settings import LOGIN_LOG_RECORD
 from apps.vadmin.auth.utils.validation import LoginForm, WXLoginForm
 from utils.ip_manage import IPManage
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.db_base import BaseModel
-from sqlalchemy import Column, String, Boolean, TEXT
+from sqlalchemy import String, Boolean
 from fastapi import Request
 from starlette.requests import Request as StarletteRequest
 from user_agents import parse
@@ -21,23 +24,23 @@ class VadminLoginRecord(BaseModel):
     __tablename__ = "vadmin_record_login"
     __table_args__ = ({'comment': '登录记录表'})
 
-    telephone = Column(String(255), index=True, nullable=False, comment="手机号")
-    status = Column(Boolean, default=True, comment="是否登录成功")
-    platform = Column(String(8), comment="登陆平台")
-    login_method = Column(String(8), comment="认证方式")
-    ip = Column(String(50), comment="登陆地址")
-    address = Column(String(255), comment="登陆地点")
-    country = Column(String(255), comment="国家")
-    province = Column(String(255), comment="县")
-    city = Column(String(255), comment="城市")
-    county = Column(String(255), comment="区/县")
-    operator = Column(String(255), comment="运营商")
-    postal_code = Column(String(255), comment="邮政编码")
-    area_code = Column(String(255), comment="地区区号")
-    browser = Column(String(50), comment="浏览器")
-    system = Column(String(50), comment="操作系统")
-    response = Column(TEXT, comment="响应信息")
-    request = Column(TEXT, comment="请求信息")
+    telephone: Mapped[str] = mapped_column(String(255), index=True, nullable=False, comment="手机号")
+    status: Mapped[bool] = mapped_column(Boolean, default=True, comment="是否登录成功")
+    platform: Mapped[str] = mapped_column(String(8), comment="登陆平台")
+    login_method: Mapped[str] = mapped_column(String(8), comment="认证方式")
+    ip: Mapped[str | None] = mapped_column(String(50), comment="登陆地址")
+    address: Mapped[str | None] = mapped_column(String(255), comment="登陆地点")
+    country: Mapped[str | None] = mapped_column(String(255), comment="国家")
+    province: Mapped[str | None] = mapped_column(String(255), comment="县")
+    city: Mapped[str | None] = mapped_column(String(255), comment="城市")
+    county: Mapped[str | None] = mapped_column(String(255), comment="区/县")
+    operator: Mapped[str | None] = mapped_column(String(255), comment="运营商")
+    postal_code: Mapped[str | None] = mapped_column(String(255), comment="邮政编码")
+    area_code: Mapped[str | None] = mapped_column(String(255), comment="地区区号")
+    browser: Mapped[str | None] = mapped_column(String(50), comment="浏览器")
+    system: Mapped[str | None] = mapped_column(String(50), comment="操作系统")
+    response: Mapped[str | None] = mapped_column(String(5000), comment="响应信息")
+    request: Mapped[str | None] = mapped_column(String(5000), comment="请求信息")
 
     @classmethod
     async def create_login_record(

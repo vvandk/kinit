@@ -6,13 +6,13 @@
 # @IDE            : PyCharm
 # @desc           : 用户模型
 
-import datetime
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import relationship
+from datetime import datetime
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from db.db_base import BaseModel
-from sqlalchemy import Column, String, Boolean, DateTime
+from sqlalchemy import String, Boolean, DateTime
 from passlib.context import CryptContext
-from .m2m import vadmin_user_roles
+from .role import VadminRole
+from .m2m import vadmin_auth_user_roles
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
@@ -21,22 +21,26 @@ class VadminUser(BaseModel):
     __tablename__ = "vadmin_auth_user"
     __table_args__ = ({'comment': '用户表'})
 
-    avatar = Column(String(500), nullable=True, comment='头像')
-    telephone = Column(String(11), nullable=False, index=True, comment="手机号", unique=False)
-    email = Column(String(50), nullable=True, comment="邮箱地址")
-    name = Column(String(50), index=True, nullable=False, comment="姓名")
-    nickname = Column(String(50), nullable=True, comment="昵称")
-    password = Column(String(255), nullable=True, comment="密码")
-    gender = Column(String(8), nullable=True, comment="性别")
-    is_active = Column(Boolean, default=True, comment="是否可用")
-    is_reset_password = Column(Boolean, default=False, comment="是否已经重置密码，没有重置的，登陆系统后必须重置密码")
-    last_ip = Column(String(50), nullable=True, comment="最后一次登录IP")
-    last_login = Column(DateTime, nullable=True, comment="最近一次登录时间")
-    is_staff = Column(Boolean, default=False, comment="是否为工作人员")
-    wx_server_openid = Column(String(255), comment="服务端微信平台openid")
-    is_wx_server_openid = Column(Boolean, default=False, comment="是否已有服务端微信平台openid")
+    avatar: Mapped[str | None] = mapped_column(String(500), comment='头像')
+    telephone: Mapped[str] = mapped_column(String(11), nullable=False, index=True, comment="手机号", unique=False)
+    email: Mapped[str | None] = mapped_column(String(50), comment="邮箱地址")
+    name: Mapped[str] = mapped_column(String(50), index=True, nullable=False, comment="姓名")
+    nickname: Mapped[str | None] = mapped_column(String(50), nullable=True, comment="昵称")
+    password: Mapped[str] = mapped_column(String(255), nullable=True, comment="密码")
+    gender: Mapped[str | None] = mapped_column(String(8), nullable=True, comment="性别")
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, comment="是否可用")
+    is_reset_password: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        comment="是否已经重置密码，没有重置的，登陆系统后必须重置密码"
+    )
+    last_ip: Mapped[str | None] = mapped_column(String(50), comment="最后一次登录IP")
+    last_login: Mapped[datetime | None] = mapped_column(DateTime, comment="最近一次登录时间")
+    is_staff: Mapped[bool] = mapped_column(Boolean, default=False, comment="是否为工作人员")
+    wx_server_openid: Mapped[str | None] = mapped_column(String(255), comment="服务端微信平台openid")
+    is_wx_server_openid: Mapped[bool] = mapped_column(Boolean, default=False, comment="是否已有服务端微信平台openid")
 
-    roles = relationship("VadminRole", back_populates='users', secondary=vadmin_user_roles)
+    roles: Mapped[set[VadminRole]] = relationship(secondary=vadmin_auth_user_roles)
 
     # generate hash password
     @staticmethod
@@ -47,17 +51,6 @@ class VadminUser(BaseModel):
     @staticmethod
     def verify_password(password: str, hashed_password: str) -> bool:
         return pwd_context.verify(password, hashed_password)
-
-    async def update_login_info(self, db: AsyncSession, last_ip: str):
-        """
-        更新当前登录信息
-        :param db: 数据库
-        :param last_ip: 最近一次登录 IP
-        :return:
-        """
-        self.last_ip = last_ip
-        self.last_login = datetime.datetime.now()
-        await db.flush()
 
     def is_admin(self) -> bool:
         """

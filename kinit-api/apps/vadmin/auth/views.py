@@ -5,6 +5,7 @@
 # @File           : views.py
 # @IDE            : PyCharm
 # @desc           : 简要说明
+
 from aioredis import Redis
 from fastapi import APIRouter, Depends, Body, UploadFile, Request
 from sqlalchemy.orm import joinedload
@@ -12,11 +13,20 @@ from core.database import redis_getter
 from utils.response import SuccessResponse, ErrorResponse
 from . import schemas, crud, models
 from core.dependencies import IdList
-from apps.vadmin.auth.utils.current import AllUserAuth, FullAdminAuth
+from apps.vadmin.auth.utils.current import AllUserAuth, FullAdminAuth, OpenAuth
 from apps.vadmin.auth.utils.validation.auth import Auth
 from .params import UserParams, RoleParams
 
 app = APIRouter()
+
+
+###########################################################
+#    接口测试
+###########################################################
+@app.get("/test", summary="接口测试")
+async def test(auth: Auth = Depends(OpenAuth())):
+    await crud.TestDal(auth.db).test()
+    return SuccessResponse()
 
 
 ###########################################################
@@ -30,8 +40,12 @@ async def get_users(
     model = models.VadminUser
     options = [joinedload(model.roles)]
     schema = schemas.UserOut
-    datas = await crud.UserDal(auth.db).get_datas(**params.dict(), v_options=options, v_schema=schema)
-    count = await crud.UserDal(auth.db).get_count(**params.to_count())
+    datas, count = await crud.UserDal(auth.db).get_datas(
+        **params.dict(),
+        v_options=options,
+        v_schema=schema,
+        v_return_count=True
+    )
     return SuccessResponse(datas, count=count)
 
 
@@ -67,7 +81,7 @@ async def get_user(
     model = models.VadminUser
     options = [joinedload(model.roles)]
     schema = schemas.UserOut
-    return SuccessResponse(await crud.UserDal(auth.db).get_data(data_id, options, v_schema=schema))
+    return SuccessResponse(await crud.UserDal(auth.db).get_data(data_id, v_options=options, v_schema=schema))
 
 
 @app.post("/user/current/reset/password", summary="重置当前用户密码")
@@ -145,8 +159,7 @@ async def get_roles(
         params: RoleParams = Depends(),
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.role.list"]))
 ):
-    datas = await crud.RoleDal(auth.db).get_datas(**params.dict())
-    count = await crud.RoleDal(auth.db).get_count(**params.to_count())
+    datas, count = await crud.RoleDal(auth.db).get_datas(**params.dict(), v_return_count=True)
     return SuccessResponse(datas, count=count)
 
 
@@ -187,7 +200,7 @@ async def get_role(
     model = models.VadminRole
     options = [joinedload(model.menus)]
     schema = schemas.RoleOut
-    return SuccessResponse(await crud.RoleDal(auth.db).get_data(data_id, options, v_schema=schema))
+    return SuccessResponse(await crud.RoleDal(auth.db).get_data(data_id, v_options=options, v_schema=schema))
 
 
 ###########################################################
@@ -239,7 +252,7 @@ async def put_menus(
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.menu.view", "auth.menu.update"]))
 ):
     schema = schemas.MenuSimpleOut
-    return SuccessResponse(await crud.MenuDal(auth.db).get_data(data_id, None, v_schema=schema))
+    return SuccessResponse(await crud.MenuDal(auth.db).get_data(data_id, v_schema=schema))
 
 
 @app.get("/role/menus/tree/{role_id}", summary="获取菜单列表树信息以及角色菜单权限ID，角色权限使用")
