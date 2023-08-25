@@ -9,7 +9,7 @@
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from apps.vadmin.auth.models import VadminUser
 from db.db_base import BaseModel
-from sqlalchemy import String, Boolean, Integer, ForeignKey
+from sqlalchemy import String, Boolean, Integer, ForeignKey, Text
 
 
 class VadminIssueCategory(BaseModel):
@@ -42,7 +42,7 @@ class VadminIssue(BaseModel):
     category: Mapped[list["VadminIssueCategory"]] = relationship(foreign_keys=category_id, back_populates='issues')
 
     title: Mapped[str] = mapped_column(String(255), index=True, nullable=False, comment="标题")
-    content: Mapped[str] = mapped_column(String(5000), comment="内容")
+    content: Mapped[str] = mapped_column(Text, comment="内容")
     view_number: Mapped[int] = mapped_column(Integer, default=0, comment="查看次数")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, comment="是否可见")
 

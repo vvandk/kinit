@@ -14,7 +14,7 @@ from apps.vadmin.auth.utils.validation import LoginForm, WXLoginForm
 from utils.ip_manage import IPManage
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.db_base import BaseModel
-from sqlalchemy import String, Boolean
+from sqlalchemy import String, Boolean, Text
 from fastapi import Request
 from starlette.requests import Request as StarletteRequest
 from user_agents import parse
@@ -39,8 +39,8 @@ class VadminLoginRecord(BaseModel):
     area_code: Mapped[str | None] = mapped_column(String(255), comment="地区区号")
     browser: Mapped[str | None] = mapped_column(String(50), comment="浏览器")
     system: Mapped[str | None] = mapped_column(String(50), comment="操作系统")
-    response: Mapped[str | None] = mapped_column(String(5000), comment="响应信息")
-    request: Mapped[str | None] = mapped_column(String(5000), comment="请求信息")
+    response: Mapped[str | None] = mapped_column(Text, comment="响应信息")
+    request: Mapped[str | None] = mapped_column(Text, comment="请求信息")
 
     @classmethod
     async def create_login_record(

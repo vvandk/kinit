@@ -253,7 +253,7 @@ def __dict_filter(self, **kwargs) -> list[BinaryExpression]:
 查询所有用户id为1或2或 4或6，并且email不为空，并且名称包括李：
 
 ```python
-users = UserDal(db).get_datas(limit=0, id=("in", [1,2,4,6]), email=("not None"), name=("like", "李"))
+users = UserDal(db).get_datas(limit=0, id=("in", [1,2,4,6]), email=("not None", ), name=("like", "李"))
 
 # limit=0：表示返回所有结果数据
 # 这里的 get_datas 默认返回的是 pydantic 模型数据
@@ -261,7 +261,7 @@ users = UserDal(db).get_datas(limit=0, id=("in", [1,2,4,6]), email=("not None"),
 users = UserDal(db).get_datas(
     limit=0,
     id=("in", [1,2,4,6]),
-    email=("not None"),
+    email=("not None", ),
     name=("like", "李"),
     v_return_objs=True
 )
