@@ -32,7 +32,7 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 ## 特别鸣谢
 
-[vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin)：一套基于vue3、element-plus、typescript4、vite3的后台集成方案
+[vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin)：基于vue3、element-plus、typescript 的后台集成方案
 
 [RuoYi 若依官方网站](http://www.ruoyi.vip/)：RuoYi 是一个优秀的 Java 后台管理系统
 
@@ -44,7 +44,7 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 ## 在线体验
 
-PC端演示地址：http://kinit.ktianc.top
+PC端演示地址：https://kinit.ktianc.top
 
 微信小程序端演示：
 
