@@ -51,7 +51,11 @@ PC端演示地址：https://kinit.ktianc.top
 - 搜索：kinit
 - 扫码：
 
-<img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/gh_5566dcf85bf0_860.jpg" alt="image-20221010214526082" style="zoom:33%;" />
+<div align="center">
+    <p align="center">
+        <img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/gh_5566dcf85bf0_860.jpg" height="150" alt="logo"/>
+    </p>
+</div>
 
 - 账号：15020221010
 - 密码：kinit2022
