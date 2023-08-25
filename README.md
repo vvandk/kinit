@@ -1,8 +1,9 @@
 <div align="center">
     <p align="center">
-        <img src="https://gitee.com/ktianc/kinit/raw/master/kinit-admin/public/logo.png" height="150" alt="logo"/>
+        <img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/logo.png" height="150" alt="logo"/>
     </p>
 </div>
+
 
 
 
@@ -53,9 +54,10 @@ PC端演示地址：https://kinit.ktianc.top
 
 <div align="center">
     <p align="center">
-        <img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/gh_5566dcf85bf0_860.jpg" height="150" alt="logo"/>
+        <img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/gh_5566dcf85bf0_860.jpg" height="150" alt="logo"/>
     </p>
 </div>
+
 
 - 账号：15020221010
 - 密码：kinit2022
@@ -442,48 +444,49 @@ pnpm run build:pro
 
 ## PC端演示图
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232679892.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232679892.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232728594.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232728594.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232742716.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232742716.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232757699.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232757699.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232894774.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232894774.jpg)
 
-![1688392266702](https://gitee.com/ktianc/kinit/raw/master/images/new/1688392266702.jpg)
+![1688392266702](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1688392266702.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232907644.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232907644.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232919754.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232919754.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232947963.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232947963.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232962873.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232962873.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233000595.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233000595.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/10.png)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233000595-10.jpg)
 
 ## 手机端查看后台演示图
 
 <table>
     <tr>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233033005.jpg"/></td>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233063697.jpg"/></td>
+        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233033005.jpg"/></td>
+        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233063697.jpg"/></td>
 	</tr>
     <tr>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233128936.jpg"/></td>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233162782.jpg"/></td>
+        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233128936.jpg"/></td>
+        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233162782.jpg"/></td>
     </tr>
 </table>
+
 
 ## 另一种布局演示图
 
 图1
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233189618.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233189618.jpg)
 
 
 
@@ -491,7 +494,7 @@ pnpm run build:pro
 
 图2
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233201218.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233201218.jpg)
 
 
 
@@ -499,7 +502,7 @@ pnpm run build:pro
 
 图3
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233211961.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233211961.jpg)
 
 
 
@@ -507,7 +510,7 @@ pnpm run build:pro
 
 图4
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233229571.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233229571.jpg)
 
 
 
@@ -515,19 +518,19 @@ pnpm run build:pro
 
 图5
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233241545.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233241545.jpg)
 
 ## 微信小程序端演示图
 
 <table>
     <tr>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077811740.jpg"/></td>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077826257.jpg"/></td>
-		<td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077835024.jpg"/></td>
+        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1670077811740.jpg"/></td>
+        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1670077826257.jpg"/></td>
+		<td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1670077835024.jpg"/></td>
     </tr>
 	<tr>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077849753.jpg"/></td>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077860987.jpg"/></td>
-		<td><img src="https://gitee.com/ktianc/kinit/raw/master/images/uni/1670077870240.jpg"/></td>
+        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1670077849753.jpg"/></td>
+        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1670077860987.jpg"/></td>
+		<td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1670077870240.jpg"/></td>
     </tr>
 </table>
