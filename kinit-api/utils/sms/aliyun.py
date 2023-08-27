@@ -27,7 +27,7 @@ from alibabacloud_dysmsapi20170525 import models as dysmsapi_20170525_models
 from alibabacloud_tea_util import models as util_models
 from core.logger import logger
 import datetime
-from aioredis.client import Redis
+from redis.asyncio.client import Redis
 from utils.cache import Cache
 from utils.db_getter import DBGetter
 

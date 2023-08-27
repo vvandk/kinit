@@ -7,7 +7,7 @@
 # @desc           : 增删改查
 
 from typing import Any
-from aioredis import Redis
+from redis.asyncio import Redis
 from fastapi import UploadFile
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.strategy_options import _AbstractLoad

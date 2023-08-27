@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from motor.motor_asyncio import AsyncIOMotorClient
 from application.settings import REDIS_DB_URL, MONGO_DB_URL, MONGO_DB_NAME, EVENTS
 from utils.cache import Cache
-import aioredis
+from redis import asyncio as aioredis
 from contextlib import asynccontextmanager
 from utils.tools import import_modules_async
 

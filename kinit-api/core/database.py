@@ -11,7 +11,7 @@
 官方文档：https://docs.sqlalchemy.org/en/20/intro.html#installation
 """
 from typing import AsyncGenerator
-from aioredis import Redis
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, declared_attr
 from application.settings import SQLALCHEMY_DATABASE_URL, REDIS_DB_ENABLE, MONGO_DB_ENABLE

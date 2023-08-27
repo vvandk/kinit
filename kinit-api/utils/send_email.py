@@ -12,7 +12,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from typing import List
-from aioredis import Redis
+from redis.asyncio import Redis
 
 from core.exception import CustomException
 from utils.cache import Cache

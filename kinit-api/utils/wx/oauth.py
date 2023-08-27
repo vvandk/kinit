@@ -10,7 +10,7 @@ import requests
 from core.logger import logger
 from utils.cache import Cache
 from utils.wx.wx_access_token import WxAccessToken
-from aioredis import Redis
+from redis.asyncio import Redis
 
 
 class WXOAuth:

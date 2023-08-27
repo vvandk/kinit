@@ -20,7 +20,7 @@ PassLib 是一个用于处理哈希密码的很棒的 Python 包。它支持许�
 """
 
 from datetime import timedelta
-from aioredis import Redis
+from redis.asyncio import Redis
 from fastapi import APIRouter, Depends, Request, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession

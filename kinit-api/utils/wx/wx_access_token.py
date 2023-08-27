@@ -7,7 +7,7 @@
 # @desc           : 获取小程序全局唯一后台接口调用凭据
 
 import requests
-from aioredis import Redis
+from redis.asyncio import Redis
 from core.logger import logger
 
 

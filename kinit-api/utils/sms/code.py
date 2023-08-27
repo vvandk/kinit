@@ -8,7 +8,7 @@
 
 import datetime
 import warnings
-from aioredis import Redis
+from redis.asyncio import Redis
 from .aliyun import AliyunSMS
 from core.logger import logger
 from core.exception import CustomException

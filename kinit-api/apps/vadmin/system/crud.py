@@ -10,7 +10,7 @@ import json
 import os
 from enum import Enum
 from typing import Any
-from aioredis import Redis
+from redis.asyncio import Redis
 from fastapi.encoders import jsonable_encoder
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from sqlalchemy import select, update

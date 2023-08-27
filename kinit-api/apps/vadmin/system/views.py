@@ -5,7 +5,7 @@
 # @IDE            : PyCharm
 # @desc           : 主要接口文件
 
-from aioredis import Redis
+from redis.asyncio import Redis
 from fastapi import APIRouter, Depends, Body, UploadFile, Form, Request
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from sqlalchemy.ext.asyncio import AsyncSession

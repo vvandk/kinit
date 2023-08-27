@@ -7,7 +7,7 @@
 # @desc           : 重置密码
 
 from typing import List
-from aioredis import Redis
+from redis.asyncio import Redis
 from .aliyun import AliyunSMS
 
 
@@ -24,7 +24,7 @@ class ResetPasswordSMS(AliyunSMS):
         主程序入口，异步方式
 
         redis 对象必填
-        @params password: 新密码
+        :param password: 新密码
         """
         return await super().main_async(password=password)
 
@@ -32,7 +32,7 @@ class ResetPasswordSMS(AliyunSMS):
         """
         主程序入口，同步方式
 
-        @params password: 新密码
+        :param password: 新密码
         """
         return super().main(password=password)
 

@@ -13,7 +13,7 @@ from core.logger import logger  # 注意：报错就在这里，如果只写 cor
 from core.database import db_getter
 from apps.vadmin.system.models import VadminSystemSettingsTab
 import json
-from aioredis.client import Redis
+from redis.asyncio.client import Redis
 from core.exception import CustomException
 from utils import status
 

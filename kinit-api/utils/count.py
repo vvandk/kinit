@@ -7,7 +7,7 @@
 # @desc           : 计数
 
 
-from aioredis.client import Redis
+from redis.asyncio.client import Redis
 
 
 class Count:

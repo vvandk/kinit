@@ -6,7 +6,7 @@
 # @IDE            : PyCharm
 # @desc           : 简要说明
 
-from aioredis import Redis
+from redis.asyncio import Redis
 from fastapi import APIRouter, Depends, Body, UploadFile, Request
 from sqlalchemy.orm import joinedload
 from core.database import redis_getter
