@@ -81,46 +81,37 @@ pnpm run build:pro
 
 ## PC端演示图
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232679892.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232679892.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232728594.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373476/1695373476b028a6f9.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232742716.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373476/16953734768af98563.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232757699.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373476/169537347630c0e225.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232894774.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373476/1695373476da1a414f.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232907644.jpg)
+![1688392266702](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373475/1695373475fca1d7b8.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232919754.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373475/16953734756617d25d.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232947963.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373477/169537347735257fe5.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687232962873.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373478/1695373478511f21e3.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233000595.jpg)
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232962873.jpg)
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/10.png)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373477/16953734770decc360.jpg)
 
-## 手机端查看后台演示图
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373477/169537347735257fe5.jpg)
 
-<table>
-    <tr>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233033005.jpg"/></td>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233063697.jpg"/></td>
-	</tr>
-    <tr>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233128936.jpg"/></td>
-        <td><img src="https://gitee.com/ktianc/kinit/raw/master/images/new/1687233162782.jpg"/></td>
-    </tr>
-</table>
+![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233000595-10.jpg)
 
 ## 另一种布局演示图
 
 图1
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233189618.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695375057/1695375057ebef7bd9.jpg)
 
 
 
@@ -128,7 +119,7 @@ pnpm run build:pro
 
 图2
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233201218.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695375057/1695375057abf3dcf6.jpg)
 
 
 
@@ -136,7 +127,7 @@ pnpm run build:pro
 
 图3
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233211961.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695375057/16953750571f2f9f7e.jpg)
 
 
 
@@ -144,13 +135,4 @@ pnpm run build:pro
 
 图4
 
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233229571.jpg)
-
-
-
-
-
-图5
-
-![image-20221010214526082](https://gitee.com/ktianc/kinit/raw/master/images/new/1687233241545.jpg)
-
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695375058/1695375058542fcf76.jpg)
