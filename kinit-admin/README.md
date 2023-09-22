@@ -99,8 +99,6 @@ pnpm run build:pro
 
 ![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373478/1695373478511f21e3.jpg)
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232962873.jpg)
-
 ![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373477/16953734770decc360.jpg)
 
 ![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373477/169537347735257fe5.jpg)

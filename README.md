@@ -21,7 +21,7 @@
 Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
 - 后端采用现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + 自动生成交互式API文档 + （强制类型约束）[Pydantic](https://docs.pydantic.dev/1.10/) + （高效率）[SQLAlchemy 2.0](https://docs.sqlalchemy.org/en/20/index.html)；
-- PC端采用 [vue-element-plus-admin 2.2](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)等主流技术开发；
+- PC端采用 [vue-element-plus-admin 2.2.0](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)等主流技术开发；
 - 移动端采用 [uni-app](https://uniapp.dcloud.net.cn/component/)，[Vue2](https://v2.cn.vuejs.org/v2/guide/)，[uView 2](https://www.uviewui.com/components/intro.html)为主要技术开发；
 - 后端加入 [Typer](https://typer.tiangolo.com/) 命令行应用，简单化数据初始化，数据表模型迁移等操作；
 - 已加入定时任务功能，采用 [APScheduler](https://github.com/agronholm/apscheduler) 定时任务框架 + [Redis](https://redis.io/)  消息队列 + [MongoDB](https://www.mongodb.com/) 持久存储；
@@ -193,7 +193,7 @@ Redis (推荐使用最新稳定版)
    修改 `application/settings.py` 文件
 
    ```python
-"""安全警告: 不要在生产中打开调试运行!"""
+# 安全警告: 不要在生产中打开调试运行!
    DEBUG = True # 如果当前为开发环境则改为 True，如果为生产环境则改为 False
    ```
 
@@ -206,37 +206,31 @@ Redis (推荐使用最新稳定版)
    - production.py：生产环境
 
    ```python
-   """
-   Mysql 数据库配置项
-   连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
-   数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
-   """
+   # Mysql 数据库配置项
+   # 连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
+   # 数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
+   
    SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称"
    SQLALCHEMY_DATABASE_TYPE = "mysql"
    
    
-   """
-   Redis 数据库配置
-   """
+   # Redis 数据库配置
    REDIS_DB_ENABLE = True
    REDIS_DB_URL = "redis://:密码@地址:端口/数据库"
    
-   """
-   MongoDB 数据库配置
-   """
+   # MongoDB 数据库配置
    MONGO_DB_ENABLE = True
    MONGO_DB_NAME = "数据库名称"
    MONGO_DB_URL = f"mongodb://用户名:密码@地址:端口/?authSource={MONGO_DB_NAME}"
    
-   """
-   阿里云对象存储OSS配置
-   阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
-   yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
-    *  [accessKeyId] {String}：通过阿里云控制台创建的AccessKey。
-    *  [accessKeySecret] {String}：通过阿里云控制台创建的AccessSecret。
-    *  [bucket] {String}：通过控制台或PutBucket创建的bucket。
-    *  [endpoint] {String}：bucket所在的区域， 默认oss-cn-hangzhou。
-   """
+   # 阿里云对象存储OSS配置
+   # 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
+   # yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，
+   # Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
+   #  *  [accessKeyId] {String}：通过阿里云控制台创建的AccessKey。
+   #  *  [accessKeySecret] {String}：通过阿里云控制台创建的AccessSecret。
+   #  *  [bucket] {String}：通过控制台或PutBucket创建的bucket。
+   #  *  [endpoint] {String}：bucket所在的区域， 默认oss-cn-hangzhou。
    ALIYUN_OSS = {
        "accessKeyId": "accessKeyId",
        "accessKeySecret": "accessKeySecret",
@@ -245,14 +239,12 @@ Redis (推荐使用最新稳定版)
        "baseUrl": "baseUrl"
    }
    
-   """
-   获取IP地址归属地
-   文档：https://user.ip138.com/ip/doc
-   """
+   # 获取IP地址归属地
+   # 文档：https://user.ip138.com/ip/doc
    IP_PARSE_ENABLE = True
    IP_PARSE_TOKEN = "IP_PARSE_TOKEN"
    ```
-
+   
 4. 并在`alembic.ini`文件中配置数据库信息，用于数据库映射
 
    ```python
@@ -369,23 +361,17 @@ pnpm run build:pro
    - production.py：生产环境
 
    ```python
-   """
-   MongoDB 数据库配置
-   
-   与接口是同一个数据库
-   """
+   # MongoDB 数据库配置
+   # 与接口是同一个数据库
    MONGO_DB_NAME = "数据库名称"
    MONGO_DB_URL = f"mongodb://用户名:密码@地址:端口/?authSource={MONGO_DB_NAME}"
    
    
-   """
-   Redis 数据库配置
-   
-   与接口是同一个数据库
-   """
+   # Redis 数据库配置
+   # 与接口是同一个数据库
    REDIS_DB_URL = "redis://:密码@地址:端口/数据库名称"
    ```
-
+   
 3. 启动
 
    ```
@@ -416,7 +402,7 @@ pnpm run build:pro
       文件路径为：`kinit-api/application/settings.py`
 
       ```python
-      """安全警告: 不要在生产中打开调试运行!"""
+      # 安全警告: 不要在生产中打开调试运行!
       DEBUG = False # 生产环境应该改为 False
       ```
 
@@ -425,7 +411,7 @@ pnpm run build:pro
       文件路径为：`kinit-task/application/settings.py`
 
       ```python
-      """安全警告: 不要在生产中打开调试运行!"""
+      # 安全警告: 不要在生产中打开调试运行!
       DEBUG = False # 生产环境应该改为 False
       ```
 
@@ -436,72 +422,57 @@ pnpm run build:pro
       文件路径为：`kinit-api/application/config/production.py`
 
       ```python
-      """
-      Mysql 数据库配置项
-      连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
-      数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
-      """
+      # Mysql 数据库配置项
+      # 连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
+      # 数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
       SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@177.8.0.7:3306/kinit"
       
-      """
-      Redis 数据库配置
-      格式："redis://:密码@地址:端口/数据库名称"
-      """
+      # Redis 数据库配置
+      # 格式："redis://:密码@地址:端口/数据库名称"
       REDIS_DB_ENABLE = True
       REDIS_DB_URL = "redis://:123456@177.8.0.5:6379/1"
       
-      """
-      MongoDB 数据库配置
-      格式：mongodb://用户名:密码@地址:端口/?authSource=数据库名称
-      """
+      # MongoDB 数据库配置
+      # 格式：mongodb://用户名:密码@地址:端口/?authSource=数据库名称
       MONGO_DB_ENABLE = True
       MONGO_DB_NAME = "kinit"
       MONGO_DB_URL = f"mongodb://kinit:123456@177.8.0.6:27017/?authSource={MONGO_DB_NAME}"
       ```
-
+      
    2. 修改定时任务配置文件
-
+   
       文件路径为：`kinit-task/application/config/production.py`
-
+   
       ```python
-      """
-      Redis 数据库配置
-      
-      与接口是同一个数据库
-      
-      格式："redis://:密码@地址:端口/数据库名称"
-      """
+      # Redis 数据库配置
+      # 与接口是同一个数据库
+      # 格式："redis://:密码@地址:端口/数据库名称"
       REDIS_DB_ENABLE = True
       REDIS_DB_URL = "redis://:123456@177.8.0.5:6379/1"
       
-      """
-      MongoDB 数据库配置
-      
-      与接口是同一个数据库
-      
-      格式：mongodb://用户名:密码@地址:端口/?authSource=数据库名称
-      """
+      # MongoDB 数据库配置
+      # 与接口是同一个数据库
+      # 格式：mongodb://用户名:密码@地址:端口/?authSource=数据库名称
       MONGO_DB_ENABLE = True
       MONGO_DB_NAME = "kinit"
       MONGO_DB_URL = f"mongodb://kinit:123456@177.8.0.6:27017/?authSource={MONGO_DB_NAME}"
       ```
-
+      
    3. 将已有的数据库在 `docker-compose.yml` 文件中注释
-
+   
 4. 配置阿里云 OSS 与 IP 解析接口地址（可选）
 
    文件路径：`kinit-api/application/config/production.py`
 
    ```python
-   """
-   阿里云对象存储OSS配置
-   阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
-   yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
-    *  [accessKeyId] {String}：通过阿里云控制台创建的AccessKey。
-    *  [accessKeySecret] {String}：通过阿里云控制台创建的AccessSecret。
-    *  [bucket] {String}：通过控制台或PutBucket创建的bucket。
-    *  [endpoint] {String}：bucket所在的区域， 默认oss-cn-hangzhou。
-   """
+   # 阿里云对象存储OSS配置
+   # 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
+   # yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，
+   # Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
+   #  *  [accessKeyId] {String}：通过阿里云控制台创建的AccessKey。
+   #  *  [accessKeySecret] {String}：通过阿里云控制台创建的AccessSecret。
+   #  *  [bucket] {String}：通过控制台或PutBucket创建的bucket。
+   #  *  [endpoint] {String}：bucket所在的区域， 默认oss-cn-hangzhou。
    ALIYUN_OSS = {
        "accessKeyId": "accessKeyId",
        "accessKeySecret": "accessKeySecret",
@@ -510,14 +481,12 @@ pnpm run build:pro
        "baseUrl": "baseUrl"
    }
    
-   """
-   获取IP地址归属地
-   文档：https://user.ip138.com/ip/doc
-   """
+   # 获取IP地址归属地
+   # 文档：https://user.ip138.com/ip/doc
    IP_PARSE_ENABLE = False
    IP_PARSE_TOKEN = "IP_PARSE_TOKEN"
    ```
-
+   
 5. 前端项目打包：
 
    ```shell
@@ -603,8 +572,6 @@ docker-compose ps -a
 ![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373477/169537347735257fe5.jpg)
 
 ![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373478/1695373478511f21e3.jpg)
-
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232962873.jpg)
 
 ![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373477/16953734770decc360.jpg)
 
