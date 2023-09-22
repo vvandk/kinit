@@ -16,16 +16,12 @@
 
 <div align="center"><h3 align="center">长期维护，积极更新！</h3></div>
 
-**通知：**
-
-**2023-09-09：因 vue-element-plus-admin 作者最近已经将框架版本从 1.x 升级到 2.x，并且许多功能都发生了重构，目前我正在做的是将本项目前端同步从 vue-element-plus-admin 1.x 升级到 2.x，前端功能上会发生很大变动，所以下个版本会更新到 3.0.0 版本。**
-
 ## 介绍
 
 Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
 - 后端采用现代、快速（高性能） [FastAPI](https://fastapi.tiangolo.com/zh/) 异步框架 + 自动生成交互式API文档 + （强制类型约束）[Pydantic](https://docs.pydantic.dev/1.10/) + （高效率）[SQLAlchemy 2.0](https://docs.sqlalchemy.org/en/20/index.html)；
-- PC端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)等主流技术开发；
+- PC端采用 [vue-element-plus-admin 2.2](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)等主流技术开发；
 - 移动端采用 [uni-app](https://uniapp.dcloud.net.cn/component/)，[Vue2](https://v2.cn.vuejs.org/v2/guide/)，[uView 2](https://www.uviewui.com/components/intro.html)为主要技术开发；
 - 后端加入 [Typer](https://typer.tiangolo.com/) 命令行应用，简单化数据初始化，数据表模型迁移等操作；
 - 已加入定时任务功能，采用 [APScheduler](https://github.com/agronholm/apscheduler) 定时任务框架 + [Redis](https://redis.io/)  消息队列 + [MongoDB](https://www.mongodb.com/) 持久存储；
@@ -199,8 +195,8 @@ Redis (推荐使用最新稳定版)
    ```python
 """安全警告: 不要在生产中打开调试运行!"""
    DEBUG = True # 如果当前为开发环境则改为 True，如果为生产环境则改为 False
-```
-   
+   ```
+
 3. 修改项目数据库配置信息
 
    在 `application/config` 目录中
@@ -257,10 +253,11 @@ Redis (推荐使用最新稳定版)
    IP_PARSE_TOKEN = "IP_PARSE_TOKEN"
    ```
 
-   并在`alembic.ini`文件中配置数据库信息，用于数据库映射
+4. 并在`alembic.ini`文件中配置数据库信息，用于数据库映射
 
    ```python
    # mysql+pymysql://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
+   
    [dev]
    # 开发环境
    version_locations = %(here)s/alembic/versions_dev
@@ -273,7 +270,7 @@ Redis (推荐使用最新稳定版)
    sqlalchemy.url = sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
    ```
 
-4. 创建数据库
+5. 创建数据库
 
    ```
    mysql> create database kinit;             # 创建数据库
@@ -281,9 +278,9 @@ Redis (推荐使用最新稳定版)
    mysql> set names utf8;                    # 设置编码
    ```
 
-5. 初始化数据库数据
+6. 初始化数据库数据
 
-   ```
+   ```python
    # 项目根目录下执行，需提前创建好数据库
    # 会自动将模型迁移到数据库，并生成初始化数据
    # 执行前请确认执行的环境与settings.py文件中配置的DEBUG一致
@@ -295,11 +292,11 @@ Redis (推荐使用最新稳定版)
    python3 main.py init --env dev
    ```
 
-6. 修改项目基本配置信息
+7. 修改项目基本配置信息
 
    修改数据库表 - vadmin_system_settings 中的关键信息
 
-   ```python
+   ```
    # 阿里云短信配置
    sms_access_key
    sms_access_key_secret
@@ -322,7 +319,7 @@ Redis (推荐使用最新稳定版)
    email_port
    ```
 
-7. 启动
+8. 启动
 
    ```
    # 进入项目根目录下执行
@@ -591,47 +588,35 @@ docker-compose ps -a
 
 ![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232679892.jpg)
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232728594.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373476/1695373476b028a6f9.jpg)
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232742716.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373476/16953734768af98563.jpg)
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232757699.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373476/169537347630c0e225.jpg)
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232894774.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373476/1695373476da1a414f.jpg)
 
-![1688392266702](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1688392266702.jpg)
+![1688392266702](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373475/1695373475fca1d7b8.jpg)
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232907644.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373475/16953734756617d25d.jpg)
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232919754.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373477/169537347735257fe5.jpg)
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232947963.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373478/1695373478511f21e3.jpg)
 
 ![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687232962873.jpg)
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233000595.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373477/16953734770decc360.jpg)
+
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695373477/169537347735257fe5.jpg)
 
 ![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233000595-10.jpg)
-
-## 手机端查看后台演示图
-
-<table>
-    <tr>
-        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233033005.jpg"/></td>
-        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233063697.jpg"/></td>
-	</tr>
-    <tr>
-        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233128936.jpg"/></td>
-        <td><img src="https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233162782.jpg"/></td>
-    </tr>
-</table>
-
 
 ## 另一种布局演示图
 
 图1
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233189618.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695375057/1695375057ebef7bd9.jpg)
 
 
 
@@ -639,7 +624,7 @@ docker-compose ps -a
 
 图2
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233201218.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695375057/1695375057abf3dcf6.jpg)
 
 
 
@@ -647,7 +632,7 @@ docker-compose ps -a
 
 图3
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233211961.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695375057/16953750571f2f9f7e.jpg)
 
 
 
@@ -655,15 +640,9 @@ docker-compose ps -a
 
 图4
 
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233229571.jpg)
+![image-20221010214526082](https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1695375058/1695375058542fcf76.jpg)
 
 
-
-
-
-图5
-
-![image-20221010214526082](https://k-typora.oss-cn-beijing.aliyuncs.com/kinit/1687233241545.jpg)
 
 ## 微信小程序端演示图
 
