@@ -1,0 +1,1 @@
+<view data-ref="u-grid" class="u-grid data-v-50bc7b32 vue-ref" style="{{$root.s0}}"><slot></slot></view>

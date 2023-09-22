@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { App } from 'vue'
 import { Layout } from '@/utils/routerHelper'
@@ -10,12 +10,10 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/dashboard/analysis',
     name: 'Root',
     meta: {
-      hidden: true,
-      title: '首页',
-      noTagsView: true
+      hidden: true
     },
     children: [
       {
@@ -28,7 +26,6 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
           breadcrumb: true,
           canTo: true,
           hidden: true,
-          icon: null,
           noCache: true,
           noTagsView: false,
           title: '个人主页'
@@ -65,63 +62,44 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
       title: '404',
       noTagsView: true
     }
-  },
+  }
+]
+
+export const asyncRouterMap: AppRouteRecordRaw[] = [
   {
-    path: '/docs',
-    name: 'Docs',
+    path: '/dashboard',
+    component: Layout,
+    redirect: '/dashboard/workplace',
+    name: 'Dashboard',
     meta: {
-      hidden: true,
-      title: '在线文档',
-      noTagsView: true
+      title: t('router.dashboard'),
+      icon: 'ant-design:dashboard-filled',
+      alwaysShow: true
     },
     children: [
       {
-        path: 'privacy',
-        name: 'Privacy',
-        component: () => import('@/views/vadmin/system/docs/privacy.vue'),
+        path: 'workplace',
+        component: () => import('@/views/Dashboard/Workplace.vue'),
+        name: 'Workplace',
         meta: {
-          hidden: true,
-          title: '隐私政策',
-          noTagsView: true
-        }
-      },
-      {
-        path: 'agreement',
-        name: 'Agreement',
-        component: () => import('@/views/vadmin/system/docs/agreement.vue'),
-        meta: {
-          hidden: true,
-          title: '用户协议',
-          noTagsView: true
+          title: t('router.workplace'),
+          noCache: true
         }
       }
     ]
   }
 ]
 
-export const asyncRouterMap: AppRouteRecordRaw[] = []
-
 const router = createRouter({
-  history: createWebHistory(), // HTML5 模式，https://router.vuejs.org/zh/guide/essentials/history-mode.html#hash-%E6%A8%A1%E5%BC%8F
-  // history: createWebHashHistory(), // Hash 模式，https://router.vuejs.org/zh/guide/essentials/history-mode.html#hash-%E6%A8%A1%E5%BC%8F
+  history: createWebHistory(),
   strict: true,
   routes: constantRouterMap as RouteRecordRaw[],
   scrollBehavior: () => ({ left: 0, top: 0 })
 })
 
 export const resetRouter = (): void => {
-  const resetWhiteNameList = [
-    'Home',
-    'Login',
-    'NoFind',
-    'Root',
-    'ResetPassword',
-    'Docs',
-    'Privacy',
-    'Agreement'
-  ]
+  const resetWhiteNameList = ['Login', 'NoFind', 'Root']
   router.getRoutes().forEach((route) => {
-    // 切记 name 不能重复
     const { name } = route
     if (name && !resetWhiteNameList.includes(name as string)) {
       router.hasRoute(name) && router.removeRoute(name)

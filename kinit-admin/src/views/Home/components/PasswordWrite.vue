@@ -1,30 +1,17 @@
-<script setup lang="ts">
-import { reactive, unref, ref } from 'vue'
-import { Form } from '@/components/Form'
-import { ElButton } from 'element-plus'
+<script setup lang="tsx">
+import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
-import { postCurrentUserResetPassword } from '@/api/vadmin/auth/user'
+import { reactive, ref } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
-import { ElMessage } from 'element-plus'
-import { FormSchema } from '@/types/form'
+import { ElButton, ElMessage } from 'element-plus'
+import { postCurrentUserResetPassword } from '@/api/vadmin/auth/user'
 
 const { required } = useValidator()
 
 const authStore = useAuthStoreWithOut()
 
-const rules = {
-  password: [
-    required(),
-    { min: 8, max: 16, message: '长度需为8-16个字符,请重新输入。', trigger: 'blur' }
-  ],
-  password_two: [
-    required(),
-    { min: 8, max: 16, message: '长度需为8-16个字符,请重新输入。', trigger: 'blur' }
-  ]
-}
-
-const schema = reactive<FormSchema[]>([
+const formSchema = reactive<FormSchema[]>([
   {
     field: 'title',
     colProps: {
@@ -63,13 +50,39 @@ const schema = reactive<FormSchema[]>([
     field: 'save',
     colProps: {
       span: 24
+    },
+    formItemProps: {
+      slots: {
+        default: () => {
+          return (
+            <>
+              <div class="w-[50%]">
+                <ElButton loading={loading.value} type="primary" class="w-[100%]" onClick={save}>
+                  保存
+                </ElButton>
+              </div>
+            </>
+          )
+        }
+      }
     }
   }
 ])
 
-const { register, elFormRef, methods } = useForm()
+const rules = {
+  password: [
+    required(),
+    { min: 8, max: 16, message: '长度需为8-16个字符,请重新输入。', trigger: 'blur' }
+  ],
+  password_two: [
+    required(),
+    { min: 8, max: 16, message: '长度需为8-16个字符,请重新输入。', trigger: 'blur' }
+  ]
+}
 
-const { setValues } = methods
+const { formRegister, formMethods } = useForm()
+const { setValues, getFormData, getElFormExpose } = formMethods
+
 setValues(authStore.getUser)
 
 const loading = ref(false)
@@ -79,40 +92,30 @@ const save = async () => {
   if (authStore.getUser.id === 1) {
     return ElMessage.warning('编辑账号为演示账号，无权限操作！')
   }
-  const formRef = unref(elFormRef)
-  await formRef?.validate(async (isValid) => {
-    if (isValid) {
-      loading.value = true
-      const { getFormData } = methods
-      const formData = await getFormData()
-      try {
-        const res = await postCurrentUserResetPassword(formData)
-        if (res) {
-          formRef.resetFields()
-          ElMessage.success('保存成功')
-        }
-      } finally {
-        loading.value = false
+  const elForm = await getElFormExpose()
+  const valid = await elForm?.validate()
+  if (valid) {
+    loading.value = true
+    const formData = await getFormData()
+    try {
+      const res = await postCurrentUserResetPassword(formData)
+      if (res) {
+        elForm?.resetFields()
+        ElMessage.success('保存成功')
       }
+    } finally {
+      loading.value = false
     }
-  })
+  }
 }
 </script>
 
 <template>
   <Form
-    :schema="schema"
+    @register="formRegister"
+    :schema="formSchema"
     :rules="rules"
     hide-required-asterisk
     class="dark:(border-1 border-[var(--el-border-color)] border-solid)"
-    @register="register"
-  >
-    <template #save>
-      <div class="w-[50%]">
-        <ElButton :loading="loading" type="primary" class="w-[100%]" @click="save"> 保存 </ElButton>
-      </div>
-    </template>
-  </Form>
+  />
 </template>
-
-<style lang="less" scoped></style>

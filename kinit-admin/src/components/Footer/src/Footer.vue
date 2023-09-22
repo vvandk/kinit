@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAppStore } from '@/store/modules/app'
-import { useDesign } from '@/hooks/web/useDesign'
 import { computed } from 'vue'
+import { useDesign } from '@/hooks/web/useDesign'
 
 const { getPrefixCls } = useDesign()
 
@@ -9,7 +9,7 @@ const prefixCls = getPrefixCls('footer')
 
 const appStore = useAppStore()
 
-const footerContent = computed(() => appStore.getFooterContent)
+const title = computed(() => appStore.getTitle)
 </script>
 
 <template>
@@ -17,6 +17,6 @@ const footerContent = computed(() => appStore.getFooterContent)
     :class="prefixCls"
     class="text-center text-[var(--el-text-color-placeholder)] bg-[var(--app-content-bg-color)] h-[var(--app-footer-height)] leading-[var(--app-footer-height)] dark:bg-[var(--el-bg-color)]"
   >
-    {{ footerContent }}
+    Copyright ©2021-present {{ title }}
   </div>
 </template>

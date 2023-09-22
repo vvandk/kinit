@@ -4,6 +4,10 @@ import { shallowRef, ref } from 'vue'
 import { getSystemSettingsApi } from '@/api/vadmin/system/settings'
 import { getUserLoginDistributeApi } from '@/api/dashboard/map/index'
 
+defineOptions({
+  name: 'DashboardMap'
+})
+
 let map = shallowRef()
 let AMap = shallowRef()
 

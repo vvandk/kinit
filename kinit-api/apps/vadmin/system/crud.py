@@ -56,7 +56,7 @@ class DictTypeDal(DalBase):
         """获取选择数据，全部数据"""
         sql = select(self.model)
         queryset = await self.db.execute(sql)
-        return [schemas.DictTypeSelectOut.model_validate(i).model_dump() for i in queryset.scalars().all()]
+        return [schemas.DictTypeOptionsOut.model_validate(i).model_dump() for i in queryset.scalars().all()]
 
 
 class DictDetailsDal(DalBase):

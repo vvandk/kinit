@@ -3,14 +3,14 @@ import { store } from '../index'
 import { UserLoginType } from '@/api/login/types'
 import { loginApi } from '@/api/login'
 import { useAppStore } from '@/store/modules/app'
-import { useCache } from '@/hooks/web/useCache'
+import { useStorage } from '@/hooks/web/useStorage'
 import { getCurrentAdminUserInfo } from '@/api/vadmin/auth/user'
 import { resetRouter } from '@/router'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import router from '@/router'
 import { ElMessage } from 'element-plus'
 
-const { wsCache } = useCache()
+const { setStorage, clear } = useStorage()
 
 export interface UserState {
   id?: number
@@ -63,15 +63,15 @@ export const useAuthStore = defineStore('auth', {
       const res = await loginApi(formData)
       if (res) {
         const appStore = useAppStore()
-        wsCache.set(appStore.getToken, `${res.data.token_type} ${res.data.access_token}`)
-        wsCache.set(appStore.getRefreshToken, res.data.refresh_token)
+        setStorage(appStore.getToken, `${res.data.token_type} ${res.data.access_token}`)
+        setStorage(appStore.getRefreshToken, res.data.refresh_token)
         // 获取当前登录用户的信息
         await this.setUserInfo()
       }
       return res
     },
     logout(message?: string) {
-      wsCache.clear()
+      clear()
       this.user = {}
       this.roles = []
       this.permissions = []

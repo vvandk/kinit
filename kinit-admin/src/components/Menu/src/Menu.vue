@@ -2,12 +2,11 @@
 import { computed, defineComponent, unref, PropType } from 'vue'
 import { ElMenu, ElScrollbar } from 'element-plus'
 import { useAppStore } from '@/store/modules/app'
-import { useRouterStore } from '@/store/modules/router'
+import { usePermissionStore } from '@/store/modules/permission'
 import { useRenderMenuItem } from './components/useRenderMenuItem'
 import { useRouter } from 'vue-router'
 import { isUrl } from '@/utils/is'
 import { useDesign } from '@/hooks/web/useDesign'
-import { LayoutType } from '@/types/layout'
 
 const { getPrefixCls } = useDesign()
 
@@ -28,7 +27,7 @@ export default defineComponent({
 
     const { push, currentRoute } = useRouter()
 
-    const routerStore = useRouterStore()
+    const permissionStore = usePermissionStore()
 
     const menuMode = computed((): 'vertical' | 'horizontal' => {
       // 竖
@@ -42,7 +41,7 @@ export default defineComponent({
     })
 
     const routers = computed(() =>
-      unref(layout) === 'cutMenu' ? routerStore.getMenuTabRouters : routerStore.getRouters
+      unref(layout) === 'cutMenu' ? permissionStore.getMenuTabRouters : permissionStore.getRouters
     )
 
     const collapse = computed(() => appStore.getCollapse)
@@ -80,28 +79,25 @@ export default defineComponent({
 
     const renderMenu = () => {
       return (
-        <ElScrollbar>
-          <ElMenu
-            defaultActive={unref(activeMenu)}
-            mode={unref(menuMode)}
-            collapse={
-              unref(layout) === 'top' || unref(layout) === 'cutMenu' ? false : unref(collapse)
+        <ElMenu
+          defaultActive={unref(activeMenu)}
+          mode={unref(menuMode)}
+          collapse={
+            unref(layout) === 'top' || unref(layout) === 'cutMenu' ? false : unref(collapse)
+          }
+          uniqueOpened={unref(layout) === 'top' ? false : unref(uniqueOpened)}
+          backgroundColor="var(--left-menu-bg-color)"
+          textColor="var(--left-menu-text-color)"
+          activeTextColor="var(--left-menu-text-active-color)"
+          onSelect={menuSelect}
+        >
+          {{
+            default: () => {
+              const { renderMenuItem } = useRenderMenuItem(unref(menuMode))
+              return renderMenuItem(unref(routers))
             }
-            uniqueOpened={unref(layout) === 'top' ? false : unref(uniqueOpened)}
-            backgroundColor="var(--left-menu-bg-color)"
-            textColor="var(--left-menu-text-color)"
-            activeTextColor="var(--left-menu-text-active-color)"
-            onSelect={menuSelect}
-            ellipsis={false}
-          >
-            {{
-              default: () => {
-                const { renderMenuItem } = useRenderMenuItem(unref(menuMode))
-                return renderMenuItem(unref(routers))
-              }
-            }}
-          </ElMenu>
-        </ElScrollbar>
+          }}
+        </ElMenu>
       )
     }
 
@@ -127,28 +123,29 @@ export default defineComponent({
 <style lang="less" scoped>
 @prefix-cls: ~'@{namespace}-menu';
 
-.is-active--after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 4px;
-  height: 100%;
-  background-color: var(--el-color-primary);
-  content: '';
-}
+// .is-active--after {
+//   position: absolute;
+//   top: 0;
+//   right: 0;
+//   width: 4px;
+//   height: 100%;
+//   background-color: var(--el-color-primary);
+//   content: '';
+// }
 
 .@{prefix-cls} {
   position: relative;
   transition: width var(--transition-time-02);
 
-  &:after {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    border-left: 1px solid var(--left-menu-border-color);
-    content: '';
-  }
+  // &:after {
+  //   position: absolute;
+  //   top: 0;
+  //   right: 0;
+  //   height: 100%;
+  //   width: 1px;
+  //   background-color: var(--el-border-color);
+  //   content: '';
+  // }
 
   :deep(.@{elNamespace}-menu) {
     width: 100% !important;
@@ -184,9 +181,9 @@ export default defineComponent({
     .@{elNamespace}-menu-item.is-active {
       position: relative;
 
-      &:after {
-        .is-active--after;
-      }
+      // &:after {
+      //   .is-active--after;
+      // }
     }
 
     // 设置子菜单的背景颜色
@@ -207,9 +204,9 @@ export default defineComponent({
       position: relative;
       background-color: var(--left-menu-collapse-bg-active-color) !important;
 
-      &:after {
-        .is-active--after;
-      }
+      // &:after {
+      //   .is-active--after;
+      // }
     }
   }
 
@@ -257,15 +254,15 @@ export default defineComponent({
 <style lang="less">
 @prefix-cls: ~'@{namespace}-menu-popper';
 
-.is-active--after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 4px;
-  height: 100%;
-  background-color: var(--el-color-primary);
-  content: '';
-}
+// .is-active--after {
+//   position: absolute;
+//   top: 0;
+//   right: 0;
+//   width: 4px;
+//   height: 100%;
+//   background-color: var(--el-color-primary);
+//   content: '';
+// }
 
 .@{prefix-cls}--vertical,
 .@{prefix-cls}--horizontal {
@@ -294,9 +291,9 @@ export default defineComponent({
       background-color: var(--left-menu-bg-active-color) !important;
     }
 
-    &:after {
-      .is-active--after;
-    }
+    // &:after {
+    //   .is-active--after;
+    // }
   }
 }
 </style>

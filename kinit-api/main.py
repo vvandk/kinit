@@ -84,6 +84,12 @@ def init(env: Environment = Environment.pro):
     """
     初始化数据
 
+    在执行前一定要确认要操作的环境与application/settings.DEBUG 设置的环境是一致的，
+    不然会导致创建表和生成数据不在一个数据库中！！！！！！！！！！！！！！！！！！！！！！
+
+    比如要初始化开发环境，那么env参数应该为 dev，并且 application/settings.DEBUG 应该 = True
+    比如要初始化生产环境，那么env参数应该为 pro，并且 application/settings.DEBUG 应该 = False
+
     :params name: 数据库环境
     """
     print("开始初始化数据")

@@ -2,7 +2,7 @@
 import { onMounted, watch, computed, unref, ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouterLinkProps } from 'vue-router'
-import { useRouterStore } from '@/store/modules/router'
+import { usePermissionStore } from '@/store/modules/permission'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { useAppStore } from '@/store/modules/app'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -12,6 +12,8 @@ import { useDesign } from '@/hooks/web/useDesign'
 import { useTemplateRefsList } from '@vueuse/core'
 import { ElScrollbar } from 'element-plus'
 import { useScrollTo } from '@/hooks/event/useScrollTo'
+import { useTagsView } from '@/hooks/web/useTagsView'
+import { cloneDeep } from 'lodash-es'
 
 const { getPrefixCls } = useDesign()
 
@@ -19,11 +21,13 @@ const prefixCls = getPrefixCls('tags-view')
 
 const { t } = useI18n()
 
-const { currentRoute, push, replace } = useRouter()
+const { currentRoute, push } = useRouter()
 
-const routerStore = useRouterStore()
+const { closeAll, closeLeft, closeRight, closeOther, closeCurrent, refreshPage } = useTagsView()
 
-const routers = computed(() => routerStore.getRouters)
+const permissionStore = usePermissionStore()
+
+const routers = computed(() => permissionStore.getRouters)
 
 const tagsViewStore = useTagsViewStore()
 
@@ -31,9 +35,15 @@ const visitedViews = computed(() => tagsViewStore.getVisitedViews)
 
 const affixTagArr = ref<RouteLocationNormalizedLoaded[]>([])
 
+const selectedTag = computed(() => tagsViewStore.getSelectedTag)
+
+const setSelectTag = tagsViewStore.setSelectedTag
+
 const appStore = useAppStore()
 
 const tagsViewIcon = computed(() => appStore.getTagsViewIcon)
+
+const isDark = computed(() => appStore.getIsDark)
 
 // 初始化tag
 const initTags = () => {
@@ -41,66 +51,30 @@ const initTags = () => {
   for (const tag of unref(affixTagArr)) {
     // Must have tag name
     if (tag.name) {
-      tagsViewStore.addVisitedView(tag)
+      tagsViewStore.addVisitedView(cloneDeep(tag))
     }
   }
 }
-
-const selectedTag = ref<RouteLocationNormalizedLoaded>()
 
 // 新增tag
 const addTags = () => {
   const { name } = unref(currentRoute)
   if (name) {
-    selectedTag.value = unref(currentRoute)
+    setSelectTag(unref(currentRoute))
     tagsViewStore.addView(unref(currentRoute))
   }
-  return false
 }
 
 // 关闭选中的tag
 const closeSelectedTag = (view: RouteLocationNormalizedLoaded) => {
-  if (view?.meta?.affix) return
-  tagsViewStore.delView(view)
-  if (isActive(view)) {
-    toLastView()
-  }
-}
-
-// 关闭全部
-const closeAllTags = () => {
-  tagsViewStore.delAllViews()
-  toLastView()
-}
-
-// 关闭其他
-const closeOthersTags = () => {
-  tagsViewStore.delOthersViews(unref(selectedTag) as RouteLocationNormalizedLoaded)
-}
-
-// 重新加载
-const refreshSelectedTag = async (view?: RouteLocationNormalizedLoaded) => {
-  if (!view) return
-  tagsViewStore.delCachedView()
-  const { path, query } = view
-  await nextTick()
-  replace({
-    path: '/redirect' + path,
-    query: query
+  closeCurrent(view, () => {
+    if (isActive(view)) {
+      toLastView()
+    }
   })
 }
 
-// 关闭左侧
-const closeLeftTags = () => {
-  tagsViewStore.delLeftViews(unref(selectedTag) as RouteLocationNormalizedLoaded)
-}
-
-// 关闭右侧
-const closeRightTags = () => {
-  tagsViewStore.delRightViews(unref(selectedTag) as RouteLocationNormalizedLoaded)
-}
-
-// 跳转到最后一个
+// 去最后一个
 const toLastView = () => {
   const visitedViews = tagsViewStore.getVisitedViews
   const latestView = visitedViews.slice(-1)[0]
@@ -108,15 +82,42 @@ const toLastView = () => {
     push(latestView)
   } else {
     if (
-      unref(currentRoute).path === routerStore.getAddRouters[0].path ||
-      unref(currentRoute).path === routerStore.getAddRouters[0].redirect
+      unref(currentRoute).path === permissionStore.getAddRouters[0].path ||
+      unref(currentRoute).path === permissionStore.getAddRouters[0].redirect
     ) {
       addTags()
       return
     }
     // You can set another route
-    push(routerStore.getAddRouters[0].path)
+    push(permissionStore.getAddRouters[0].path)
   }
+}
+
+// 关闭全部
+const closeAllTags = () => {
+  closeAll(() => {
+    toLastView()
+  })
+}
+
+// 关闭其它
+const closeOthersTags = () => {
+  closeOther()
+}
+
+// 重新加载
+const refreshSelectedTag = async (view?: RouteLocationNormalizedLoaded) => {
+  refreshPage(view)
+}
+
+// 关闭左侧
+const closeLeftTags = () => {
+  closeLeft()
+}
+
+// 关闭右侧
+const closeRightTags = () => {
+  closeRight()
 }
 
 // 滚动到选中的tag
@@ -264,13 +265,14 @@ watch(
     class="flex w-full relative bg-[#fff] dark:bg-[var(--el-bg-color)]"
   >
     <span
-      :class="`${prefixCls}__tool`"
-      class="w-[var(--tags-view-height)] h-[var(--tags-view-height)] text-center leading-[var(--tags-view-height)] cursor-pointer"
+      :class="`${prefixCls}__tool ${prefixCls}__tool--first`"
+      class="w-[var(--tags-view-height)] h-[var(--tags-view-height)] flex items-center justify-center cursor-pointer"
       @click="move(-200)"
     >
       <Icon
         icon="ep:d-arrow-left"
-        :color="appStore.getIsDark ? 'var(--el-text-color-regular)' : '#333'"
+        color="var(--el-text-color-placeholder)"
+        :hover-color="isDark ? '#fff' : 'var(--el-color-black)'"
       />
     </span>
     <div class="overflow-hidden flex-1">
@@ -381,22 +383,24 @@ watch(
     </div>
     <span
       :class="`${prefixCls}__tool`"
-      class="w-[var(--tags-view-height)] h-[var(--tags-view-height)] text-center leading-[var(--tags-view-height)] cursor-pointer"
+      class="w-[var(--tags-view-height)] h-[var(--tags-view-height)] flex items-center justify-center cursor-pointer"
       @click="move(200)"
     >
       <Icon
         icon="ep:d-arrow-right"
-        :color="appStore.getIsDark ? 'var(--el-text-color-regular)' : '#333'"
+        color="var(--el-text-color-placeholder)"
+        :hover-color="isDark ? '#fff' : 'var(--el-color-black)'"
       />
     </span>
     <span
       :class="`${prefixCls}__tool`"
-      class="w-[var(--tags-view-height)] h-[var(--tags-view-height)] text-center leading-[var(--tags-view-height)] cursor-pointer"
+      class="w-[var(--tags-view-height)] h-[var(--tags-view-height)] flex items-center justify-center cursor-pointer"
       @click="refreshSelectedTag(selectedTag)"
     >
       <Icon
         icon="ant-design:reload-outlined"
-        :color="appStore.getIsDark ? 'var(--el-text-color-regular)' : '#333'"
+        color="var(--el-text-color-placeholder)"
+        :hover-color="isDark ? '#fff' : 'var(--el-color-black)'"
       />
     </span>
     <ContextMenu
@@ -455,11 +459,12 @@ watch(
     >
       <span
         :class="`${prefixCls}__tool`"
-        class="w-[var(--tags-view-height)] h-[var(--tags-view-height)] text-center leading-[var(--tags-view-height)] cursor-pointer block"
+        class="w-[var(--tags-view-height)] h-[var(--tags-view-height)] flex items-center justify-center cursor-pointer block"
       >
         <Icon
           icon="ant-design:setting-outlined"
-          :color="appStore.getIsDark ? 'var(--el-text-color-regular)' : '#333'"
+          color="var(--el-text-color-placeholder)"
+          :hover-color="isDark ? '#fff' : 'var(--el-color-black)'"
         />
       </span>
     </ContextMenu>
@@ -477,33 +482,40 @@ watch(
   &__tool {
     position: relative;
 
-    &:hover {
-      :deep(span) {
-        color: var(--el-color-black) !important;
-      }
-    }
-
-    &:after {
+    &::before {
       position: absolute;
       top: 1px;
       left: 0;
       width: 100%;
       height: calc(~'100% - 1px');
-      border-right: 1px solid var(--tags-view-border-color);
-      border-left: 1px solid var(--tags-view-border-color);
+      border-left: 1px solid var(--el-border-color);
       content: '';
+    }
+
+    &--first {
+      &::before {
+        position: absolute;
+        top: 1px;
+        left: 0;
+        width: 100%;
+        height: calc(~'100% - 1px');
+        border-right: 1px solid var(--el-border-color);
+        border-left: none;
+        content: '';
+      }
     }
   }
 
   &__item {
     position: relative;
     top: 2px;
-    height: calc(~'100% - 4px');
+    height: calc(~'100% - 6px');
     padding-right: 25px;
     margin-left: 4px;
     font-size: 12px;
     cursor: pointer;
     border: 1px solid #d9d9d9;
+    border-radius: 2px;
 
     &--close {
       position: absolute;
@@ -530,7 +542,7 @@ watch(
     background-color: var(--el-color-primary);
     border: 1px solid var(--el-color-primary);
     .@{prefix-cls}__item--close {
-      :deep(span) {
+      :deep(svg) {
         color: var(--el-color-white) !important;
       }
     }
@@ -540,25 +552,14 @@ watch(
 .dark {
   .@{prefix-cls} {
     &__tool {
-      &:hover {
-        :deep(span) {
-          color: #fff !important;
+      &--first {
+        &::after {
+          display: none;
         }
-      }
-
-      &:after {
-        border-right: 1px solid var(--el-border-color);
-        border-left: 1px solid var(--el-border-color);
       }
     }
 
     &__item {
-      position: relative;
-      top: 2px;
-      height: calc(~'100% - 4px');
-      padding-right: 25px;
-      font-size: 12px;
-      cursor: pointer;
       border: 1px solid var(--el-border-color);
     }
 
@@ -571,8 +572,9 @@ watch(
     &__item.is-active {
       color: var(--el-color-white);
       background-color: var(--el-color-primary);
+      border: 1px solid var(--el-color-primary);
       .@{prefix-cls}__item--close {
-        :deep(span) {
+        :deep(svg) {
           color: var(--el-color-white) !important;
         }
       }
@@ -580,3 +582,4 @@ watch(
   }
 }
 </style>
+@/hooks/web/useTagsView

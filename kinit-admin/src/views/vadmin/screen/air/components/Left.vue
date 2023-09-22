@@ -2,6 +2,7 @@
 import { propTypes } from '@/utils/propTypes'
 import { PropType } from 'vue'
 import { LeftPropsType } from '../typers/index'
+import { BorderBox11 } from '@kjgl77/datav-vue3'
 
 const props = defineProps({
   leftData: {
@@ -13,33 +14,33 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="left-view">
+  <div class="left-view box-border">
     <span class="text-3xl font-bold">{{ props.activeMenuName }}</span>
     <div class="main-content">
-      <dv-border-box11 title="室内甲醛">
+      <BorderBox11 title="室内甲醛">
         <div class="data-view">
           <span class="data-title">{{ props.leftData.hcho }}ug/m³</span>
           <span class="data-desc">提示：低于80ug/m³适合长期居住</span>
         </div>
-      </dv-border-box11>
-      <dv-border-box11 title="室内PM2.5">
+      </BorderBox11>
+      <BorderBox11 title="室内PM2.5">
         <div class="data-view">
           <span class="data-title">{{ props.leftData.pm25 }}ug/m³</span>
           <span class="data-desc">提示：低于75ug/m³适合长期居住</span>
         </div>
-      </dv-border-box11>
-      <dv-border-box11 title="室内温度">
+      </BorderBox11>
+      <BorderBox11 title="室内温度">
         <div class="data-view">
           <span class="data-title">{{ props.leftData.temp }}°C</span>
           <span class="data-desc">提示：当前室外温度为25°C</span>
         </div>
-      </dv-border-box11>
-      <dv-border-box11 title="室内湿度">
+      </BorderBox11>
+      <BorderBox11 title="室内湿度">
         <div class="data-view">
           <span class="data-title">{{ props.leftData.hum }}%RH</span>
           <span class="data-desc">提示：当前室外湿度为38%RH</span>
         </div>
-      </dv-border-box11>
+      </BorderBox11>
     </div>
   </div>
 </template>

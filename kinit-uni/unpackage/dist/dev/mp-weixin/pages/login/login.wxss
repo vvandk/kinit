@@ -1,0 +1,83 @@
+@charset "UTF-8";
+/* uView的全局SCSS主题文件 */
+/**
+ * uni-app内置的常用样式变量
+ */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+page {
+  background-color: #ffffff;
+}
+.normal-login-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+.normal-login-container .logo-content {
+  width: 100%;
+  font-size: 21px;
+  text-align: center;
+  padding-top: 15%;
+}
+.normal-login-container .logo-content image {
+  border-radius: 4px;
+}
+.normal-login-container .logo-content .title {
+  margin-left: 10px;
+}
+.normal-login-container .login-form-content {
+  text-align: center;
+  margin: 20px auto;
+  margin-top: 15%;
+  width: 80%;
+}
+.normal-login-container .login-form-content .input-item {
+  margin: 20px auto;
+  background-color: #f5f6f7;
+  height: 45px;
+  border-radius: 20px;
+}
+.normal-login-container .login-form-content .input-item .icon {
+  font-size: 38rpx;
+  margin-left: 10px;
+  color: #999;
+}
+.normal-login-container .login-form-content .input-item .input {
+  width: 100%;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: left;
+  padding-left: 15px;
+}
+.normal-login-container .login-form-content .login-btn {
+  margin-top: 40px;
+  height: 45px;
+}
+.normal-login-container .login-form-content .xieyi {
+  color: #333;
+  margin-top: 20px;
+}
+.normal-login-container .easyinput {
+  width: 100%;
+}
+.normal-login-container .footer {
+  margin: 20px auto;
+  width: 80%;
+  position: absolute;
+  bottom: 30px;
+  left: 10%;
+}
+.login-code-img {
+  height: 45px;
+}
+

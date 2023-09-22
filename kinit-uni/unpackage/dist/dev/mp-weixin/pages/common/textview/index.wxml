@@ -1,0 +1,1 @@
+<view class="data-v-9a109160"><uni-card class="view-title data-v-9a109160" vue-id="a8009894-1" title="{{title}}" bind:__l="__l" vue-slots="{{['default']}}"><text class="uni-body view-content data-v-9a109160">{{content}}</text></uni-card></view>

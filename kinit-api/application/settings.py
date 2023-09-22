@@ -11,13 +11,13 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "2.3.0"
+VERSION = "3.0.0"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = False
 
 """是否开启演示功能：取消所有POST,DELETE,PUT操作权限"""
-DEMO = not DEBUG
+DEMO = False
 """演示功能白名单"""
 DEMO_WHITE_LIST_PATH = [
     "/auth/login",
@@ -122,7 +122,7 @@ DEFAULT_AVATAR = "https://vv-reserve.oss-cn-hangzhou.aliyuncs.com/avatar/2023-01
 # 默认登陆时最大输入密码或验证码错误次数
 DEFAULT_AUTH_ERROR_MAX_NUMBER = 5
 # 是否开启保存登录日志
-LOGIN_LOG_RECORD = not DEBUG
+LOGIN_LOG_RECORD = True
 # 是否开启保存每次请求日志到本地
 REQUEST_LOG_RECORD = True
 # 是否开启每次操作日志记录到MongoDB数据库

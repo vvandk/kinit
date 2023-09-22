@@ -14,6 +14,8 @@ from utils.cache import Cache
 from redis import asyncio as aioredis
 from contextlib import asynccontextmanager
 from utils.tools import import_modules_async
+from sqlalchemy.exc import ProgrammingError
+from core.logger import logger
 
 
 @asynccontextmanager
@@ -64,7 +66,11 @@ async def connect_redis(app: FastAPI, status: bool):
     if status:
         print("Connecting to Redis")
         app.state.redis = aioredis.from_url(REDIS_DB_URL, decode_responses=True, health_check_interval=1)
-        await Cache(app.state.redis).cache_tab_names()
+        try:
+            await Cache(app.state.redis).cache_tab_names()
+        except ProgrammingError as e:
+            logger.error(f"sqlalchemy.exc.ProgrammingError: {e}")
+            print(f"sqlalchemy.exc.ProgrammingError: {e}")
     else:
         print("Redis connection closed")
         await app.state.redis.close()

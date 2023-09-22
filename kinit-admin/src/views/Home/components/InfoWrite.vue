@@ -1,30 +1,26 @@
-<script setup lang="ts">
-import { reactive, unref, ref } from 'vue'
-import { Form } from '@/components/Form'
-import { ElButton } from 'element-plus'
+<script setup lang="tsx">
+import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
-import { postCurrentUserUpdateInfo } from '@/api/vadmin/auth/user'
+import { reactive, ref } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
-import { ElMessage } from 'element-plus'
-import { FormSchema } from '@/types/form'
+import { ElButton, ElMessage } from 'element-plus'
+import { postCurrentUserUpdateInfo } from '@/api/vadmin/auth/user'
 
-const { required } = useValidator()
+const { required, isTelephone } = useValidator()
 
 const authStore = useAuthStoreWithOut()
 
-const rules = {
-  name: [required()],
-  gender: [required()]
-}
-
-const schema = reactive<FormSchema[]>([
+const formSchema = reactive<FormSchema[]>([
   {
     field: 'name',
     label: '用户名称',
     component: 'Input',
     colProps: {
       span: 24
+    },
+    formItemProps: {
+      rules: [required()]
     },
     componentProps: {
       style: {
@@ -52,6 +48,9 @@ const schema = reactive<FormSchema[]>([
     colProps: {
       span: 24
     },
+    formItemProps: {
+      rules: [required(), { validator: isTelephone, trigger: 'blur' }]
+    },
     componentProps: {
       style: {
         width: '50%'
@@ -65,7 +64,10 @@ const schema = reactive<FormSchema[]>([
     colProps: {
       span: 24
     },
-    component: 'Radio',
+    formItemProps: {
+      rules: [required()]
+    },
+    component: 'RadioGroup',
     componentProps: {
       options: [
         {
@@ -83,15 +85,29 @@ const schema = reactive<FormSchema[]>([
     field: 'save',
     colProps: {
       span: 24
+    },
+    formItemProps: {
+      slots: {
+        default: () => {
+          return (
+            <>
+              <div class="w-[50%]">
+                <ElButton loading={loading.value} type="primary" class="w-[100%]" onClick={save}>
+                  保存
+                </ElButton>
+              </div>
+            </>
+          )
+        }
+      }
     }
   }
 ])
 
-const { register, elFormRef, methods } = useForm()
+const { formRegister, formMethods } = useForm()
+const { setValues, getFormData, getElFormExpose } = formMethods
 
-const { setValues } = methods
 setValues(authStore.getUser)
-
 const loading = ref(false)
 
 // 提交
@@ -99,40 +115,29 @@ const save = async () => {
   if (authStore.getUser.id === 1) {
     return ElMessage.warning('编辑账号为演示账号，无权限操作！')
   }
-  const formRef = unref(elFormRef)
-  await formRef?.validate(async (isValid) => {
-    if (isValid) {
-      loading.value = true
-      const { getFormData } = methods
-      const formData = await getFormData()
-      try {
-        const res = await postCurrentUserUpdateInfo(formData)
-        if (res) {
-          authStore.updateUser(res.data)
-          ElMessage.success('保存成功')
-        }
-      } finally {
-        loading.value = false
+  const elForm = await getElFormExpose()
+  const valid = await elForm?.validate()
+  if (valid) {
+    loading.value = true
+    const formData = await getFormData()
+    try {
+      const res = await postCurrentUserUpdateInfo(formData)
+      if (res) {
+        authStore.updateUser(res.data)
+        ElMessage.success('保存成功')
       }
+    } finally {
+      loading.value = false
     }
-  })
+  }
 }
 </script>
 
 <template>
   <Form
-    :schema="schema"
-    :rules="rules"
+    @register="formRegister"
+    :schema="formSchema"
     hide-required-asterisk
     class="dark:(border-1 border-[var(--el-border-color)] border-solid)"
-    @register="register"
-  >
-    <template #save>
-      <div class="w-[50%]">
-        <ElButton :loading="loading" type="primary" class="w-[100%]" @click="save"> 保存 </ElButton>
-      </div>
-    </template>
-  </Form>
+  />
 </template>
-
-<style lang="less" scoped></style>

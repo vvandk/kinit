@@ -1,0 +1,1 @@
+<block wx:if="{{params.url}}"><view><web-view webview-styles="{{webviewStyles}}" src="{{''+params.url}}"></web-view></view></block>

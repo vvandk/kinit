@@ -1,0 +1,690 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* pages/uni-cropper/index.wxss */
+.uni-content-info {
+  /* position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		display: block;
+		align-items: center;
+		flex-direction: column; */
+}
+.cropper-config {
+  padding: 20rpx 40rpx;
+}
+.cropper-content {
+  min-height: 750rpx;
+  width: 100%;
+}
+.uni-corpper {
+  position: relative;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  box-sizing: border-box;
+}
+.uni-corpper-content {
+  position: relative;
+}
+.uni-corpper-content image {
+  display: block;
+  width: 100%;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 100%;
+  min-height: 0 !important;
+  max-height: none !important;
+  image-orientation: 0deg !important;
+  margin: 0 auto;
+}
+
+/* 移动图片效果 */
+.uni-cropper-drag-box {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  cursor: move;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+/* 内部的信息 */
+.uni-corpper-crop-box {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  z-index: 2;
+}
+.uni-corpper-crop-box .uni-cropper-view-box {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  outline: 1rpx solid #69f;
+  outline-color: rgba(102, 153, 255, 0.75);
+}
+
+/* 横向虚线 */
+.uni-cropper-dashed-h {
+  position: absolute;
+  top: 33.33333333%;
+  left: 0;
+  width: 100%;
+  height: 33.33333333%;
+  border-top: 1rpx dashed rgba(255, 255, 255, 0.5);
+  border-bottom: 1rpx dashed rgba(255, 255, 255, 0.5);
+}
+
+/* 纵向虚线 */
+.uni-cropper-dashed-v {
+  position: absolute;
+  left: 33.33333333%;
+  top: 0;
+  width: 33.33333333%;
+  height: 100%;
+  border-left: 1rpx dashed rgba(255, 255, 255, 0.5);
+  border-right: 1rpx dashed rgba(255, 255, 255, 0.5);
+}
+
+/* 四个方向的线  为了之后的拖动事件*/
+.uni-cropper-line-t {
+  position: absolute;
+  display: block;
+  width: 100%;
+  background-color: #69f;
+  top: 0;
+  left: 0;
+  height: 1rpx;
+  opacity: 0.1;
+  cursor: n-resize;
+}
+.uni-cropper-line-t::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0rpx;
+  width: 100%;
+  -webkit-transform: translate3d(0, -50%, 0);
+  transform: translate3d(0, -50%, 0);
+  bottom: 0;
+  height: 41rpx;
+  background: transparent;
+  z-index: 11;
+}
+.uni-cropper-line-r {
+  position: absolute;
+  display: block;
+  background-color: #69f;
+  top: 0;
+  right: 0rpx;
+  width: 1rpx;
+  opacity: 0.1;
+  height: 100%;
+  cursor: e-resize;
+}
+.uni-cropper-line-r::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 41rpx;
+  -webkit-transform: translate3d(-50%, 0, 0);
+  transform: translate3d(-50%, 0, 0);
+  bottom: 0;
+  height: 100%;
+  background: transparent;
+  z-index: 11;
+}
+.uni-cropper-line-b {
+  position: absolute;
+  display: block;
+  width: 100%;
+  background-color: #69f;
+  bottom: 0;
+  left: 0;
+  height: 1rpx;
+  opacity: 0.1;
+  cursor: s-resize;
+}
+.uni-cropper-line-b::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0rpx;
+  width: 100%;
+  -webkit-transform: translate3d(0, -50%, 0);
+  transform: translate3d(0, -50%, 0);
+  bottom: 0;
+  height: 41rpx;
+  background: transparent;
+  z-index: 11;
+}
+.uni-cropper-line-l {
+  position: absolute;
+  display: block;
+  background-color: #69f;
+  top: 0;
+  left: 0;
+  width: 1rpx;
+  opacity: 0.1;
+  height: 100%;
+  cursor: w-resize;
+}
+.uni-cropper-line-l::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 41rpx;
+  -webkit-transform: translate3d(-50%, 0, 0);
+  transform: translate3d(-50%, 0, 0);
+  bottom: 0;
+  height: 100%;
+  background: transparent;
+  z-index: 11;
+}
+.uni-cropper-point {
+  width: 5rpx;
+  height: 5rpx;
+  background-color: #69f;
+  opacity: 0.75;
+  position: absolute;
+  z-index: 3;
+}
+.point-t {
+  top: -3rpx;
+  left: 50%;
+  margin-left: -3rpx;
+  cursor: n-resize;
+}
+.point-tr {
+  top: -3rpx;
+  left: 100%;
+  margin-left: -3rpx;
+  cursor: n-resize;
+}
+.point-r {
+  top: 50%;
+  left: 100%;
+  margin-left: -3rpx;
+  margin-top: -3rpx;
+  cursor: n-resize;
+}
+.point-rb {
+  left: 100%;
+  top: 100%;
+  -webkit-transform: translate3d(-50%, -50%, 0);
+  transform: translate3d(-50%, -50%, 0);
+  cursor: n-resize;
+  width: 36rpx;
+  height: 36rpx;
+  background-color: #69f;
+  position: absolute;
+  z-index: 1112;
+  opacity: 1;
+}
+.point-b {
+  left: 50%;
+  top: 100%;
+  margin-left: -3rpx;
+  margin-top: -3rpx;
+  cursor: n-resize;
+}
+.point-bl {
+  left: 0%;
+  top: 100%;
+  margin-left: -3rpx;
+  margin-top: -3rpx;
+  cursor: n-resize;
+}
+.point-l {
+  left: 0%;
+  top: 50%;
+  margin-left: -3rpx;
+  margin-top: -3rpx;
+  cursor: n-resize;
+}
+.point-lt {
+  left: 0%;
+  top: 0%;
+  margin-left: -3rpx;
+  margin-top: -3rpx;
+  cursor: n-resize;
+}
+
+/* 裁剪框预览内容 */
+.uni-cropper-viewer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.uni-cropper-viewer image {
+  position: absolute;
+  z-index: 2;
+}
+

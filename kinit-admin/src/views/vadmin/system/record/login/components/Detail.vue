@@ -1,22 +1,16 @@
-<script setup lang="ts">
-import { PropType, ref } from 'vue'
-import { Descriptions } from '@/components/Descriptions'
+<script setup lang="tsx">
+import { PropType, reactive, ref } from 'vue'
+import { Descriptions, DescriptionsSchema } from '@/components/Descriptions'
 import { ElSwitch } from 'element-plus'
-// json内容展示组件
+import { selectDictLabel, DictDetail } from '@/utils/dict'
+import { useDictStore } from '@/store/modules/dict'
 import { JsonViewer } from 'vue3-json-viewer'
 import 'vue3-json-viewer/dist/index.css'
-import { DescriptionsSchema } from '@/types/descriptions'
-import { DictDetail, selectDictLabel } from '@/utils/dict'
-import { useDictStore } from '@/store/modules/dict'
 
 defineProps({
   currentRow: {
     type: Object as PropType<Nullable<any>>,
     default: () => null
-  },
-  detailSchema: {
-    type: Array as PropType<DescriptionsSchema[]>,
-    default: () => []
   }
 })
 
@@ -31,28 +25,127 @@ const getOptions = async () => {
 }
 
 getOptions()
+
+const detailSchema = reactive<DescriptionsSchema[]>([
+  {
+    field: 'id',
+    label: '编号',
+    minWidth: 100,
+    span: 24
+  },
+  {
+    field: 'telephone',
+    label: '手机号',
+    span: 24
+  },
+  {
+    field: 'status',
+    label: '登录状态',
+    span: 24,
+    slots: {
+      default: (data: any) => {
+        return (
+          <>
+            <ElSwitch value={data.status} size="small" disabled />
+          </>
+        )
+      }
+    }
+  },
+  {
+    field: 'platform',
+    label: '登录平台',
+    span: 24,
+    slots: {
+      default: (data: any) => {
+        return (
+          <>
+            <div>{selectDictLabel(platformOptions.value, data.platform)}</div>
+          </>
+        )
+      }
+    }
+  },
+  {
+    field: 'login_method',
+    label: '认证方式',
+    span: 24,
+    slots: {
+      default: (data: any) => {
+        return (
+          <>
+            <div>{selectDictLabel(loginMethodOptions.value, data.login_method)}</div>
+          </>
+        )
+      }
+    }
+  },
+  {
+    field: 'ip',
+    label: '登录地址',
+    span: 24
+  },
+  {
+    field: 'address',
+    label: '登录地点',
+    span: 24
+  },
+  {
+    field: 'postal_code',
+    label: '邮政编码',
+    span: 24
+  },
+  {
+    field: 'area_code',
+    label: '地区区号',
+    span: 24
+  },
+  {
+    field: 'browser',
+    label: '浏览器',
+    span: 24
+  },
+  {
+    field: 'system',
+    label: '操作系统',
+    span: 24
+  },
+  {
+    field: 'response',
+    label: '响应信息',
+    span: 24,
+    slots: {
+      default: (data: any) => {
+        return (
+          <>
+            <JsonViewer value={JSON.parse(data.request)} copyable boxed sort />
+          </>
+        )
+      }
+    }
+  },
+  {
+    field: 'request',
+    label: '请求信息',
+    span: 24,
+    slots: {
+      default: (data: any) => {
+        return (
+          <>
+            <JsonViewer value={JSON.parse(data.request)} copyable boxed sort />
+          </>
+        )
+      }
+    }
+  },
+  {
+    field: 'create_datetime',
+    label: '创建时间',
+    span: 24
+  }
+])
 </script>
 
 <template>
-  <Descriptions :schema="detailSchema" :data="currentRow || {}">
-    <template #status="{ row }">
-      <ElSwitch :value="row.status" size="small" disabled />
-    </template>
-
-    <template #response="{ row }">
-      <JsonViewer :value="JSON.parse(row.response)" copyable boxed sort />
-    </template>
-
-    <template #request="{ row }">
-      <JsonViewer :value="JSON.parse(row.request)" copyable boxed sort />
-    </template>
-
-    <template #platform="{ row }">
-      {{ selectDictLabel(platformOptions, row.platform) }}
-    </template>
-
-    <template #login_method="{ row }">
-      {{ selectDictLabel(loginMethodOptions, row.login_method) }}
-    </template>
-  </Descriptions>
+  <Descriptions :schema="detailSchema" :data="currentRow || {}" />
 </template>

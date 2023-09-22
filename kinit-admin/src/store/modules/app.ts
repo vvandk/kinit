@@ -1,13 +1,10 @@
 import { defineStore } from 'pinia'
 import { store } from '../index'
 import { setCssVar, humpToUnderline } from '@/utils'
-import { ElMessage } from 'element-plus'
-import { ElementPlusSize } from '@/types/elementPlus'
-import { useCache } from '@/hooks/web/useCache'
-import { LayoutType } from '@/types/layout'
-import { ThemeTypes } from '@/types/theme'
+import { ElMessage, ComponentSize } from 'element-plus'
+import { useStorage } from '@/hooks/web/useStorage'
 
-const { wsCache } = useCache()
+const { getStorage, setStorage } = useStorage()
 
 interface AppState {
   breadcrumb: boolean
@@ -24,33 +21,34 @@ interface AppState {
   fixedHeader: boolean
   greyMode: boolean
   dynamicRouter: boolean
+  serverDynamicRouter: boolean
   pageLoading: boolean
   layout: LayoutType
   title: string
+  userInfo: string
   isDark: boolean
-  currentSize: ElementPlusSize
-  sizeMap: ElementPlusSize[]
+  currentSize: ComponentSize
+  sizeMap: ComponentSize[]
   mobile: boolean
   footer: boolean
   theme: ThemeTypes
   fixedMenu: boolean
+
+  token: string
+  refreshToken: string
   logoImage: string
   footerContent: string
   icpNumber: string
-  token: string
-  refreshToken: string
 }
 
 export const useAppStore = defineStore('app', {
   state: (): AppState => {
     return {
-      token: 'Token', // 存储Token字段
-      refreshToken: 'RefreshToken', // 存储刷新Token字段
+      userInfo: 'userInfo', // 登录信息存储字段-建议每个项目换一个字段，避免与其它项目冲突
       sizeMap: ['default', 'large', 'small'],
       mobile: false, // 是否是移动端
       title: import.meta.env.VITE_APP_TITLE, // 标题
       pageLoading: false, // 路由跳转loading
-
       breadcrumb: true, // 面包屑
       breadcrumbIcon: true, // 面包屑图标
       collapse: false, // 折叠菜单
@@ -61,20 +59,18 @@ export const useAppStore = defineStore('app', {
       locale: true, // 多语言图标
       tagsView: true, // 标签页
       tagsViewIcon: true, // 是否显示标签图标
-      logo: true, // 是否开启logo显示
-      logoImage: '', // logo图片
+      logo: true, // logo
       fixedHeader: true, // 固定toolheader
       footer: true, // 显示页脚
-      footerContent: '', // 页脚内容
-      icpNumber: '', // 备案号
       greyMode: false, // 是否开始灰色模式，用于特殊悼念日
-      dynamicRouter: wsCache.get('dynamicRouter') || true, // 是否动态路由
-      fixedMenu: wsCache.get('fixedMenu') || true, // 是否固定菜单
+      dynamicRouter: getStorage('dynamicRouter'), // 是否动态路由
+      serverDynamicRouter: getStorage('serverDynamicRouter'), // 是否服务端渲染动态路由
+      fixedMenu: getStorage('fixedMenu'), // 是否固定菜单
 
-      layout: wsCache.get('layout') || 'classic', // layout布局
-      isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
-      currentSize: wsCache.get('default') || 'default', // 组件尺寸
-      theme: wsCache.get('theme') || {
+      layout: getStorage('layout') || 'classic', // layout布局
+      isDark: getStorage('isDark'), // 是否是暗黑模式
+      currentSize: getStorage('default') || 'default', // 组件尺寸
+      theme: getStorage('theme') || {
         // 主题色
         elColorPrimary: '#409eff',
         // 左侧菜单边框颜色
@@ -103,7 +99,13 @@ export const useAppStore = defineStore('app', {
         topHeaderHoverColor: '#f6f6f6',
         // 头部边框颜色
         topToolBorderColor: '#eee'
-      }
+      },
+
+      token: 'Token', // 存储Token字段
+      refreshToken: 'RefreshToken', // 存储刷新Token字段
+      logoImage: '', // logo图片
+      footerContent: '', // 页脚内容
+      icpNumber: '' // 备案号
     }
   },
   getters: {
@@ -140,9 +142,6 @@ export const useAppStore = defineStore('app', {
     getLogo(): boolean {
       return this.logo
     },
-    getLogoImage(): string {
-      return this.logoImage
-    },
     getFixedHeader(): boolean {
       return this.fixedHeader
     },
@@ -151,6 +150,9 @@ export const useAppStore = defineStore('app', {
     },
     getDynamicRouter(): boolean {
       return this.dynamicRouter
+    },
+    getServerDynamicRouter(): boolean {
+      return this.serverDynamicRouter
     },
     getFixedMenu(): boolean {
       return this.fixedMenu
@@ -164,19 +166,16 @@ export const useAppStore = defineStore('app', {
     getTitle(): string {
       return this.title
     },
-    getToken(): string {
-      return this.token
-    },
-    getRefreshToken(): string {
-      return this.refreshToken
+    getUserInfo(): string {
+      return this.userInfo
     },
     getIsDark(): boolean {
       return this.isDark
     },
-    getCurrentSize(): ElementPlusSize {
+    getCurrentSize(): ComponentSize {
       return this.currentSize
     },
-    getSizeMap(): ElementPlusSize[] {
+    getSizeMap(): ComponentSize[] {
       return this.sizeMap
     },
     getMobile(): boolean {
@@ -187,6 +186,16 @@ export const useAppStore = defineStore('app', {
     },
     getFooter(): boolean {
       return this.footer
+    },
+
+    getLogoImage(): string {
+      return this.logoImage
+    },
+    getToken(): string {
+      return this.token
+    },
+    getRefreshToken(): string {
+      return this.refreshToken
     },
     getFooterContent(): string {
       return this.footerContent
@@ -229,9 +238,6 @@ export const useAppStore = defineStore('app', {
     setLogo(logo: boolean) {
       this.logo = logo
     },
-    setLogoImage(logoImage: string) {
-      this.logoImage = logoImage
-    },
     setFixedHeader(fixedHeader: boolean) {
       this.fixedHeader = fixedHeader
     },
@@ -239,11 +245,15 @@ export const useAppStore = defineStore('app', {
       this.greyMode = greyMode
     },
     setDynamicRouter(dynamicRouter: boolean) {
-      wsCache.set('dynamicRouter', dynamicRouter)
+      setStorage('dynamicRouter', dynamicRouter)
       this.dynamicRouter = dynamicRouter
     },
+    setServerDynamicRouter(serverDynamicRouter: boolean) {
+      setStorage('serverDynamicRouter', serverDynamicRouter)
+      this.serverDynamicRouter = serverDynamicRouter
+    },
     setFixedMenu(fixedMenu: boolean) {
-      wsCache.set('fixedMenu', fixedMenu)
+      setStorage('fixedMenu', fixedMenu)
       this.fixedMenu = fixedMenu
     },
     setPageLoading(pageLoading: boolean) {
@@ -251,11 +261,11 @@ export const useAppStore = defineStore('app', {
     },
     setLayout(layout: LayoutType) {
       if (this.mobile && layout !== 'classic') {
-        ElMessage.warning('移动端模式下不支持切换其他布局')
+        ElMessage.warning('移动端模式下不支持切换其它布局')
         return
       }
       this.layout = layout
-      wsCache.set('layout', this.layout)
+      setStorage('layout', this.layout)
     },
     setTitle(title: string) {
       this.title = title
@@ -269,18 +279,18 @@ export const useAppStore = defineStore('app', {
         document.documentElement.classList.add('light')
         document.documentElement.classList.remove('dark')
       }
-      wsCache.set('isDark', this.isDark)
+      setStorage('isDark', this.isDark)
     },
-    setCurrentSize(currentSize: ElementPlusSize) {
+    setCurrentSize(currentSize: ComponentSize) {
       this.currentSize = currentSize
-      wsCache.set('currentSize', this.currentSize)
+      setStorage('currentSize', this.currentSize)
     },
     setMobile(mobile: boolean) {
       this.mobile = mobile
     },
     setTheme(theme: ThemeTypes) {
       this.theme = Object.assign(this.theme, theme)
-      wsCache.set('theme', this.theme)
+      setStorage('theme', this.theme)
     },
     setCssVarTheme() {
       for (const key in this.theme) {
@@ -289,6 +299,10 @@ export const useAppStore = defineStore('app', {
     },
     setFooter(footer: boolean) {
       this.footer = footer
+    },
+
+    setLogoImage(logoImage: string) {
+      this.logoImage = logoImage
     },
     setFooterContent(footerContent: string) {
       this.footerContent = footerContent

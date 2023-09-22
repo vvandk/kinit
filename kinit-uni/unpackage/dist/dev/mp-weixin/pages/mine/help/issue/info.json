@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "常见问题详情",
+  "usingComponents": {
+    "uni-card": "/uni_modules/uni-card/components/uni-card/uni-card",
+    "u--text": "/node-modules/uview-ui/components/u--text/u--text",
+    "u-empty": "/node-modules/uview-ui/components/u-empty/u-empty"
+  }
+}

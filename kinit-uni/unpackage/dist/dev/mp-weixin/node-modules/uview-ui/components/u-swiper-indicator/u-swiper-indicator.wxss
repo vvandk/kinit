@@ -1,0 +1,53 @@
+@charset "UTF-8";
+/* uView的全局SCSS主题文件 */
+/**
+ * uni-app内置的常用样式变量
+ */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+view.data-v-647f6c67, scroll-view.data-v-647f6c67, swiper-item.data-v-647f6c67 {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-basis: auto;
+  align-items: stretch;
+  align-content: flex-start;
+}
+.u-swiper-indicator__wrapper.data-v-647f6c67 {
+  display: flex;
+  flex-direction: row;
+}
+.u-swiper-indicator__wrapper--line.data-v-647f6c67 {
+  border-radius: 100px;
+  height: 4px;
+}
+.u-swiper-indicator__wrapper--line__bar.data-v-647f6c67 {
+  width: 22px;
+  height: 4px;
+  border-radius: 100px;
+  background-color: #FFFFFF;
+  transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
+  transition: transform 0.3s, -webkit-transform 0.3s;
+}
+.u-swiper-indicator__wrapper__dot.data-v-647f6c67 {
+  width: 5px;
+  height: 5px;
+  border-radius: 100px;
+  margin: 0 4px;
+}
+.u-swiper-indicator__wrapper__dot--active.data-v-647f6c67 {
+  width: 12px;
+}
+

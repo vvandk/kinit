@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "工作台",
+  "usingComponents": {
+    "u-swiper": "/node-modules/uview-ui/components/u-swiper/u-swiper",
+    "u-grid": "/node-modules/uview-ui/components/u-grid/u-grid",
+    "u-grid-item": "/node-modules/uview-ui/components/u-grid-item/u-grid-item",
+    "u--text": "/node-modules/uview-ui/components/u--text/u--text"
+  }
+}

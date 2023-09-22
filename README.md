@@ -28,10 +28,11 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 - PC端采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 、[Vue3](https://cn.vuejs.org/guide/introduction.html)、[Element Plus](https://element-plus.gitee.io/zh-CN/guide/design.html)、[TypeScript](https://www.tslang.cn/)等主流技术开发；
 - 移动端采用 [uni-app](https://uniapp.dcloud.net.cn/component/)，[Vue2](https://v2.cn.vuejs.org/v2/guide/)，[uView 2](https://www.uviewui.com/components/intro.html)为主要技术开发；
 - 后端加入 [Typer](https://typer.tiangolo.com/) 命令行应用，简单化数据初始化，数据表模型迁移等操作；
-- 新加入定时任务功能，采用 [APScheduler](https://github.com/agronholm/apscheduler) 定时任务框架 + [Redis](https://redis.io/)  消息队列 + [MongoDB](https://www.mongodb.com/) 持久存储；
+- 已加入定时任务功能，采用 [APScheduler](https://github.com/agronholm/apscheduler) 定时任务框架 + [Redis](https://redis.io/)  消息队列 + [MongoDB](https://www.mongodb.com/) 持久存储；
 - 权限认证使用[（哈希）密码和 JWT Bearer 令牌的 OAuth2](https://fastapi.tiangolo.com/zh/tutorial/security/oauth2-jwt/)，支持多终端认证系统。
 - 支持加载动态权限菜单，多方式轻松权限控制，按钮级别权限控制。
 - 已加入常见的 [MySQL](https://www.mysql.com/) + [MongoDB](https://www.mongodb.com/) + [Redis](https://redis.io/)  数据库异步操作。
+- 支持 [docker-compose](https://docs.docker.com/compose/) 部署方式
 - 开箱即用的中后台解决方案，可以用来作为新项目的启动模版，也可用于学习参考。并且时刻关注着最新技术动向，尽可能的第一时间更新。
 - 与 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 前端框架时刻保持同步更新。
 
@@ -42,8 +43,6 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 [RuoYi 若依官方网站](http://www.ruoyi.vip/)：RuoYi 是一个优秀的 Java 后台管理系统
 
 [django-vue-admin](https://gitee.com/liqianglog/django-vue-admin)：django-vue-admin 是一个优秀的基于 Django 开发后台管理系统
-
-[Ant Design Pro](https://preview.pro.ant.design/dashboard/analysis)：开箱即用的中台前端/设计解决方案
 
 [小诺开源技术 (xiaonuo.vip)](https://www.xiaonuo.vip/)：国内首个国密前后端分离快速开发平台
 
@@ -98,6 +97,8 @@ github地址：https://github.com/vvandk/kinit
 
 - [x] 用户分布：接入高德地图显示各地区用户分布情况
 
+- [x] 数据概览：提供两种数据统计展示模板，更直观的查看数据统计情况
+
 - [x] 智慧大屏：大屏展示`办公室空气质量实时检测`数据分析
 
 - [x] 登录日志：用户登录日志记录和查询。
@@ -107,14 +108,6 @@ github地址：https://github.com/vvandk/kinit
 - [x] 接口文档：提供自动生成的交互式 API 文档，与 ReDoc 文档
 
 - [x] 导入导出：灵活支持数据导入导出功能
-
-- [x] 简单适配手机端：
-
-  1. 工作台招呼语一行显示，多余显示省略号
-  2. 查询框宽度统一，需手动调整（强迫症建议）
-  3. 分页符更新，电脑端与手机端分页功能不同
-  4. 表格工具栏更新，手机端取消文字显示
-  5. 表格操作按钮多的时候自动叠起
 
 - [x] 已加入常见的`Redis`、`MySQL`、`MongoDB`数据库异步操作。
 
@@ -154,9 +147,7 @@ github地址：https://github.com/vvandk/kinit
 - [Es6+](https://gitee.com/link?target=http%3A%2F%2Fes6.ruanyifeng.com%2F) - 熟悉 es6 基本语法
 - [Vue-Router-Next](https://gitee.com/link?target=https%3A%2F%2Fnext.router.vuejs.org%2F) - 熟悉 vue-router 基本使用
 - [Element-Plus](https://gitee.com/link?target=https%3A%2F%2Felement-plus.org%2F) - element-plus 基本使用
-- [Mock.js](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fnuysoft%2FMock) - mockjs 基本语法
 - [vue3-json-viewer](https://gitee.com/isfive/vue3-json-viewer)：简单易用的json内容展示组件,适配vue3和vite。
-- [SortableJS/vue.draggable.next](https://github.com/SortableJS/vue.draggable.next)：Vue 组件 （Vue.js 3.0） 允许拖放和与视图模型数组同步。
 - [高德地图API (amap.com)](https://lbs.amap.com/api/jsapi-v2/guide/webcli/map-vue1)：地图 JSAPI 2.0 是高德开放平台免费提供的第四代 Web 地图渲染引擎。
 
 ### 移动端
@@ -201,7 +192,16 @@ Redis (推荐使用最新稳定版)
    pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
    ```
 
-2. 修改项目数据库配置信息
+2. 修改项目环境配置
+
+   修改 `application/settings.py` 文件
+
+   ```python
+"""安全警告: 不要在生产中打开调试运行!"""
+   DEBUG = True # 如果当前为开发环境则改为 True，如果为生产环境则改为 False
+```
+   
+3. 修改项目数据库配置信息
 
    在 `application/config` 目录中
 
@@ -273,7 +273,7 @@ Redis (推荐使用最新稳定版)
    sqlalchemy.url = sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
    ```
 
-3. 创建数据库
+4. 创建数据库
 
    ```
    mysql> create database kinit;             # 创建数据库
@@ -281,7 +281,7 @@ Redis (推荐使用最新稳定版)
    mysql> set names utf8;                    # 设置编码
    ```
 
-4. 初始化数据库数据
+5. 初始化数据库数据
 
    ```
    # 项目根目录下执行，需提前创建好数据库
@@ -295,7 +295,7 @@ Redis (推荐使用最新稳定版)
    python3 main.py init --env dev
    ```
 
-5. 修改项目基本配置信息
+6. 修改项目基本配置信息
 
    修改数据库表 - vadmin_system_settings 中的关键信息
 
@@ -322,7 +322,7 @@ Redis (推荐使用最新稳定版)
    email_port
    ```
 
-6. 启动
+7. 启动
 
    ```
    # 进入项目根目录下执行
@@ -402,6 +402,165 @@ pnpm run build:pro
 - 账号：`15020221010` 密码：`kinit2022`
 - 接口地址：http://localhost:9000/docs (默认为此地址，如有修改请按照配置文件)
 
+## Docker Compose 生产环境部署
+
+### 准备工作
+
+1. 获取代码
+
+   ```
+   git clone https://gitee.com/ktianc/kinit.git
+   ```
+
+2. 修改项目环境配置：
+
+   1. 修改 API 端：
+
+      文件路径为：`kinit-api/application/settings.py`
+
+      ```python
+      """安全警告: 不要在生产中打开调试运行!"""
+      DEBUG = False # 生产环境应该改为 False
+      ```
+
+   2. 修改定时任务端：
+
+      文件路径为：`kinit-task/application/settings.py`
+
+      ```python
+      """安全警告: 不要在生产中打开调试运行!"""
+      DEBUG = False # 生产环境应该改为 False
+      ```
+
+3. 如果已有 Mysql 或者 Redis 或者 MongoDB 数据库，请修改如下内容，如果没有则不需要修改：
+
+   1. 修改 API 端配置文件：
+
+      文件路径为：`kinit-api/application/config/production.py`
+
+      ```python
+      """
+      Mysql 数据库配置项
+      连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
+      数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
+      """
+      SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@177.8.0.7:3306/kinit"
+      
+      """
+      Redis 数据库配置
+      格式："redis://:密码@地址:端口/数据库名称"
+      """
+      REDIS_DB_ENABLE = True
+      REDIS_DB_URL = "redis://:123456@177.8.0.5:6379/1"
+      
+      """
+      MongoDB 数据库配置
+      格式：mongodb://用户名:密码@地址:端口/?authSource=数据库名称
+      """
+      MONGO_DB_ENABLE = True
+      MONGO_DB_NAME = "kinit"
+      MONGO_DB_URL = f"mongodb://kinit:123456@177.8.0.6:27017/?authSource={MONGO_DB_NAME}"
+      ```
+
+   2. 修改定时任务配置文件
+
+      文件路径为：`kinit-task/application/config/production.py`
+
+      ```python
+      """
+      Redis 数据库配置
+      
+      与接口是同一个数据库
+      
+      格式："redis://:密码@地址:端口/数据库名称"
+      """
+      REDIS_DB_ENABLE = True
+      REDIS_DB_URL = "redis://:123456@177.8.0.5:6379/1"
+      
+      """
+      MongoDB 数据库配置
+      
+      与接口是同一个数据库
+      
+      格式：mongodb://用户名:密码@地址:端口/?authSource=数据库名称
+      """
+      MONGO_DB_ENABLE = True
+      MONGO_DB_NAME = "kinit"
+      MONGO_DB_URL = f"mongodb://kinit:123456@177.8.0.6:27017/?authSource={MONGO_DB_NAME}"
+      ```
+
+   3. 将已有的数据库在 `docker-compose.yml` 文件中注释
+
+4. 配置阿里云 OSS 与 IP 解析接口地址（可选）
+
+   文件路径：`kinit-api/application/config/production.py`
+
+   ```python
+   """
+   阿里云对象存储OSS配置
+   阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
+   yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
+    *  [accessKeyId] {String}：通过阿里云控制台创建的AccessKey。
+    *  [accessKeySecret] {String}：通过阿里云控制台创建的AccessSecret。
+    *  [bucket] {String}：通过控制台或PutBucket创建的bucket。
+    *  [endpoint] {String}：bucket所在的区域， 默认oss-cn-hangzhou。
+   """
+   ALIYUN_OSS = {
+       "accessKeyId": "accessKeyId",
+       "accessKeySecret": "accessKeySecret",
+       "endpoint": "endpoint",
+       "bucket": "bucket",
+       "baseUrl": "baseUrl"
+   }
+   
+   """
+   获取IP地址归属地
+   文档：https://user.ip138.com/ip/doc
+   """
+   IP_PARSE_ENABLE = False
+   IP_PARSE_TOKEN = "IP_PARSE_TOKEN"
+   ```
+
+5. 前端项目打包：
+
+   ```shell
+   cd kinit-admin
+   
+   # 安装依赖包
+   pnpm install
+   
+   # 打包
+   pnpm run build:pro
+   ```
+
+### 启动并初始化项目
+
+```shell
+# 启动并创建所有容器
+docker-compose up -d
+
+# 初始化数据
+docker-compose exec kinit-api python3 main.py init
+
+# 重启所有容器
+docker-compose restart
+
+
+# 其他命令：
+
+# 停止所有容器
+docker-compose down
+
+# 查看所有容器状态
+docker-compose ps -a
+```
+
+### 访问项目
+
+- 访问地址：http://localhost (默认为此地址，如有修改请按照配置文件)
+- 账号：`15020221010` 密码：`kinit2022`
+- 接口地址：http://localhost:9000/docs (默认为此地址，如有修改请按照配置文件)
+
 ## 如何贡献
 
 你可以[提一个 issue](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2Fkailong321200875%2Fvue-element-plus-admin%2Fissues%2Fnew) 或者提交一个 Pull Request。
@@ -413,24 +572,6 @@ pnpm run build:pro
 3. 提交你的修改: `git commit -am 'feat(function): add xxxxx'`
 4. 推送您的分支: `git push origin feat/xxxx`
 5. 提交 `pull request`
-
-## Git 贡献提交规范
-
-- `feat` 新功能
-- `fix` 修补 bug
-- `docs` 文档
-- `style` 格式、样式(不影响代码运行的变动)
-- `refactor` 重构(即不是新增功能，也不是修改 BUG 的代码)
-- `perf` 优化相关，比如提升性能、体验
-- `test` 添加测试
-- `build` 编译相关的修改，对项目构建或者依赖的改动
-- `ci` 持续集成修改
-- `chore` 构建过程或辅助工具的变动
-- `revert` 回滚到上一个版本
-- `workflow` 工作流改进
-- `mod` 不确定分类的修改
-- `wip` 开发中
-- `types` 类型
 
 ## 浏览器支持
 

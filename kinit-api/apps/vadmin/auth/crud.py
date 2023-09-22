@@ -382,7 +382,7 @@ class RoleDal(DalBase):
         """获取选择数据，全部数据"""
         sql = select(self.model)
         queryset = await self.db.scalars(sql)
-        return [schemas.RoleSelectOut.model_validate(i).model_dump() for i in queryset.all()]
+        return [schemas.RoleOptionsOut.model_validate(i).model_dump() for i in queryset.all()]
 
     async def delete_datas(self, ids: list[int], v_soft: bool = False, **kwargs) -> None:
         """
@@ -466,7 +466,13 @@ class MenuDal(DalBase):
         for root in nodes:
             router = schemas.RouterOut.model_validate(root)
             router.name = name + "".join(name.capitalize() for name in router.path.split("/"))
-            router.meta = schemas.Meta(title=root.title, icon=root.icon, hidden=root.hidden, alwaysShow=root.alwaysShow)
+            router.meta = schemas.Meta(
+                title=root.title,
+                icon=root.icon,
+                hidden=root.hidden,
+                alwaysShow=root.alwaysShow,
+                noCache=root.noCache
+            )
             if root.menu_type == "0":
                 sons = filter(lambda i: i.parent_id == root.id, menus)
                 router.children = self.generate_router_tree(menus, sons, router.name)

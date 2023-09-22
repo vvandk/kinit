@@ -7,7 +7,7 @@
 # @desc           : pydantic 模型，用于数据库序列化操作
 
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from core.data_types import DatetimeStr
 from .menu import MenuSimpleOut
 
@@ -39,10 +39,10 @@ class RoleIn(Role):
     menu_ids: list[int] = []
 
 
-class RoleSelectOut(BaseModel):
+class RoleOptionsOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
-    name: str
+    label: str = Field(alias='name')
+    value: int = Field(alias='id')
     disabled: bool
 

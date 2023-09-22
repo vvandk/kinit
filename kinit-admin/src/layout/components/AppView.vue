@@ -17,37 +17,48 @@ const tagsViewStore = useTagsViewStore()
 const getCaches = computed((): string[] => {
   return tagsViewStore.getCachedViews
 })
+
+const tagsView = computed(() => appStore.getTagsView)
 </script>
 
 <template>
   <section
     :class="[
-      'w-[100%] bg-[var(--app-content-bg-color-new)] dark:bg-[var(--el-bg-color)] flex flex-col',
+      'p-[var(--app-content-padding)] w-[calc(100%-var(--app-content-padding)-var(--app-content-padding))] bg-[var(--app-content-bg-color-new)] dark:bg-[var(--el-bg-color)]',
       {
         '!min-h-[calc(100%-var(--app-footer-height))]':
-          ((fixedHeader && (layout === 'classic' || layout === 'topLeft')) || layout === 'top') &&
-          footer,
+          (fixedHeader &&
+            (layout === 'classic' || layout === 'topLeft' || layout === 'top') &&
+            footer) ||
+          (!tagsView && layout === 'top' && footer),
 
-        '!min-h-[calc(100%-var(--tags-view-height)-var(--top-tool-height)-var(--app-footer-height))]':
+        '!min-h-[calc(100%-var(--app-content-padding)-var(--app-content-padding)-var(--app-footer-height)-var(--tags-view-height))]':
+          tagsView && layout === 'top' && footer,
+
+        '!min-h-[calc(100%-var(--tags-view-height)-var(--app-content-padding)-var(--app-content-padding)-var(--top-tool-height)-var(--app-footer-height))]':
           !fixedHeader && layout === 'classic' && footer,
 
-        '!min-h-[calc(100%-var(--tags-view-height)-var(--app-footer-height))]':
+        '!min-h-[calc(100%-var(--tags-view-height)-var(--app-content-padding)-var(--app-content-padding)-var(--app-footer-height))]':
           !fixedHeader && layout === 'topLeft' && footer,
 
-        '!min-h-[calc(100%-var(--top-tool-height))]': fixedHeader && layout === 'cutMenu' && footer,
+        // '!min-h-[calc(100%-var(--app-content-padding)-var(--app-content-padding)-var(--app-footer-height)-var(--tags-view-height)-var(--top-tool-height))]':
+        //   !fixedHeader && layout === 'top' && footer,
 
-        '!min-h-[calc(100%-var(--top-tool-height)-var(--tags-view-height))]':
-          !fixedHeader && (layout === 'topLeft' || layout === 'top') && footer
+        '!min-h-[calc(100%-var(--top-tool-height)-var(--app-content-padding)-var(--app-content-padding))]':
+          fixedHeader && layout === 'cutMenu' && footer,
+
+        '!min-h-[calc(100%-var(--top-tool-height)-var(--app-content-padding)-var(--app-content-padding)-var(--tags-view-height))]':
+          !fixedHeader && layout === 'cutMenu' && footer
       }
     ]"
   >
-    <RouterView>
+    <router-view>
       <template #default="{ Component, route }">
-        <KeepAlive :include="getCaches">
+        <keep-alive :include="getCaches">
           <component :is="Component" :key="route.fullPath" />
-        </KeepAlive>
+        </keep-alive>
       </template>
-    </RouterView>
+    </router-view>
   </section>
   <Footer v-if="footer" />
 </template>

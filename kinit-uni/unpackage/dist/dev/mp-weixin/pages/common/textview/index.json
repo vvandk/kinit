@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "浏览文本",
+  "usingComponents": {
+    "uni-card": "/uni_modules/uni-card/components/uni-card/uni-card"
+  }
+}

@@ -557,9 +557,9 @@ expressionChange(props.expression)
 </script>
 
 <template>
-  <ul class="text-center">
+  <ol class="text-center">
     <li v-for="(item, index) in resultList" :key="index" class="leading-9"> {{ item }}</li>
-  </ul>
+  </ol>
 </template>
 
 <style lang="scss" scoped></style>

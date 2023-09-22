@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { propTypes } from '@/utils/propTypes'
 import { PropType } from 'vue'
+import { BorderBox10, Decoration7 } from '@kjgl77/datav-vue3'
 
 const props = defineProps({
   menus: {
@@ -13,17 +14,17 @@ const props = defineProps({
 
 <template>
   <div class="top-menu-view">
-    <dv-border-box10>
+    <BorderBox10>
       <div class="menu-item-view" v-for="(item, index) in props.menus" :key="index">
-        <dv-decoration7
+        <Decoration7
           class="animate__animated animate__fadeInDown"
           v-if="index === props.activeIndex"
         >
           {{ item }}
-        </dv-decoration7>
+        </Decoration7>
         <span v-else>{{ item }}</span>
       </div>
-    </dv-border-box10>
+    </BorderBox10>
   </div>
 </template>
 

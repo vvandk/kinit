@@ -1,0 +1,108 @@
+@charset "UTF-8";
+/* uView的全局SCSS主题文件 */
+/**
+ * uni-app内置的常用样式变量
+ */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+view.data-v-913eaa32, scroll-view.data-v-913eaa32, swiper-item.data-v-913eaa32 {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-basis: auto;
+  align-items: stretch;
+  align-content: flex-start;
+}
+.u-cell__body.data-v-913eaa32 {
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  padding: 10px 15px;
+  font-size: 15px;
+  color: #303133;
+  align-items: center;
+}
+.u-cell__body__content.data-v-913eaa32 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+}
+.u-cell__body--large.data-v-913eaa32 {
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+.u-cell__left-icon-wrap.data-v-913eaa32, .u-cell__right-icon-wrap.data-v-913eaa32 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 16px;
+}
+.u-cell__left-icon-wrap.data-v-913eaa32 {
+  margin-right: 4px;
+}
+.u-cell__right-icon-wrap.data-v-913eaa32 {
+  margin-left: 4px;
+  transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
+  transition: transform 0.3s, -webkit-transform 0.3s;
+}
+.u-cell__right-icon-wrap--up.data-v-913eaa32 {
+  -webkit-transform: rotate(-90deg);
+          transform: rotate(-90deg);
+}
+.u-cell__right-icon-wrap--down.data-v-913eaa32 {
+  -webkit-transform: rotate(90deg);
+          transform: rotate(90deg);
+}
+.u-cell__title.data-v-913eaa32 {
+  flex: 1;
+}
+.u-cell__title-text.data-v-913eaa32 {
+  font-size: 15px;
+  line-height: 22px;
+  color: #303133;
+}
+.u-cell__title-text--large.data-v-913eaa32 {
+  font-size: 16px;
+}
+.u-cell__label.data-v-913eaa32 {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #909193;
+  line-height: 18px;
+}
+.u-cell__label--large.data-v-913eaa32 {
+  font-size: 14px;
+}
+.u-cell__value.data-v-913eaa32 {
+  text-align: right;
+  font-size: 14px;
+  line-height: 24px;
+  color: #606266;
+}
+.u-cell__value--large.data-v-913eaa32 {
+  font-size: 15px;
+}
+.u-cell--clickable.data-v-913eaa32 {
+  background-color: #f3f4f6;
+}
+.u-cell--disabled.data-v-913eaa32 {
+  color: #c8c9cc;
+  cursor: not-allowed;
+}
+.u-cell--center.data-v-913eaa32 {
+  align-items: center;
+}
+

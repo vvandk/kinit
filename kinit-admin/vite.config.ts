@@ -2,15 +2,16 @@ import { resolve } from 'path'
 import { loadEnv } from 'vite'
 import type { UserConfig, ConfigEnv } from 'vite'
 import Vue from '@vitejs/plugin-vue'
-import WindiCSS from 'vite-plugin-windicss'
-import progress from 'vite-plugin-progress'
 import VueJsx from '@vitejs/plugin-vue-jsx'
+import progress from 'vite-plugin-progress'
 import EslintPlugin from 'vite-plugin-eslint'
+import { ViteEjsPlugin } from "vite-plugin-ejs"
+import { viteMockServe } from 'vite-plugin-mock'
 import PurgeIcons from 'vite-plugin-purge-icons'
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite"
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
-import { ViteEjsPlugin } from "vite-plugin-ejs"
+import UnoCSS from 'unocss/vite'
 
 // https://vitejs.dev/config/
 const root = process.cwd()
@@ -30,9 +31,14 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   return {
     base: env.VITE_BASE_PATH,
     plugins: [
-      Vue(),
+      Vue({
+        script: {
+          // 开启defineModel
+          defineModel: true
+        }
+      }),
       VueJsx(),
-      WindiCSS(),
+      // WindiCSS(),
       progress(),
       createStyleImportPlugin({
         resolves: [ElementPlusResolve()],
@@ -40,7 +46,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           libraryName: 'element-plus',
           esModule: true,
           resolveStyle: (name) => {
-            return `element-plus/es/components/${name.substring(3)}/style/css`
+            if (name === 'click-outside') {
+              return ''
+            }
+            return `element-plus/es/components/${name.replace(/^el-/, '')}/style/css`
           }
         }]
       }),
@@ -59,9 +68,22 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         svgoOptions: true
       }),
       PurgeIcons(),
+      viteMockServe({
+        ignore: /^\_/,
+        mockPath: 'mock',
+        localEnabled: !isBuild,
+        prodEnabled: isBuild,
+        injectCode: `
+          import { setupProdMockServer } from '../mock/_createProductionServer'
+
+          setupProdMockServer()
+          `
+      }),
       ViteEjsPlugin({
         title: env.VITE_APP_TITLE
-      })
+      }),
+      UnoCSS(),
+      // sveltekit(),
     ],
 
     css: {
@@ -89,6 +111,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       minify: 'terser',
       outDir: env.VITE_OUT_DIR || 'dist',
       sourcemap: env.VITE_SOURCEMAP === 'true' ? 'inline' : false,
+      // brotliSize: false,
       terserOptions: {
         compress: {
           drop_debugger: env.VITE_DROP_DEBUGGER === 'true',
@@ -139,7 +162,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         'intro.js',
         'qrcode',
         '@wangeditor/editor',
-        '@wangeditor/editor-for-vue'
+        '@wangeditor/editor-for-vue',
+        'vue-json-pretty'
       ]
     }
   }

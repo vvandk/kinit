@@ -36,6 +36,13 @@ export const underlineToHump = (str: string): string => {
   })
 }
 
+/**
+ * 驼峰转横杠
+ */
+export const humpToDash = (str: string): string => {
+  return str.replace(/([A-Z])/g, '-$1').toLowerCase()
+}
+
 export const setCssVar = (prop: string, val: any, dom = document.documentElement) => {
   dom.style.setProperty(prop, val)
 }
@@ -107,6 +114,65 @@ export function toAnyString() {
     return v.toString()
   })
   return str
+}
+
+/**
+ * 首字母大写
+ */
+export function firstUpperCase(str: string) {
+  return str.toLowerCase().replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
+}
+
+// 根据当前时间获取祝福语
+export const getGreeting = (): string => {
+  const now = new Date()
+  const hour = now.getHours()
+
+  if (hour >= 6 && hour < 10) {
+    return '早上好'
+  } else if (hour >= 10 && hour < 13) {
+    return '中午好'
+  } else if (hour >= 13 && hour < 18) {
+    return '下午好'
+  } else {
+    return '晚上好'
+  }
+}
+
+// 获取当前星期几
+export const getDayOfWeek = (): string => {
+  const daysOfWeek: string[] = [
+    '星期日',
+    '星期一',
+    '星期二',
+    '星期三',
+    '星期四',
+    '星期五',
+    '星期六'
+  ]
+  const date: Date = new Date()
+  const dayOfWeekIndex: number = date.getDay()
+  return daysOfWeek[dayOfWeekIndex]
+}
+
+// 数字转金额
+// 作者：时光足迹
+// 链接：https://juejin.cn/post/7028086399601475591
+// 来源：稀土掘金
+export const formatMoney = (amount, currency = true): string => {
+  const formatter = new Intl.NumberFormat('zh-CN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  })
+
+  const formattedAmount = formatter.format(amount)
+
+  if (currency) {
+    return `￥${formattedAmount}`
+  }
+
+  return formattedAmount
 }
 
 /**
@@ -182,54 +248,19 @@ export const base64ToFile = (dataURI, filename): File => {
   return new File([u8arr], filename, { type: mime })
 }
 
-// 根据当前时间获取祝福语
-export const getGreeting = (): string => {
-  const now = new Date()
-  const hour = now.getHours()
+// 将指定索引的元素移动到目标索引的函数
+export const moveElementToIndex = (array: any[], fromIndex: number, toIndex: number) => {
+  const clonedArray = [...array] // 克隆数组以避免修改原始数组
 
-  if (hour >= 6 && hour < 10) {
-    return '早上好'
-  } else if (hour >= 10 && hour < 13) {
-    return '中午好'
-  } else if (hour >= 13 && hour < 18) {
-    return '下午好'
-  } else {
-    return '晚上好'
-  }
-}
-
-// 获取当前星期几
-export const getDayOfWeek = (): string => {
-  const daysOfWeek: string[] = [
-    '星期日',
-    '星期一',
-    '星期二',
-    '星期三',
-    '星期四',
-    '星期五',
-    '星期六'
-  ]
-  const date: Date = new Date()
-  const dayOfWeekIndex: number = date.getDay()
-  return daysOfWeek[dayOfWeekIndex]
-}
-
-// 数字转金额
-// 作者：时光足迹
-// 链接：https://juejin.cn/post/7028086399601475591
-// 来源：稀土掘金
-export const formatMoney = (amount, currency = true): string => {
-  const formatter = new Intl.NumberFormat('zh-CN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-    useGrouping: true
-  })
-
-  const formattedAmount = formatter.format(amount)
-
-  if (currency) {
-    return `￥${formattedAmount}`
+  if (
+    fromIndex >= 0 &&
+    fromIndex < clonedArray.length &&
+    toIndex >= 0 &&
+    toIndex < clonedArray.length
+  ) {
+    const [element] = clonedArray.splice(fromIndex, 1) // 移除指定索引的元素
+    clonedArray.splice(toIndex, 0, element) // 将元素插入目标索引位置
   }
 
-  return formattedAmount
+  return clonedArray
 }

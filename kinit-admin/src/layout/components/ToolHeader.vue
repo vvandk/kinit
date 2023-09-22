@@ -8,6 +8,7 @@ import { Screenfull } from '@/components/Screenfull'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
+import { SettingV2 } from '@/components/SettingV2'
 
 const { getPrefixCls, variables } = useDesign()
 
@@ -48,25 +49,27 @@ export default defineComponent({
         {layout.value !== 'top' ? (
           <div class="h-full flex items-center">
             {hamburger.value && layout.value !== 'cutMenu' ? (
-              <Collapse class="hover-trigger" color="var(--top-header-text-color)"></Collapse>
+              <Collapse class="custom-hover" color="var(--top-header-text-color)"></Collapse>
             ) : undefined}
             {breadcrumb.value ? <Breadcrumb class="<md:hidden"></Breadcrumb> : undefined}
           </div>
         ) : undefined}
         <div class="h-full flex items-center">
+          <SettingV2 class="custom-hover" color="var(--top-header-text-color)"></SettingV2>
           {screenfull.value ? (
-            <Screenfull class="hover-trigger" color="var(--top-header-text-color)"></Screenfull>
+            <Screenfull class="custom-hover" color="var(--top-header-text-color)"></Screenfull>
           ) : undefined}
           {size.value ? (
-            <SizeDropdown class="hover-trigger" color="var(--top-header-text-color)"></SizeDropdown>
+            <SizeDropdown class="custom-hover" color="var(--top-header-text-color)"></SizeDropdown>
           ) : undefined}
           {locale.value ? (
             <LocaleDropdown
-              class="hover-trigger"
+              class="custom-hover"
               color="var(--top-header-text-color)"
             ></LocaleDropdown>
           ) : undefined}
-          <UserInfo class="hover-trigger"></UserInfo>
+
+          <UserInfo></UserInfo>
         </div>
       </div>
     )

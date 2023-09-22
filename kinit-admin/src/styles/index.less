@@ -6,12 +6,17 @@
   width: 100% !important;
 }
 
+// 解决表格多选框无法对齐问题
+.el-table__body-wrapper .el-table-column--selection>.cell, .el-table__header-wrapper .el-table-column--selection>.cell {
+  display: inline !important;
+}
+
 // 解决element-plus 中的日期组件宽度无法设置100%的问题
 .el-date-editor .el-input__wrapper {
   width: 100% !important;
 }
 
-// 解决element-plus 中的日期组件宽度无法设置100%的问题
+// 设置表单单选中行的背景颜色
 .el-table__body tr.current-row>td.el-table__cell {
-  background-color: #a0cfff !important;
+  background-color: #ecf5ff !important;
 }

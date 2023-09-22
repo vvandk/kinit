@@ -1,0 +1,15 @@
+
+page.data-v-9a109160 {
+  background-color: #ffffff;
+}
+.view-title.data-v-9a109160 {
+  font-weight: bold;
+}
+.view-content.data-v-9a109160 {
+  font-size: 26rpx;
+  padding: 12px 5px 0;
+  color: #333;
+  line-height: 24px;
+  font-weight: normal;
+}
+

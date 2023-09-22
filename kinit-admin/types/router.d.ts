@@ -27,25 +27,28 @@ import { defineComponent } from 'vue'
 
     activeMenu: '/dashboard'  显示高亮的路由路径
 
-    followAuth: '/dashboard'  跟随哪个路由进行权限过滤
-
     canTo: true               设置为true即使hidden为true，也依然可以进行路由跳转(默认 false)
+
+    permission: ['edit','add', 'delete']    设置该路由的权限
   }
 **/
+
+interface RouteMetaCustom extends Record<string | number | symbol, unknown> {
+  hidden?: boolean
+  alwaysShow?: boolean
+  title?: string
+  icon?: string
+  noCache?: boolean
+  breadcrumb?: boolean
+  affix?: boolean
+  activeMenu?: string
+  noTagsView?: boolean
+  canTo?: boolean
+  permission?: string[]
+}
+
 declare module 'vue-router' {
-  interface RouteMeta extends Record<string | number | symbol, unknown> {
-    hidden?: boolean
-    alwaysShow?: boolean
-    title?: string
-    icon?: string
-    noCache?: boolean
-    breadcrumb?: boolean
-    affix?: boolean
-    activeMenu?: string
-    noTagsView?: boolean
-    followAuth?: string
-    canTo?: boolean
-  }
+  interface RouteMeta extends RouteMetaCustom {}
 }
 
 type Component<T = any> =
@@ -56,7 +59,7 @@ type Component<T = any> =
 declare global {
   declare interface AppRouteRecordRaw extends Omit<RouteRecordRaw, 'meta'> {
     name: string
-    meta: RouteMeta
+    meta: RouteMetaCustom
     component?: Component | string
     children?: AppRouteRecordRaw[]
     props?: Recordable
@@ -65,7 +68,7 @@ declare global {
 
   declare interface AppCustomRouteRecordRaw extends Omit<RouteRecordRaw, 'meta'> {
     name: string
-    meta: RouteMeta
+    meta: RouteMetaCustom
     component: string
     path: string
     redirect: string

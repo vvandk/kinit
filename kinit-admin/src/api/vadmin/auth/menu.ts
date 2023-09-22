@@ -1,11 +1,10 @@
 import request from '@/config/axios'
-import { List } from 'echarts'
 
 export const getMenuListApi = (params: any): Promise<IResponse> => {
   return request.get({ url: '/vadmin/auth/menus', params })
 }
 
-export const delMenuListApi = (data: List): Promise<IResponse> => {
+export const delMenuListApi = (data: any): Promise<IResponse> => {
   return request.delete({ url: '/vadmin/auth/menus', data })
 }
 

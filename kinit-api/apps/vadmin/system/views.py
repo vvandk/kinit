@@ -81,8 +81,6 @@ async def create_dict_details(data: schemas.DictDetails, auth: Auth = Depends(Al
 
 @app.get("/dict/details", summary="获取单个字典类型下的字典元素列表，分页")
 async def get_dict_details(params: DictDetailParams = Depends(), auth: Auth = Depends(AllUserAuth())):
-    if not params.dict_type_id:
-        return ErrorResponse(msg="未获取到字典类型！")
     datas, count = await crud.DictDetailsDal(auth.db).get_datas(**params.dict(), v_return_count=True)
     return SuccessResponse(datas, count=count)
 

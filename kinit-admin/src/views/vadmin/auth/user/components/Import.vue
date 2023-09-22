@@ -18,18 +18,18 @@ import { ref } from 'vue'
 const emit = defineEmits(['getList'])
 
 const beforeFileUpload: UploadProps['beforeUpload'] = (rawFile) => {
-  const isIMAGE = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].includes(
+  const isExcel = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].includes(
     rawFile.type
   )
   const isLtSize = rawFile.size / 1024 / 1024 < 10
 
-  if (!isIMAGE) {
+  if (!isExcel) {
     ElMessage.error('上传文件必须是 XLSX 格式!')
   }
   if (!isLtSize) {
     ElMessage.error('上传文件大小不能超过 10MB!')
   }
-  return isIMAGE && isLtSize
+  return isExcel && isLtSize
 }
 
 const importFile = ref()

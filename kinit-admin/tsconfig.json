@@ -10,7 +10,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
-    "baseUrl": ".",
+    "baseUrl": "./",
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
@@ -27,12 +27,10 @@
       "@intlify/unplugin-vue-i18n/types",
       "vite/client",
       "element-plus/global",
-      "@types/intro.js",
       "@types/qrcode",
       "vite-plugin-svg-icons/client"
-    ],
-    "typeRoots": ["./node_modules/@types/", "./types", "./node_modules/"]
+    ]
   },
-  "include": ["src/**/*", "types/**/*.d.ts", "mock/**/*.ts"],
+  "include": ["src", "types/**/*.d.ts"],
   "exclude": ["dist", "node_modules"]
 }

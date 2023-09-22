@@ -1,20 +1,28 @@
 <script setup lang="ts">
-import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElMessageBox, ElButton } from 'element-plus'
+import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElMessageBox } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useRouter } from 'vue-router'
-import { useDesign } from '@/hooks/web/useDesign'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
+import { useDesign } from '@/hooks/web/useDesign'
+import LockDialog from './components/LockDialog.vue'
+import { ref, computed } from 'vue'
+import LockPage from './components/LockPage.vue'
+import { useLockStore } from '@/store/modules/lock'
+import { useRouter } from 'vue-router'
 import avatar from '@/assets/imgs/avatar.jpg'
+
+const lockStore = useLockStore()
+
+const getIsLock = computed(() => lockStore.getLockInfo?.isLock ?? false)
+
+const authStore = useAuthStoreWithOut()
 
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('user-info')
 
-const { t } = useI18n()
-
-const authStore = useAuthStoreWithOut()
-
 const { push } = useRouter()
+
+const { t } = useI18n()
 
 const loginOut = () => {
   ElMessageBox.confirm(t('common.loginOutMessage'), t('common.reminder'), {
@@ -26,6 +34,13 @@ const loginOut = () => {
       authStore.logout()
     })
     .catch(() => {})
+}
+
+const dialogVisible = ref<boolean>(false)
+
+// 锁定屏幕
+const lockScreen = () => {
+  dialogVisible.value = true
 }
 
 const toHome = () => {
@@ -40,11 +55,11 @@ const toGithub = () => {
   window.open('https://github.com/vvandk/kinit')
 }
 
-const user = authStore.getUser
+const user = computed(() => authStore.getUser)
 </script>
 
 <template>
-  <ElDropdown :class="prefixCls" trigger="click">
+  <ElDropdown class="custom-hover" :class="prefixCls" trigger="click">
     <div class="flex items-center">
       <img
         :src="user.avatar ? user.avatar : avatar"
@@ -67,9 +82,19 @@ const user = authStore.getUser
           <ElButton @click="toGithub" link>Github</ElButton>
         </ElDropdownItem>
         <ElDropdownItem divided>
-          <ElButton @click="loginOut" link>退出系统</ElButton>
+          <div @click="lockScreen">{{ t('lock.lockScreen') }}</div>
+        </ElDropdownItem>
+        <ElDropdownItem>
+          <div @click="loginOut">{{ t('common.loginOut') }}</div>
         </ElDropdownItem>
       </ElDropdownMenu>
     </template>
   </ElDropdown>
+
+  <LockDialog v-if="dialogVisible" v-model="dialogVisible" />
+  <teleport to="body">
+    <transition name="fade-bottom" mode="out-in">
+      <LockPage v-if="getIsLock" />
+    </transition>
+  </teleport>
 </template>

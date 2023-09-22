@@ -7,7 +7,7 @@
 # @desc           : pydantic 模型，用于数据库序列化操作
 
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from core.data_types import DatetimeStr
 
 
@@ -26,11 +26,11 @@ class DictTypeSimpleOut(DictType):
     update_datetime: DatetimeStr
 
 
-class DictTypeSelectOut(BaseModel):
+class DictTypeOptionsOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
-    dict_name: str
+    label: str = Field(alias='dict_name')
+    value: int = Field(alias='id')
     disabled: bool
 
 

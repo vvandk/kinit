@@ -22,10 +22,6 @@ RuoYi App 移动解决方案，采用uniapp框架，一份代码多终端适配�
 
 二次开发中我们重新将接口请求改为了使用 `luch-request`，项目结构也有所改动，并且加入了 `uView UI` 组件，`uni-simple-router` 路由拦截。
 
-
-
-开发环境：HBuilder X
-
 ## 依赖插件
 
 - [uni-read-pages](https://github.com/SilurianYang/uni-read-pages) ：自动读取 `pages.json` 所有配置。
@@ -45,6 +41,8 @@ RuoYi App 移动解决方案，采用uniapp框架，一份代码多终端适配�
 
 - 源码地址：https://github.com/umicro/uView2.0
 - 文档地址：https://uviewui.com
+
+![image-20221201101340689](..\images\uni\image-20221201101340689.png)
 
 uView UI，是[uni-app](https://uniapp.dcloud.io/)全面兼容nvue的uni-app生态框架，全面的组件和便捷的工具会让您信手拈来，如鱼得水
 
@@ -67,3 +65,23 @@ uView UI，是[uni-app](https://uniapp.dcloud.io/)全面兼容nvue的uni-app生�
 11. 名称: uni-app-snippets
 12. 名称: uni-create-view
 13. 名称: Vetur
+
+## 演示图
+
+<table>
+    <tr>
+        <td><img src="https://oscimg.oschina.net/oscnet/up-3ea20e447ac621a161e395fb53ccc683d84.png"/></td>
+        <td><img src="https://oscimg.oschina.net/oscnet/up-a6f23cf9a371a30165e135eff6d9ae89a9d.png"/></td>
+		<td><img src="https://oscimg.oschina.net/oscnet/up-ff5f62016bf6624c1ff27eee57499dccd44.png"/></td>
+    </tr>
+	<tr>
+        <td><img src="https://oscimg.oschina.net/oscnet/up-b9a582fdb26ec69d407fabd044d2c8494df.png"/></td>
+        <td><img src="https://oscimg.oschina.net/oscnet/up-96427ee08fca29d77934cfc8d1b1a637cef.png"/></td>
+		<td><img src="https://oscimg.oschina.net/oscnet/up-5fdadc582d24cccd7727030d397b63185a3.png"/></td>
+    </tr>
+	<tr>
+        <td><img src="https://oscimg.oschina.net/oscnet/up-0a36797b6bcc50c36d40c3c782665b89efc.png"/></td>
+        <td><img src="https://oscimg.oschina.net/oscnet/up-d77995cc00687cedd00d5ac7d68a07ea276.png"/></td>
+		<td><img src="https://oscimg.oschina.net/oscnet/up-fa8f5ab20becf59b4b38c1b92a9989e7109.png"/></td>
+    </tr>
+</table>

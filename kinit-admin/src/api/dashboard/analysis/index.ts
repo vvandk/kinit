@@ -1,13 +1,8 @@
 import request from '@/config/axios'
-import type {
-  AnalysisBannersTypes,
-  UserAccessSource,
-  WeeklyUserActivity,
-  MonthlySales
-} from './types'
+import type { UserAccessSource, WeeklyUserActivity, MonthlySales } from './types'
 
-export const getBannersApi = (): Promise<IResponse<AnalysisBannersTypes[]>> => {
-  return request.get({ url: '/vadmin/analysis/banners' })
+export const getRandomNumberApi = (): Promise<IResponse<any>> => {
+  return request.get({ url: '/vadmin/analysis/random/number' })
 }
 
 export const getUserAccessSourceApi = (): Promise<IResponse<UserAccessSource[]>> => {

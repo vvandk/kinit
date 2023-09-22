@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElCard, ElRow, ElCol, ElTabs, ElTabPane, ElAvatar } from 'element-plus'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import InfoWrite from './components/InfoWrite.vue'
 import PasswordWrite from './components/PasswordWrite.vue'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
@@ -22,11 +22,11 @@ const getOptions = async () => {
 
 getOptions()
 
-const user = authStore.getUser
+const user = computed(() => authStore.getUser)
 </script>
 
 <template>
-  <div class="m-20px">
+  <div class="p-20px">
     <ElRow :gutter="20">
       <ElCol :xs="24" :sm="12" :md="8">
         <ElCard shadow="hover" class="pb-30px">

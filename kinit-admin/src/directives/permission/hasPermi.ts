@@ -14,12 +14,15 @@ const hasPermission = (value: string | string[]): boolean => {
   if (!value) {
     throw new Error(t('permission.hasPermission'))
   }
-  if (!isArray(value)) {
-    return permissions?.includes(value as string)
-  }
+
   if (all_permission[0] === permissions[0]) {
     return true
   }
+
+  if (!isArray(value)) {
+    return permissions?.includes(value as string)
+  }
+
   return (intersection(value, permissions) as string[]).length > 0
 }
 function hasPermi(el: Element, binding: DirectiveBinding) {

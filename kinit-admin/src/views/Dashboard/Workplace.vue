@@ -15,6 +15,10 @@ import type { Project, Dynamic, Team, Shortcuts } from '@/api/dashboard/workplac
 import avatar from '@/assets/imgs/avatar.jpg'
 import { useAuthStore } from '@/store/modules/auth'
 
+defineOptions({
+  name: 'DashboardWorkplace'
+})
+
 const authStore = useAuthStore()
 
 const loading = ref(true)
@@ -90,8 +94,8 @@ const user = computed(() => authStore.getUser)
                   alt=""
                   class="w-70px h-70px rounded-[50%] mr-20px"
                 />
-                <div class="truncate">
-                  <div class="text-20px text-700 truncate">
+                <div>
+                  <div class="text-20px">
                     {{ getGreeting() }}，{{ user.name }}，{{ t('workplace.happyDay') }}
                   </div>
                   <div class="mt-10px text-14px text-gray-500">

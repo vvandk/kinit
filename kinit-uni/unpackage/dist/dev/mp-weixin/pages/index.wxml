@@ -1,0 +1,1 @@
+<view class="content"><block wx:if="{{logo}}"><image class="logo" src="{{logoImage}}"></image></block><view class="text-area"><text class="title">{{"Hello "+name}}</text></view></view>

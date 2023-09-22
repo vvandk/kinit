@@ -1,12 +1,22 @@
 <script lang="tsx">
-import { ElTable, ElTableColumn, ElPagination } from 'element-plus'
+import {
+  ElTable,
+  ElTableColumn,
+  ElPagination,
+  ComponentSize,
+  ElTooltipProps,
+  ElImage
+} from 'element-plus'
 import { defineComponent, PropType, ref, computed, unref, watch, onMounted } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { setIndex } from './helper'
+import type { TableProps, TableColumn, Pagination, TableSetProps } from './types'
+import { set, get } from 'lodash-es'
+import { CSSProperties } from 'vue'
 import { getSlot } from '@/utils/tsxHelper'
-import type { TableProps } from './types'
-import { set } from 'lodash-es'
-import { TableColumn, TableSlotDefault, Pagination, TableSetPropsType } from '../../../types/table'
+import TableActions from './components/TableActions.vue'
+// import Sortable from 'sortablejs'
+// import { Icon } from '@/components/Icon'
 import { useAppStore } from '@/store/modules/app'
 
 const appStore = useAppStore()
@@ -14,10 +24,10 @@ const appStore = useAppStore()
 export default defineComponent({
   name: 'Table',
   props: {
-    limit: propTypes.number.def(10),
-    page: propTypes.number.def(1),
-    // 是否多选
-    selection: propTypes.bool.def(true),
+    pageSize: propTypes.number.def(10),
+    currentPage: propTypes.number.def(1),
+    // 是否展示表格的工具栏
+    showAction: propTypes.bool.def(false),
     // 是否所有的超出隐藏，优先级低于schema中的showOverflowTooltip,
     showOverflowTooltip: propTypes.bool.def(true),
     // 表头
@@ -26,9 +36,7 @@ export default defineComponent({
       default: () => []
     },
     // 展开行
-    expand: propTypes.bool.def(false),
-    // 是否为斑马纹 table
-    stripe: propTypes.bool.def(true),
+    // expand: propTypes.bool.def(false),
     // 是否展示分页
     pagination: {
       type: Object as PropType<Pagination>,
@@ -51,10 +59,142 @@ export default defineComponent({
     data: {
       type: Array as PropType<Recordable[]>,
       default: () => []
-    }
+    },
+    // 是否自动预览
+    preview: {
+      type: Array as PropType<string[]>,
+      default: () => []
+    },
+    // sortable: propTypes.bool.def(false),
+    height: propTypes.oneOfType([Number, String]),
+    maxHeight: propTypes.oneOfType([Number, String]),
+    stripe: propTypes.bool.def(false),
+    border: propTypes.bool.def(true),
+    size: {
+      type: String as PropType<ComponentSize>,
+      validator: (v: ComponentSize) => ['medium', 'small', 'mini'].includes(v)
+    },
+    fit: propTypes.bool.def(true),
+    showHeader: propTypes.bool.def(true),
+    highlightCurrentRow: propTypes.bool.def(false),
+    currentRowKey: propTypes.oneOfType([Number, String]),
+    // row-class-name, 类型为 (row: Recordable, rowIndex: number) => string | string
+    rowClassName: {
+      type: [Function, String] as PropType<(row: Recordable, rowIndex: number) => string | string>,
+      default: ''
+    },
+    rowStyle: {
+      type: [Function, Object] as PropType<
+        (row: Recordable, rowIndex: number) => Recordable | CSSProperties
+      >,
+      default: () => undefined
+    },
+    cellClassName: {
+      type: [Function, String] as PropType<
+        (row: Recordable, column: any, rowIndex: number) => string | string
+      >,
+      default: ''
+    },
+    cellStyle: {
+      type: [Function, Object] as PropType<
+        (row: Recordable, column: any, rowIndex: number) => Recordable | CSSProperties
+      >,
+      default: () => undefined
+    },
+    headerRowClassName: {
+      type: [Function, String] as PropType<(row: Recordable, rowIndex: number) => string | string>,
+      default: ''
+    },
+    headerRowStyle: {
+      type: [Function, Object] as PropType<
+        (row: Recordable, rowIndex: number) => Recordable | CSSProperties
+      >,
+      default: () => undefined
+    },
+    headerCellClassName: {
+      type: [Function, String] as PropType<
+        (row: Recordable, column: any, rowIndex: number) => string | string
+      >,
+      default: ''
+    },
+    headerCellStyle: {
+      type: [Function, Object] as PropType<
+        (row: Recordable, column: any, rowIndex: number) => Recordable | CSSProperties
+      >,
+      default: () => undefined
+    },
+    rowKey: propTypes.string.def('id'),
+    emptyText: propTypes.string.def('暂无数据'),
+    // 表格工具栏缓存唯一标识符
+    activeUID: propTypes.string.def(''),
+    defaultExpandAll: propTypes.bool.def(false),
+    expandRowKeys: {
+      type: Array as PropType<string[]>,
+      default: () => []
+    },
+    defaultSort: {
+      type: Object as PropType<{ prop: string; order: string }>,
+      default: () => ({})
+    },
+    tooltipEffect: {
+      type: String as PropType<'dark' | 'light'>,
+      default: 'dark'
+    },
+    tooltipOptions: {
+      type: Object as PropType<
+        Pick<
+          ElTooltipProps,
+          | 'effect'
+          | 'enterable'
+          | 'hideAfter'
+          | 'offset'
+          | 'placement'
+          | 'popperClass'
+          | 'popperOptions'
+          | 'showAfter'
+          | 'showArrow'
+        >
+      >,
+      default: () => ({
+        enterable: true,
+        placement: 'top',
+        showArrow: true,
+        hideAfter: 200,
+        popperOptions: { strategy: 'fixed' }
+      })
+    },
+    showSummary: propTypes.bool.def(false),
+    sumText: propTypes.string.def('Sum'),
+    summaryMethod: {
+      type: Function as PropType<(param: { columns: any[]; data: any[] }) => any[]>,
+      default: () => undefined
+    },
+    spanMethod: {
+      type: Function as PropType<
+        (param: { row: any; column: any; rowIndex: number; columnIndex: number }) => any[]
+      >,
+      default: () => undefined
+    },
+    selectOnIndeterminate: propTypes.bool.def(true),
+    indent: propTypes.number.def(16),
+    lazy: propTypes.bool.def(false),
+    load: {
+      type: Function as PropType<(row: Recordable, treeNode: any, resolve: Function) => void>,
+      default: () => undefined
+    },
+    treeProps: {
+      type: Object as PropType<{ hasChildren?: string; children?: string; label?: string }>,
+      default: () => ({ hasChildren: 'hasChildren', children: 'children', label: 'label' })
+    },
+    tableLayout: {
+      type: String as PropType<'auto' | 'fixed'>,
+      default: 'fixed'
+    },
+    scrollbarAlwaysOn: propTypes.bool.def(false),
+    flexible: propTypes.bool.def(false)
   },
-  emits: ['update:limit', 'update:page', 'register'],
-  setup(props, { attrs, slots, emit, expose }) {
+  emits: ['update:pageSize', 'update:currentPage', 'register', 'refresh', 'sortable-change'],
+  setup(props, { attrs, emit, slots, expose }) {
     const elTableRef = ref<ComponentRef<typeof ElTable>>()
 
     // 注册
@@ -63,9 +203,9 @@ export default defineComponent({
       emit('register', tableRef?.$parent, elTableRef)
     })
 
-    const limitRef = ref(props.limit)
+    const pageSizeRef = ref(props.pageSize)
 
-    const pageRef = ref(props.page)
+    const currentPageRef = ref(props.currentPage)
 
     // useTable传入的props
     const outsideProps = ref<TableProps>({})
@@ -78,12 +218,39 @@ export default defineComponent({
       return propsObj
     })
 
+    // const sortableEl = ref()
+    // 初始化拖拽
+    // const initDropTable = () => {
+    //   const el = unref(elTableRef)?.$el.querySelector('.el-table__body tbody')
+    //   if (!el) return
+    //   if (unref(sortableEl)) unref(sortableEl).destroy()
+
+    //   sortableEl.value = Sortable.create(el, {
+    //     handle: '.table-move',
+    //     animation: 180,
+    //     onEnd(e: any) {
+    //       emit('sortable-change', e)
+    //     }
+    //   })
+    // }
+
+    // watch(
+    //   () => getProps.value.sortable,
+    //   async (v) => {
+    //     await nextTick()
+    //     v && initDropTable()
+    //   },
+    //   {
+    //     immediate: true
+    //   }
+    // )
+
     const setProps = (props: TableProps = {}) => {
       mergeProps.value = Object.assign(unref(mergeProps), props)
-      outsideProps.value = props
+      outsideProps.value = { ...props } as any
     }
 
-    const setColumn = (columnProps: TableSetPropsType[], columnsChildren?: TableColumn[]) => {
+    const setColumn = (columnProps: TableSetProps[], columnsChildren?: TableColumn[]) => {
       const { columns } = unref(getProps)
       for (const v of columnsChildren || columns) {
         for (const item of columnProps) {
@@ -96,16 +263,42 @@ export default defineComponent({
       }
     }
 
-    const selections = ref<Recordable[]>([])
+    const addColumn = (column: TableColumn, index?: number) => {
+      const { columns } = unref(getProps)
+      if (index) {
+        columns.splice(index, 0, column)
+      } else {
+        columns.push(column)
+      }
+    }
 
-    const selectionChange = (selection: Recordable[]) => {
-      selections.value = selection
+    const getColumn = () => {
+      const { columns } = unref(getProps)
+      return columns
+    }
+
+    const delColumn = (field: string) => {
+      const { columns } = unref(getProps)
+      const index = columns.findIndex((item) => item.field === field)
+      if (index > -1) {
+        columns.splice(index, 1)
+      }
+    }
+
+    const refresh = () => {
+      emit('refresh')
+    }
+
+    const changSize = (size: ComponentSize) => {
+      setProps({ size })
     }
 
     expose({
       setProps,
       setColumn,
-      selections,
+      delColumn,
+      addColumn,
+      getColumn,
       elTableRef
     })
 
@@ -115,9 +308,7 @@ export default defineComponent({
           small: false,
           background: false,
           pagerCount: 7,
-          layout: appStore.getMobile
-            ? 'prev, pager, next, ->, total'
-            : 'sizes, prev, pager, next, jumper, ->, total',
+          layout: 'sizes, prev, pager, next, jumper, ->, total',
           pageSizes: [10, 20, 30, 40, 50, 100],
           disabled: false,
           hideOnSinglePage: false,
@@ -128,72 +319,72 @@ export default defineComponent({
     })
 
     watch(
-      () => unref(getProps).limit,
+      () => unref(getProps).pageSize,
       (val: number) => {
-        limitRef.value = val
+        pageSizeRef.value = val
       }
     )
 
     watch(
-      () => unref(getProps).page,
+      () => unref(getProps).currentPage,
       (val: number) => {
-        pageRef.value = val
+        currentPageRef.value = val
       }
     )
 
     watch(
-      () => limitRef.value,
+      () => pageSizeRef.value,
       (val: number) => {
-        emit('update:limit', val)
+        emit('update:pageSize', val)
       }
     )
 
     watch(
-      () => pageRef.value,
+      () => currentPageRef.value,
       (val: number) => {
-        emit('update:page', val)
+        emit('update:currentPage', val)
       }
     )
 
     const getBindValue = computed(() => {
-      const bindValue: Recordable = { ...attrs, ...props }
+      const bindValue: Recordable = { ...attrs, ...unref(getProps) }
       delete bindValue.columns
       delete bindValue.data
       return bindValue
     })
 
-    const renderTableSelection = () => {
-      const { selection, reserveSelection, align, headerAlign } = unref(getProps)
-      // 渲染多选
-      return selection ? (
-        <ElTableColumn
-          type="selection"
-          reserveSelection={reserveSelection}
-          align={align}
-          headerAlign={headerAlign}
-          width="50"
-        ></ElTableColumn>
-      ) : undefined
-    }
-
-    const renderTableExpand = () => {
-      const { align, headerAlign, expand } = unref(getProps)
-      // 渲染展开行
-      return expand ? (
-        <ElTableColumn type="expand" align={align} headerAlign={headerAlign}>
-          {{
-            // @ts-ignore
-            default: (data: TableSlotDefault) => getSlot(slots, 'expand', data)
-          }}
-        </ElTableColumn>
-      ) : undefined
-    }
-
     const renderTreeTableColumn = (columnsChildren: TableColumn[]) => {
-      const { align, headerAlign, showOverflowTooltip } = unref(getProps)
+      const { align, headerAlign, showOverflowTooltip, preview } = unref(getProps)
       return columnsChildren.map((v) => {
-        const props = { ...v }
+        if (v.show === false) return null
+        const props = { ...v } as any
         if (props.children) delete props.children
+
+        const children = v.children
+
+        const slots = {
+          default: (...args: any[]) => {
+            const data = args[0]
+            let isImageUrl = false
+            if (preview.length) {
+              isImageUrl = preview.some((item) => (item as string) === v.field)
+            }
+
+            return children && children.length
+              ? renderTreeTableColumn(children)
+              : props?.slots?.default
+              ? props.slots.default(...args)
+              : v?.formatter
+              ? v?.formatter?.(data.row, data.column, get(data.row, v.field), data.$index)
+              : isImageUrl
+              ? renderPreview(get(data.row, v.field))
+              : get(data.row, v.field)
+          }
+        }
+        if (props?.slots?.header) {
+          slots['header'] = (...args: any[]) => props.slots.header(...args)
+        }
+
         return (
           <ElTableColumn
             showOverflowTooltip={showOverflowTooltip}
@@ -202,99 +393,179 @@ export default defineComponent({
             {...props}
             prop={v.field}
           >
-            {{
-              default: (data: TableSlotDefault) =>
-                v.children && v.children.length
-                  ? renderTableColumn(v.children)
-                  : // @ts-ignore
-                    getSlot(slots, v.field, data) ||
-                    v?.formatter?.(data.row, data.column, data.row[v.field], data.$index) ||
-                    data.row[v.field],
-              // @ts-ignore
-              header: getSlot(slots, `${v.field}-header`)
-            }}
+            {slots}
           </ElTableColumn>
         )
       })
     }
 
-    const renderTableColumn = (columnsChildren?: TableColumn[]) => {
-      const { columns, reserveIndex, limit, page, align, headerAlign, showOverflowTooltip } =
-        unref(getProps)
-      return [...[renderTableExpand()], ...[renderTableSelection()]].concat(
-        (columnsChildren || columns).map((v) => {
-          // 自定生成序号
-          if (v.type === 'index') {
-            return (
-              <ElTableColumn
-                type="index"
-                index={v.index ? v.index : (index) => setIndex(reserveIndex, index, limit, page)}
-                align={v.align || align}
-                headerAlign={v.headerAlign || headerAlign}
-                label={v.label}
-                width="65px"
-              ></ElTableColumn>
-            )
-          } else {
-            const props = { ...v }
-            if (props.children) delete props.children
-            if (props.show === false) return
-            return (
-              <ElTableColumn
-                showOverflowTooltip={showOverflowTooltip}
-                align={align}
-                headerAlign={headerAlign}
-                {...props}
-                prop={v.field}
-              >
-                {{
-                  default: (data: TableSlotDefault) =>
-                    v.children && v.children.length
-                      ? renderTreeTableColumn(v.children)
-                      : // @ts-ignore
-                        getSlot(slots, v.field, data) ||
-                        v?.formatter?.(data.row, data.column, data.row[v.field], data.$index) ||
-                        data.row[v.field],
-                  // @ts-ignore
-                  header: () => getSlot(slots, `${v.field}-header`) || v.label
-                }}
-              </ElTableColumn>
-            )
-          }
-        })
+    const renderPreview = (url: string) => {
+      return (
+        <div class="flex items-center">
+          <ElImage
+            src={url}
+            fit="cover"
+            class="w-[100%] h-100px"
+            lazy
+            preview-src-list={[url]}
+            preview-teleported
+          />
+        </div>
       )
     }
 
-    return () => (
-      <div v-loading={unref(getProps).loading}>
-        <ElTable
-          // @ts-ignore
-          ref={elTableRef}
-          data={unref(getProps).data}
-          onSelection-change={selectionChange}
-          {...unref(getBindValue)}
-          header-cell-style={
-            appStore.getIsDark
-              ? { color: '#CFD3DC', 'background-color': '#000' }
-              : { color: '#000', 'background-color': '#f5f7fa' }
+    const renderTableColumn = (columnsChildren?: TableColumn[]) => {
+      const {
+        columns,
+        reserveIndex,
+        pageSize,
+        currentPage,
+        align,
+        headerAlign,
+        showOverflowTooltip,
+        reserveSelection,
+        preview
+      } = unref(getProps)
+
+      return (columnsChildren || columns).map((v) => {
+        if (v.show === false) return null
+        if (v.type === 'index') {
+          return (
+            <ElTableColumn
+              type="index"
+              index={
+                v.index ? v.index : (index) => setIndex(reserveIndex, index, pageSize, currentPage)
+              }
+              align={v.align || align}
+              headerAlign={v.headerAlign || headerAlign}
+              label={v.label}
+              width="65px"
+              fixed="left"
+            ></ElTableColumn>
+          )
+        } else if (v.type === 'selection') {
+          return (
+            <ElTableColumn
+              type="selection"
+              reserveSelection={reserveSelection}
+              align="center"
+              headerAlign="center"
+              width="50px"
+              fixed="left"
+            ></ElTableColumn>
+          )
+        } else {
+          const props = { ...v } as any
+          if (props.children) delete props.children
+
+          const children = v.children
+
+          const slots = {
+            default: (...args: any[]) => {
+              const data = args[0]
+
+              let isImageUrl = false
+              if (preview.length) {
+                isImageUrl = preview.some((item) => (item as string) === v.field)
+              }
+
+              return children && children.length
+                ? renderTreeTableColumn(children)
+                : props?.slots?.default
+                ? props.slots.default(...args)
+                : v?.formatter
+                ? v?.formatter?.(data.row, data.column, get(data.row, v.field), data.$index)
+                : isImageUrl
+                ? renderPreview(get(data.row, v.field))
+                : get(data.row, v.field)
+            }
           }
-        >
-          {{
-            default: () => renderTableColumn(),
-            // @ts-ignore
-            append: () => getSlot(slots, 'append')
-          }}
-        </ElTable>
-        {unref(getProps).pagination ? (
-          <ElPagination
-            v-model:pageSize={limitRef.value}
-            v-model:currentPage={pageRef.value}
-            class="mt-10px"
-            {...unref(pagination)}
-          ></ElPagination>
-        ) : undefined}
-      </div>
-    )
+          if (props?.slots?.header) {
+            slots['header'] = (...args: any[]) => props.slots.header(...args)
+          }
+
+          return (
+            <ElTableColumn
+              showOverflowTooltip={showOverflowTooltip}
+              align={align}
+              headerAlign={headerAlign}
+              {...props}
+              prop={v.field}
+            >
+              {slots}
+            </ElTableColumn>
+          )
+        }
+      })
+    }
+
+    return () => {
+      const tableSlots = {}
+      if (getSlot(slots, 'empty')) {
+        tableSlots['empty'] = (...args: any[]) => getSlot(slots, 'empty', args)
+      }
+      if (getSlot(slots, 'append')) {
+        tableSlots['append'] = (...args: any[]) => getSlot(slots, 'append', args)
+      }
+      const toolbar = getSlot(slots, 'toolbar')
+
+      // const { sortable } = unref(getProps)
+
+      // const sortableEl = sortable ? (
+      //   <ElTableColumn
+      //     className="table-move cursor-move"
+      //     type="sortable"
+      //     prop="sortable"
+      //     width="60px"
+      //     align="center"
+      //   >
+      //     <Icon icon="ant-design:drag-outlined" />
+      //   </ElTableColumn>
+      // ) : null
+
+      return (
+        <div v-loading={unref(getProps).loading}>
+          <div class="flex justify-between mb-1">
+            <div>{toolbar}</div>
+            <div class="pt-2">
+              {unref(getProps).showAction ? (
+                <TableActions
+                  activeUID={unref(getProps).activeUID}
+                  columns={unref(getProps).columns}
+                  el-table-ref={elTableRef}
+                  onChangSize={changSize}
+                  onRefresh={refresh}
+                />
+              ) : null}
+            </div>
+          </div>
+
+          <ElTable
+            ref={elTableRef}
+            data={unref(getProps).data}
+            {...unref(getBindValue)}
+            header-cell-style={
+              appStore.getIsDark
+                ? { color: '#CFD3DC', 'background-color': '#000' }
+                : { color: '#000', 'background-color': '#f5f7fa' }
+            }
+          >
+            {{
+              default: () => renderTableColumn(),
+              ...tableSlots
+            }}
+          </ElTable>
+          {unref(getProps).pagination ? (
+            <ElPagination
+              v-model:pageSize={pageSizeRef.value}
+              v-model:currentPage={currentPageRef.value}
+              class="mt-10px"
+              {...unref(pagination)}
+            ></ElPagination>
+          ) : undefined}
+        </div>
+      )
+    }
   }
 })
 </script>

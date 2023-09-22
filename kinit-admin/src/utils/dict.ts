@@ -11,6 +11,7 @@ export interface DictDetail {
   disabled?: boolean
   is_default?: boolean
 }
+
 export const selectDictLabel = (datas: DictDetail[], value: string) => {
   if (!value) {
     return ''

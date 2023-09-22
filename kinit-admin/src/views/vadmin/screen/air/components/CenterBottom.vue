@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { reactive, PropType, ref, watch } from 'vue'
+import { ScrollBoard } from '@kjgl77/datav-vue3'
 
 const props = defineProps({
   centerBottomData: {
@@ -36,7 +37,7 @@ watch(
 
 <template>
   <div class="center-bottom-view">
-    <dv-scroll-board ref="scrollBoardRef" :config="config" />
+    <ScrollBoard ref="scrollBoardRef" :config="config" />
   </div>
 </template>
 

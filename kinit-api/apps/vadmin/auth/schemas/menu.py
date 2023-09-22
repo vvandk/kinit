@@ -24,6 +24,7 @@ class Menu(BaseModel):
     parent_id: int | None = None
     menu_type: str
     alwaysShow: bool | None = True
+    noCache: bool | None = False
 
 
 class MenuSimpleOut(Menu):
