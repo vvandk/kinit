@@ -193,9 +193,8 @@ Redis (推荐使用最新稳定版)
    修改 `application/settings.py` 文件
 
    ```python
-# 安全警告: 不要在生产中打开调试运行!
+   # 安全警告: 不要在生产中打开调试运行!
    DEBUG = True # 如果当前为开发环境则改为 True，如果为生产环境则改为 False
-   ```
 
 3. 修改项目数据库配置信息
 
@@ -243,8 +242,7 @@ Redis (推荐使用最新稳定版)
    # 文档：https://user.ip138.com/ip/doc
    IP_PARSE_ENABLE = True
    IP_PARSE_TOKEN = "IP_PARSE_TOKEN"
-   ```
-   
+
 4. 并在`alembic.ini`文件中配置数据库信息，用于数据库映射
 
    ```python
