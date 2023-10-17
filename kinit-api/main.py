@@ -113,6 +113,8 @@ def init_app(path: str):
     """
     自动创建初始化 APP 结构
 
+    命令例子：python main.py init-app vadmin/test
+
     :params path: app 路径，根目录为apps，填写apps后面路径即可，例子：vadmin/auth
     """
     print(f"开始创建并初始化 {path} APP")
