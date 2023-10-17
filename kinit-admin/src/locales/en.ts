@@ -186,7 +186,8 @@ export default {
     permission: 'Permission test page',
     function: 'Function',
     multipleTabs: 'Multiple tabs',
-    details: 'Details'
+    details: 'Details',
+    iconPicker: 'Icon picker'
   },
   permission: {
     hasPermission: 'Please set the operation permission value'

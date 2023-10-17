@@ -15,8 +15,6 @@ import { set, get } from 'lodash-es'
 import { CSSProperties } from 'vue'
 import { getSlot } from '@/utils/tsxHelper'
 import TableActions from './components/TableActions.vue'
-// import Sortable from 'sortablejs'
-// import { Icon } from '@/components/Icon'
 import { useAppStore } from '@/store/modules/app'
 
 const appStore = useAppStore()
@@ -193,7 +191,7 @@ export default defineComponent({
     scrollbarAlwaysOn: propTypes.bool.def(false),
     flexible: propTypes.bool.def(false)
   },
-  emits: ['update:pageSize', 'update:currentPage', 'register', 'refresh', 'sortable-change'],
+  emits: ['update:pageSize', 'update:currentPage', 'register', 'refresh'],
   setup(props, { attrs, emit, slots, expose }) {
     const elTableRef = ref<ComponentRef<typeof ElTable>>()
 
@@ -217,33 +215,6 @@ export default defineComponent({
       Object.assign(propsObj, unref(mergeProps))
       return propsObj
     })
-
-    // const sortableEl = ref()
-    // 初始化拖拽
-    // const initDropTable = () => {
-    //   const el = unref(elTableRef)?.$el.querySelector('.el-table__body tbody')
-    //   if (!el) return
-    //   if (unref(sortableEl)) unref(sortableEl).destroy()
-
-    //   sortableEl.value = Sortable.create(el, {
-    //     handle: '.table-move',
-    //     animation: 180,
-    //     onEnd(e: any) {
-    //       emit('sortable-change', e)
-    //     }
-    //   })
-    // }
-
-    // watch(
-    //   () => getProps.value.sortable,
-    //   async (v) => {
-    //     await nextTick()
-    //     v && initDropTable()
-    //   },
-    //   {
-    //     immediate: true
-    //   }
-    // )
 
     const setProps = (props: TableProps = {}) => {
       mergeProps.value = Object.assign(unref(mergeProps), props)
@@ -508,20 +479,6 @@ export default defineComponent({
         tableSlots['append'] = (...args: any[]) => getSlot(slots, 'append', args)
       }
       const toolbar = getSlot(slots, 'toolbar')
-
-      // const { sortable } = unref(getProps)
-
-      // const sortableEl = sortable ? (
-      //   <ElTableColumn
-      //     className="table-move cursor-move"
-      //     type="sortable"
-      //     prop="sortable"
-      //     width="60px"
-      //     align="center"
-      //   >
-      //     <Icon icon="ant-design:drag-outlined" />
-      //   </ElTableColumn>
-      // ) : null
 
       return (
         <div v-loading={unref(getProps).loading}>

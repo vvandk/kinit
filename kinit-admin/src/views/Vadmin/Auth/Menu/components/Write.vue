@@ -5,7 +5,8 @@ import { PropType, reactive, watch } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
 import { propTypes } from '@/utils/propTypes'
 import { getMenuTreeOptionsApi } from '@/api/vadmin/auth/menu'
-import { ElButton, ElInput } from 'element-plus'
+import { ElButton } from 'element-plus'
+import { IconPicker } from '@/components/IconPicker'
 
 const { required } = useValidator()
 
@@ -85,14 +86,10 @@ const formSchema = reactive<FormSchema[]>([
           return (
             <>
               <div style="display: flex; justify-content: space-between">
-                <ElInput
-                  v-model={data['icon']}
-                  placeholder="支持 Iconify 中的所有图标，请登录网站自行搜索：https://iconify.design/"
-                  style="width: 490px"
-                />
+                <IconPicker style="width: 470px" input-disabled={false} v-model={data['icon']} />
                 <div style="margin-left: 10px">
                   <ElButton type="primary" onClick={toIconify}>
-                    跳转
+                    Iconify
                   </ElButton>
                 </div>
               </div>
