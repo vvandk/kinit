@@ -145,9 +145,9 @@ async def sms_send(telephone: str, rd: Redis = Depends(redis_getter), auth: Auth
 ###########################################################
 #    系统配置管理
 ###########################################################
-@app.get("/settings/tabs", summary="获取系统配置标签列表")
-async def get_settings_tabs(classify: str, auth: Auth = Depends(FullAdminAuth())):
-    return SuccessResponse(await crud.SettingsTabDal(auth.db).get_datas(limit=0, classify=classify))
+@app.post("/settings/tabs", summary="获取系统配置标签列表")
+async def get_settings_tabs(classifys: list[str] = Body(...), auth: Auth = Depends(FullAdminAuth())):
+    return SuccessResponse(await crud.SettingsTabDal(auth.db).get_datas(limit=0, classify=("in", classifys)))
 
 
 @app.get("/settings/tabs/values", summary="获取系统配置标签下的信息")

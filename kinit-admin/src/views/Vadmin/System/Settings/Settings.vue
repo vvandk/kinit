@@ -6,6 +6,7 @@ import Privacy from './components/Privacy.vue'
 import Agreement from './components/Agreement.vue'
 import WXClient from './components/WechatServer.vue'
 import Email from './components/Email.vue'
+import SMS from './components/SMS.vue'
 import { ContentWrap } from '@/components/ContentWrap'
 import { getSystemSettingsTabsApi } from '@/api/vadmin/system/settings'
 
@@ -18,7 +19,7 @@ const activeName = ref('web_basic')
 const tabs = ref([] as Recordable[])
 
 const getList = async () => {
-  const res = await getSystemSettingsTabsApi({ classify: 'web' })
+  const res = await getSystemSettingsTabsApi(['web', 'aliyun'])
   if (res) {
     tabs.value = res.data
   }
@@ -37,6 +38,7 @@ getList()
           <Agreement v-else-if="item.tab_name === 'web_agreement'" :tab-id="item.id" />
           <WXClient v-else-if="item.tab_name === 'wx_server'" :tab-id="item.id" />
           <Email v-else-if="item.tab_name === 'web_email'" :tab-id="item.id" />
+          <SMS v-else-if="item.tab_name === 'aliyun_sms'" :tab-id="item.id" />
         </ElTabPane>
       </template>
     </ElTabs>

@@ -87,6 +87,8 @@ def register_exception(app: FastAPI):
             msg = f"类型错误，提交参数应该为整数！"
         elif msg == "value could not be parsed to a boolean":
             msg = f"类型错误，提交参数应该为布尔值！"
+        elif msg == "Input should be a valid list":
+            msg = f"类型错误，输入应该是一个有效的列表！"
         return JSONResponse(
             status_code=200,
             content=jsonable_encoder(

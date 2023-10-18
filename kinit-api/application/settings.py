@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "3.1.0"
+VERSION = "3.2.0"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = False
@@ -24,6 +24,7 @@ DEMO_WHITE_LIST_PATH = [
     "/auth/token/refresh",
     "/auth/wx/login",
     "/vadmin/system/dict/types/details",
+    "/vadmin/system/settings/tabs",
     "/vadmin/resource/images",
     "/vadmin/auth/user/export/query/list/to/excel"
 ]

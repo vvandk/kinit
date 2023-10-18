@@ -1,7 +1,7 @@
 import request from '@/config/axios'
 
-export const getSystemSettingsTabsApi = (params: any): Promise<IResponse> => {
-  return request.get({ url: '/vadmin/system/settings/tabs', params })
+export const getSystemSettingsTabsApi = (data: any): Promise<IResponse> => {
+  return request.post({ url: '/vadmin/system/settings/tabs', data })
 }
 
 export const getSystemSettingsApi = (params: any): Promise<IResponse> => {

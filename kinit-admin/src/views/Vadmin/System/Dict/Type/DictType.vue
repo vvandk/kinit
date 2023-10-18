@@ -239,7 +239,7 @@ const save = async () => {
 const emit = defineEmits(['updateDictTypeId'])
 
 const handleCurrentChange = async (val: any | undefined) => {
-  emit('updateDictTypeId', val.id)
+  emit('updateDictTypeId', val ? val.id : val)
 }
 
 const clearCurrentRow = async () => {
