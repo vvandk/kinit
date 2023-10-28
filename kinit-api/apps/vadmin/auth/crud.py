@@ -544,14 +544,15 @@ class TestDal(DalBase):
     async def test(self):
         # print("-----------------------开始------------------------")
         options = [joinedload(self.model.roles)]
-        v_where = [self.model.id == 1, models.VadminRole.id == 1]
         v_join = [[self.model.roles]]
+        v_where = [self.model.id == 1, models.VadminRole.id == 1]
         v_start_sql = select(self.model)
         result, count = await self.get_datas(
             v_start_sql=v_start_sql,
             v_join=v_join,
             v_options=options,
-            v_where=v_where
+            v_where=v_where,
+            v_return_count=True
         )
         if result:
             print(result)

@@ -46,8 +46,6 @@ def register_exception(app: FastAPI):
         # logger.error(exc.msg)
         # 打印栈信息，方便追踪排查异常
         logger.exception(exc)
-        print(exc.desc)
-        print(exc.msg)
         return JSONResponse(
             status_code=exc.status_code,
             content={"message": exc.msg, "code": exc.code},
@@ -63,7 +61,6 @@ def register_exception(app: FastAPI):
         # logger.error(exc.detail)
         # 打印栈信息，方便追踪排查异常
         logger.exception(exc)
-        print(exc.detail)
         return JSONResponse(
             status_code=200,
             content={
@@ -82,7 +79,6 @@ def register_exception(app: FastAPI):
         # logger.error(exc.errors())
         # 打印栈信息，方便追踪排查异常
         logger.exception(exc)
-        print(exc.errors())
         msg = exc.errors()[0].get("msg")
         if msg == "field required":
             msg = "请求失败，缺少必填项！"
@@ -116,7 +112,6 @@ def register_exception(app: FastAPI):
         # logger.error(exc.__str__())
         # 打印栈信息，方便追踪排查异常
         logger.exception(exc)
-        print(exc.__str__())
         return JSONResponse(
             status_code=200,
             content=jsonable_encoder(
