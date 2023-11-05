@@ -19,7 +19,7 @@ class VadminMenu(BaseModel):
     title: Mapped[str] = mapped_column(String(50), comment="名称")
     icon: Mapped[str | None] = mapped_column(String(50), comment="菜单图标")
     redirect: Mapped[str | None] = mapped_column(String(100), comment="重定向地址")
-    component: Mapped[str | None] = mapped_column(String(50), comment="前端组件地址")
+    component: Mapped[str | None] = mapped_column(String(255), comment="前端组件地址")
     path: Mapped[str | None] = mapped_column(String(50), comment="前端路由地址")
     disabled: Mapped[bool] = mapped_column(Boolean, default=False, comment="是否禁用")
     hidden: Mapped[bool] = mapped_column(Boolean, default=False, comment="是否隐藏")
@@ -31,6 +31,8 @@ class VadminMenu(BaseModel):
         comment="父菜单"
     )
     perms: Mapped[str | None] = mapped_column(String(50), comment="权限标识", unique=False, index=True)
+
+    """以下属性主要用于补全前端路由属性，"""
     noCache: Mapped[bool] = mapped_column(
         Boolean,
         comment="如果设置为true，则不会被 <keep-alive> 缓存(默认 false)",
