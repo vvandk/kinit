@@ -54,8 +54,8 @@ def run_migrations_offline():
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        compare_type=True,  # 检查字段类型
-        compare_server_default=True  # 比较默认值
+        compare_type=True,  # 是否检查字段类型，字段长度
+        compare_server_default=True  # 是否比较在数据库中的默认值
     )
 
     with context.begin_transaction():
@@ -74,7 +74,10 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,  # 是否检查字段类型，字段长度
+            compare_server_default=True  # 是否比较在数据库中的默认值
         )
 
         with context.begin_transaction():
