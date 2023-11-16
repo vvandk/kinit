@@ -17,6 +17,7 @@ from starlette.middleware.cors import CORSMiddleware
 from application import settings
 from application import urls
 from starlette.staticfiles import StaticFiles  # 依赖安装：pip install aiofiles
+from core.docs import custom_api_docs
 from core.exception import register_exception
 import typer
 from scripts.initialize.initialize import InitializeData, Environment
@@ -40,7 +41,9 @@ def create_app():
         title="Kinit",
         description="本项目基于Fastapi与Vue3+Typescript+Vite4+element-plus的基础项目 前端基于vue-element-plus-admin框架开发",
         version=settings.VERSION,
-        lifespan=lifespan
+        lifespan=lifespan,
+        docs_url=None,
+        redoc_url=None
     )
     import_modules(settings.MIDDLEWARES, "中间件", app=app)
     # 全局异常捕捉处理
@@ -62,6 +65,8 @@ def create_app():
     # 引入应用中的路由
     for url in urls.urlpatterns:
         app.include_router(url["ApiRouter"], prefix=url["prefix"], tags=url["tags"])
+    # 配置接口文档静态资源
+    custom_api_docs(app)
     return app
 
 
@@ -90,7 +95,7 @@ def init(env: Environment = Environment.pro):
     比如要初始化开发环境，那么env参数应该为 dev，并且 application/settings.DEBUG 应该 = True
     比如要初始化生产环境，那么env参数应该为 pro，并且 application/settings.DEBUG 应该 = False
 
-    :params name: 数据库环境
+    :param env: 数据库环境
     """
     print("开始初始化数据")
     data = InitializeData()
@@ -102,7 +107,7 @@ def migrate(env: Environment = Environment.pro):
     """
     将模型迁移到数据库，更新数据库表结构
 
-    :params name: 数据库环境
+    :param env: 数据库环境
     """
     print("开始更新数据库表")
     InitializeData.migrate_model(env)
@@ -115,7 +120,7 @@ def init_app(path: str):
 
     命令例子：python main.py init-app vadmin/test
 
-    :params path: app 路径，根目录为apps，填写apps后面路径即可，例子：vadmin/auth
+    :param path: app 路径，根目录为apps，填写apps后面路径即可，例子：vadmin/auth
     """
     print(f"开始创建并初始化 {path} APP")
     app = CreateApp(path)
