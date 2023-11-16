@@ -73,8 +73,8 @@ class Cache:
     async def get_tab_name(self, tab_name: str, retry: int = 3):
         """
         获取系统配置
-        :params tab_name: 配置表标签名称
-        :params retry_num: 重试次数
+        :param tab_name: 配置表标签名称
+        :param retry_num: 重试次数
         """
         result = await self.rd.get(tab_name)
         if not result and retry > 0:

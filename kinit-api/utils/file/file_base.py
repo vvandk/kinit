@@ -18,7 +18,8 @@ class FileBase:
 
     IMAGE_ACCEPT = ["image/png", "image/jpeg", "image/gif", "image/x-icon"]
     VIDEO_ACCEPT = ["video/mp4", "video/mpeg"]
-    ALL_ACCEPT = [*IMAGE_ACCEPT, *VIDEO_ACCEPT]
+    AUDIO_ACCEPT = ["audio/wav", "audio/mp3", "audio/m4a", "audio/wma", "audio/ogg", "audio/mpeg", "audio/x-wav"]
+    ALL_ACCEPT = [*IMAGE_ACCEPT, *VIDEO_ACCEPT, *AUDIO_ACCEPT]
 
     @classmethod
     def generate_path(cls, path: str, filename):
@@ -29,9 +30,9 @@ class FileBase:
             path = path[1:]
         if path[-1] == "/":
             path = path[:-1]
-        full_date = int(datetime.datetime.now().timestamp())
+        today = str(int((datetime.datetime.now().replace(hour=0, minute=0, second=0)).timestamp()))
         _filename = str(int(datetime.datetime.now().timestamp())) + str(uuid.uuid4())[:8]
-        return f"{path}/{full_date}/{_filename}{os.path.splitext(filename)[-1]}"
+        return f"{path}/{today}/{_filename}{os.path.splitext(filename)[-1]}"
 
     @classmethod
     async def validate_file(cls, file: UploadFile, max_size: int = None, mime_types: list = None) -> bool:
