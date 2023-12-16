@@ -30,7 +30,10 @@ from fastapi import Request
 class DictTypeDal(DalBase):
 
     def __init__(self, db: AsyncSession):
-        super(DictTypeDal, self).__init__(db, models.VadminDictType, schemas.DictTypeSimpleOut)
+        super(DictTypeDal, self).__init__()
+        self.db = db
+        self.model = models.VadminDictType
+        self.schema = schemas.DictTypeSimpleOut
 
     async def get_dicts_details(self, dict_types: list[str]) -> dict:
         """
@@ -62,13 +65,19 @@ class DictTypeDal(DalBase):
 class DictDetailsDal(DalBase):
 
     def __init__(self, db: AsyncSession):
-        super(DictDetailsDal, self).__init__(db, models.VadminDictDetails, schemas.DictDetailsSimpleOut)
+        super(DictDetailsDal, self).__init__()
+        self.db = db
+        self.model = models.VadminDictDetails
+        self.schema = schemas.DictDetailsSimpleOut
 
 
 class SettingsDal(DalBase):
 
     def __init__(self, db: AsyncSession):
-        super(SettingsDal, self).__init__(db, models.VadminSystemSettings, schemas.SettingsSimpleOut)
+        super(SettingsDal, self).__init__()
+        self.db = db
+        self.model = models.VadminSystemSettings
+        self.schema = schemas.SettingsSimpleOut
 
     async def get_tab_values(self, tab_id: int) -> dict:
         """
@@ -108,6 +117,9 @@ class SettingsDal(DalBase):
         if "wx_server_app_id" in datas and REDIS_DB_ENABLE:
             rd = redis_getter(request)
             await rd.client().set("wx_server", json.dumps(datas))
+        elif "sms_access_key" in datas and REDIS_DB_ENABLE:
+            rd = redis_getter(request)
+            await rd.client().set('aliyun_sms', json.dumps(datas))
 
     async def get_base_config(self) -> dict:
         """
@@ -371,8 +383,8 @@ class TaskDal(MongoManage):
 
         使用消息无保留策略：无保留是指当发送者向某个频道发送消息时，如果没有订阅该频道的调用方，就直接将该消息丢弃。
 
-        :params rd: redis 对象
-        :params data: 行数据字典
+        :param rd: redis 对象
+        :param data: 行数据字典
         :return: 接收到消息的订阅者数量。
         """
         exec_strategy = data.get("exec_strategy")

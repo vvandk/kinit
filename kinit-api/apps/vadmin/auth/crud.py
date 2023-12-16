@@ -13,7 +13,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.strategy_options import _AbstractLoad
 from core.exception import CustomException
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import select
+from sqlalchemy import select, false
 from core.crud import DalBase
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.validator import vali_telephone
@@ -45,7 +45,10 @@ class UserDal(DalBase):
     ]
 
     def __init__(self, db: AsyncSession):
-        super(UserDal, self).__init__(db, models.VadminUser, schemas.UserSimpleOut)
+        super(UserDal, self).__init__()
+        self.db = db
+        self.model = models.VadminUser
+        self.schema = schemas.UserSimpleOut
 
     async def update_login_info(self, user: models.VadminUser, last_ip: str) -> None:
         """
@@ -67,6 +70,11 @@ class UserDal(DalBase):
     ) -> Any:
         """
         创建用户
+        :param data:
+        :param v_options:
+        :param v_return_obj:
+        :param v_schema:
+        :return:
         """
         unique = await self.get_data(telephone=data.telephone, v_return_none=True)
         if unique:
@@ -92,6 +100,12 @@ class UserDal(DalBase):
     ) -> Any:
         """
         更新用户信息
+        :param data_id:
+        :param data:
+        :param v_options:
+        :param v_return_obj:
+        :param v_schema:
+        :return:
         """
         obj = await self.get_data(data_id, v_options=[joinedload(self.model.roles)])
         data_dict = jsonable_encoder(data)
@@ -111,6 +125,9 @@ class UserDal(DalBase):
     async def reset_current_password(self, user: models.VadminUser, data: schemas.ResetPwd) -> None:
         """
         重置密码
+        :param user:
+        :param data:
+        :return:
         """
         if data.password != data.password_two:
             raise CustomException(msg="两次密码不一致", code=400)
@@ -124,6 +141,9 @@ class UserDal(DalBase):
     async def update_current_info(self, user: models.VadminUser, data: schemas.UserUpdateBaseInfo) -> Any:
         """
         更新当前用户基本信息
+        :param user:
+        :param data:
+        :return:
         """
         if data.telephone != user.telephone:
             unique = await self.get_data(telephone=data.telephone, v_return_none=True)
@@ -139,7 +159,10 @@ class UserDal(DalBase):
 
     async def export_query_list(self, header: list, params: UserParams) -> dict:
         """
-        导出用户查询列表为excel
+        导出用户查询列表为 excel
+        :param header:
+        :param params:
+        :return:
         """
         datas = await self.get_datas(**params.dict(), v_return_objs=True)
         # 获取表头
@@ -171,6 +194,7 @@ class UserDal(DalBase):
     async def get_import_headers_options(self) -> None:
         """
         补全表头数据选项
+        :return:
         """
         # 角色选择项
         roles = await RoleDal(self.db).get_datas(limit=0, v_return_objs=True, disabled=False, is_admin=False)
@@ -188,16 +212,20 @@ class UserDal(DalBase):
     async def download_import_template(self) -> dict:
         """
         下载用户最新版导入模板
+        :return:
         """
         await self.get_import_headers_options()
-        em = WriteXlsx(sheet_name="用户导入模板")
+        em = WriteXlsx()
+        em.create_excel(sheet_name="用户导入模板", save_static=True)
         em.generate_template(copy.deepcopy(self.import_headers))
         em.close()
-        return {"url": em.file_url, "filename": "用户导入模板.xlsx"}
+        return {"url": em.get_file_url(), "filename": "用户导入模板.xlsx"}
 
     async def import_users(self, file: UploadFile) -> dict:
         """
         批量导入用户数据
+        :param file:
+        :return:
         """
         await self.get_import_headers_options()
         im = ImportManage(file, copy.deepcopy(self.import_headers))
@@ -224,6 +252,8 @@ class UserDal(DalBase):
         """
         初始化所选用户密码
         将用户密码改为系统默认密码，并将初始化密码状态改为false
+        :param ids:
+        :return:
         """
         users = await self.get_datas(limit=0, id=("in", ids), v_return_objs=True)
         result = []
@@ -244,6 +274,9 @@ class UserDal(DalBase):
         """
         初始化所选用户密码并发送通知短信
         将用户密码改为系统默认密码，并将初始化密码状态改为false
+        :param ids:
+        :param rd:
+        :return:
         """
         result = await self.init_password(ids)
         for user in result:
@@ -266,6 +299,9 @@ class UserDal(DalBase):
         """
         初始化所选用户密码并发送通知邮件
         将用户密码改为系统默认密码，并将初始化密码状态改为false
+        :param ids:
+        :param rd:
+        :return:
         """
         result = await self.init_password(ids)
         for user in result:
@@ -294,6 +330,9 @@ class UserDal(DalBase):
     async def update_current_avatar(self, user: models.VadminUser, file: UploadFile) -> str:
         """
         更新当前用户头像
+        :param user:
+        :param file:
+        :return:
         """
         result = await AliyunOSS(BucketConf(**settings.ALIYUN_OSS)).upload_image("avatar", file)
         user.avatar = result
@@ -303,6 +342,10 @@ class UserDal(DalBase):
     async def update_wx_server_openid(self, code: str, user: models.VadminUser, redis: Redis) -> bool:
         """
         更新用户服务端微信平台openid
+        :param code:
+        :param user:
+        :param redis:
+        :return:
         """
         wx = WXOAuth(redis, 0)
         openid = await wx.parsing_openid(code)
@@ -332,7 +375,10 @@ class UserDal(DalBase):
 class RoleDal(DalBase):
 
     def __init__(self, db: AsyncSession):
-        super(RoleDal, self).__init__(db, models.VadminRole, schemas.RoleSimpleOut)
+        super(RoleDal, self).__init__()
+        self.db = db
+        self.model = models.VadminRole
+        self.schema = schemas.RoleSimpleOut
 
     async def create_data(
             self,
@@ -341,7 +387,14 @@ class RoleDal(DalBase):
             v_return_obj: bool = False,
             v_schema: Any = None
     ) -> Any:
-        """创建数据"""
+        """
+        创建数据
+        :param data:
+        :param v_options:
+        :param v_return_obj:
+        :param v_schema:
+        :return:
+        """
         obj = self.model(**data.model_dump(exclude={'menu_ids'}))
         if data.menu_ids:
             menus = await MenuDal(db=self.db).get_datas(limit=0, id=("in", data.menu_ids), v_return_objs=True)
@@ -358,7 +411,15 @@ class RoleDal(DalBase):
             v_return_obj: bool = False,
             v_schema: Any = None
     ) -> Any:
-        """更新单个数据"""
+        """
+        更新单个数据
+        :param data_id:
+        :param data:
+        :param v_options:
+        :param v_return_obj:
+        :param v_schema:
+        :return:
+        """
         obj = await self.get_data(data_id, v_options=[joinedload(self.model.menus)])
         obj_dict = jsonable_encoder(data)
         for key, value in obj_dict.items():
@@ -379,7 +440,10 @@ class RoleDal(DalBase):
         return [i.id for i in role.menus]
 
     async def get_select_datas(self) -> list:
-        """获取选择数据，全部数据"""
+        """
+        获取选择数据，全部数据
+        :return:
+        """
         sql = select(self.model)
         queryset = await self.db.scalars(sql)
         return [schemas.RoleOptionsOut.model_validate(i).model_dump() for i in queryset.all()]
@@ -401,18 +465,23 @@ class RoleDal(DalBase):
 class MenuDal(DalBase):
 
     def __init__(self, db: AsyncSession):
-        super(MenuDal, self).__init__(db, models.VadminMenu, schemas.MenuSimpleOut)
+        super(MenuDal, self).__init__()
+        self.db = db
+        self.model = models.VadminMenu
+        self.schema = schemas.MenuSimpleOut
 
     async def get_tree_list(self, mode: int) -> list:
         """
         1：获取菜单树列表
         2：获取菜单树选择项，添加/修改菜单时使用
         3：获取菜单树列表，角色添加菜单权限时使用
+        :param mode:
+        :return:
         """
         if mode == 3:
-            sql = select(self.model).where(self.model.disabled == 0, self.model.is_delete == False)
+            sql = select(self.model).where(self.model.disabled == 0, self.model.is_delete == false())
         else:
-            sql = select(self.model).where(self.model.is_delete == False)
+            sql = select(self.model).where(self.model.is_delete == false())
         queryset = await self.db.scalars(sql)
         datas = list(queryset.all())
         roots = filter(lambda i: not i.parent_id, datas)
@@ -435,10 +504,12 @@ class MenuDal(DalBase):
             redirect: string
             children?: AppCustomRouteRecordRaw[]
         }
+        :param user:
+        :return:
         """
         if any([i.is_admin for i in user.roles]):
             sql = select(self.model) \
-                .where(self.model.disabled == 0, self.model.menu_type != "2", self.model.is_delete == False)
+                .where(self.model.disabled == 0, self.model.menu_type != "2", self.model.is_delete == false())
             queryset = await self.db.scalars(sql)
             datas = list(queryset.all())
         else:
@@ -457,10 +528,10 @@ class MenuDal(DalBase):
     def generate_router_tree(self, menus: list[models.VadminMenu], nodes: filter, name: str = "") -> list:
         """
         生成路由树
-
-        menus: 总菜单列表
-        nodes：节点菜单列表
-        name：name拼接，切记Name不能重复
+        :param menus: 总菜单列表
+        :param nodes: 节点菜单列表
+        :param name: name拼接，切记Name不能重复
+        :return:
         """
         data = []
         for root in nodes:
@@ -482,9 +553,9 @@ class MenuDal(DalBase):
     def generate_tree_list(self, menus: list[models.VadminMenu], nodes: filter) -> list:
         """
         生成菜单树列表
-
-        menus: 总菜单列表
-        nodes：每层节点菜单列表
+        :param menus: 总菜单列表
+        :param nodes: 每层节点菜单列表
+        :return:
         """
         data = []
         for root in nodes:
@@ -498,9 +569,9 @@ class MenuDal(DalBase):
     def generate_tree_options(self, menus: list[models.VadminMenu], nodes: filter) -> list:
         """
         生成菜单树选择项
-
-        menus: 总菜单列表
-        nodes：每层节点菜单列表
+        :param menus:总菜单列表
+        :param nodes:每层节点菜单列表
+        :return:
         """
         data = []
         for root in nodes:
@@ -515,6 +586,10 @@ class MenuDal(DalBase):
     def menus_order(cls, datas: list, order: str = "order", children: str = "children") -> list:
         """
         菜单排序
+        :param datas:
+        :param order:
+        :param children:
+        :return:
         """
         result = sorted(datas, key=lambda menu: menu[order])
         for item in result:
@@ -529,32 +604,10 @@ class MenuDal(DalBase):
         :param ids: 数据集
         :param v_soft: 是否执行软删除
         :param kwargs: 其他更新字段
+        :return:
         """
         count = await RoleDal(self.db).get_count(v_join=[["menus"]], v_where=[self.model.id.in_(ids)])
         if count > 0:
             raise CustomException("无法删除存在角色关联的菜单", code=400)
         await super(MenuDal, self).delete_datas(ids, v_soft, **kwargs)
 
-
-class TestDal(DalBase):
-
-    def __init__(self, db: AsyncSession):
-        super(TestDal, self).__init__(db, models.VadminUser, schemas.UserSimpleOut)
-
-    async def test(self):
-        # print("-----------------------开始------------------------")
-        options = [joinedload(self.model.roles)]
-        v_join = [[self.model.roles]]
-        v_where = [self.model.id == 1, models.VadminRole.id == 1]
-        v_start_sql = select(self.model)
-        result, count = await self.get_datas(
-            v_start_sql=v_start_sql,
-            v_join=v_join,
-            v_options=options,
-            v_where=v_where,
-            v_return_count=True
-        )
-        if result:
-            print(result)
-            print(count)
-        # print("-----------------------结束------------------------")

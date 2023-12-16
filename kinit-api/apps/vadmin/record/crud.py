@@ -17,7 +17,10 @@ from core.mongo_manage import MongoManage
 class LoginRecordDal(DalBase):
 
     def __init__(self, db: AsyncSession):
-        super(LoginRecordDal, self).__init__(db, models.VadminLoginRecord, schemas.LoginRecordSimpleOut)
+        super(LoginRecordDal, self).__init__()
+        self.db = db
+        self.model = models.VadminLoginRecord
+        self.schema = schemas.LoginRecordSimpleOut
 
     async def get_user_distribute(self) -> list[dict]:
         """
@@ -69,10 +72,17 @@ class LoginRecordDal(DalBase):
 class SMSSendRecordDal(DalBase):
 
     def __init__(self, db: AsyncSession):
-        super(SMSSendRecordDal, self).__init__(db, models.VadminSMSSendRecord, schemas.SMSSendRecordSimpleOut)
+        super(SMSSendRecordDal, self).__init__()
+        self.db = db
+        self.model = models.VadminSMSSendRecord
+        self.schema = schemas.SMSSendRecordSimpleOut
 
 
 class OperationRecordDal(MongoManage):
 
     def __init__(self, db: AsyncIOMotorDatabase):
-        super(OperationRecordDal, self).__init__(db, "operation_record", schemas.OperationRecordSimpleOut)
+        super(OperationRecordDal, self).__init__()
+        self.db = db
+        self.collection = db["operation_record"]
+        self.schema = schemas.OperationRecordSimpleOut
+        self.is_object_id = True
