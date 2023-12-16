@@ -5,7 +5,9 @@
 # @File           : tools.py
 # @IDE            : PyCharm
 # @desc           : 工具类
-from asyncio.exceptions import TimeoutError
+
+from win32com.client import gencache
+import comtypes.client
 import datetime
 import random
 import re
@@ -101,6 +103,42 @@ async def import_modules_async(modules: list, desc: str, **kwargs):
             logger.error(f"AttributeError：导入{desc}失败，未找到该模块：{module}")
         except AttributeError:
             logger.error(f"ModuleNotFoundError：导入{desc}失败，未找到该模块下的方法：{module}")
+
+
+def ppt_to_pdf_1(ppt_path: str, pdf_path: str):
+    """
+    ppt 转 pdf，会弹出 office 软件
+    :param ppt_path:
+    :param pdf_path:
+    :return:
+    """
+    # 创建PDF
+    powerpoint = comtypes.client.CreateObject("Powerpoint.Application")
+    powerpoint.Visible = 1
+    slide = powerpoint.Presentations.Open(ppt_path)
+    # 保存PDF
+    slide.SaveAs(pdf_path, 32)
+    slide.Close()
+    # 退出 office 软件
+    powerpoint.Quit()
+
+
+def ppt_to_pdf_2(ppt_path: str, pdf_path: str):
+    """
+    完美办法，PPT 转 PDF
+    :param ppt_path:
+    :param pdf_path:
+    :return:
+    """
+    p = gencache.EnsureDispatch("PowerPoint.Application")
+    try:
+        ppt = p.Presentations.Open(ppt_path, False, False, False)
+        ppt.ExportAsFixedFormat(pdf_path, 2, PrintRange=None)
+        ppt.Close()
+        p.Quit()
+    except Exception as e:
+        print(os.path.split(ppt_path)[1], "转化失败，失败原因%s" % e)
+        logger.info(os.path.split(ppt_path)[1], "转化失败，失败原因%s" % e)
 
 
 if __name__ == '__main__':

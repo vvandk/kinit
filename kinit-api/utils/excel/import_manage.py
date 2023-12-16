@@ -21,7 +21,7 @@ class FieldType(Enum):
     str = "str"
 
 
-class ImportManage:
+class ImportManage(ExcelManage):
     """
     数据导入管理
 
@@ -38,9 +38,9 @@ class ImportManage:
     file_type = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
 
     def __init__(self, file: UploadFile, headers: List[dict]):
+        super().__init__()
         self.__table_data = None
         self.__table_header = None
-        self.__filename = None
         self.errors = []
         self.success = []
         self.success_number = 0
@@ -53,27 +53,40 @@ class ImportManage:
     def check_file_type(cls, file: UploadFile) -> None:
         """
         验证文件类型
+        :param file: 上传文件
+        :return:
         """
         if file.content_type not in cls.file_type:
             raise CustomException(msg="文件类型必须为xlsx类型", code=status.HTTP_ERROR)
 
-    async def get_table_data(self, header_row: int = 1, data_row: int = 2) -> None:
+    async def get_table_data(
+            self,
+            file_path: str = None,
+            sheet_name: str = None,
+            header_row: int = 1,
+            data_row: int = 2
+    ) -> None:
         """
         获取表格数据与表头
-
+        :param file_path:
+        :param sheet_name:
         :param header_row: 表头在第几行
         :param data_row: 数据开始行
+        :return:
         """
-        self.__filename = await FileManage.save_tmp_file(self.file)
-        es = ExcelManage()
-        es.open_sheet(file=self.__filename, read_only=True)
-        self.__table_header = es.get_header(header_row, len(self.headers), asterisk=True)
-        self.__table_data = es.readlines(min_row=data_row, max_col=len(self.headers))
-        es.close()
+        if file_path:
+            __filename = file_path
+        else:
+            __filename = await FileManage.async_save_temp_file(self.file)
+        self.open_sheet(sheet_name=sheet_name, file=__filename, read_only=True)
+        self.__table_header = self.get_header(header_row, len(self.headers), asterisk=True)
+        self.__table_data = self.readlines(min_row=data_row, max_col=len(self.headers))
+        self.close()
 
     def check_table_data(self) -> None:
         """
         检查表格数据
+        :return:
         """
         for row in self.__table_data:
             result = self.__check_row(row)
@@ -93,6 +106,8 @@ class ImportManage:
         1. 检查是否为必填项
         2. 检查是否为选项列表
         3. 检查是否符合规则
+        :param row: 数据行
+        :return:
         """
         data = {}
         for index, cell in enumerate(row):
@@ -128,18 +143,22 @@ class ImportManage:
     def generate_error_url(self) -> str:
         """
         成功错误数据的文件链接
+        :return:
         """
         if self.error_number <= 0:
             return ""
-        em = WriteXlsx(sheet_name="用户导入失败数据")
+        em = WriteXlsx()
+        em.create_excel(sheet_name="用户导入失败数据", save_static=True)
         em.generate_template(self.headers, max_row=self.error_number)
         em.write_list(self.errors)
         em.close()
-        return em.file_url
+        return em.get_file_url()
 
     def add_error_data(self, row: dict) -> None:
         """
         增加错误数据
+        :param row: 错误的数据行
+        :return:
         """
         self.errors.append(row)
         self.error_number += 1

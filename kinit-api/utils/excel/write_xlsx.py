@@ -10,12 +10,13 @@
 XlsxWriter：https://github.com/jmcnamara/XlsxWriter
 博客教程：https://blog.csdn.net/lemonbit/article/details/113855768
 """
-import datetime
-import hashlib
+
 import os.path
-import random
 import xlsxwriter
-from application.settings import TEMP_DIR, TEMP_URL
+from typing import List
+from application.settings import STATIC_ROOT, STATIC_URL
+from utils.file.file_base import FileBase
+from utils.tools import generate_string
 
 
 class WriteXlsx:
@@ -23,35 +24,38 @@ class WriteXlsx:
     写入xlsx文件
     """
 
-    def __init__(self, filename: str = None, sheet_name: str = "sheet1"):
-        date = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d")
-        file_dir = os.path.join(TEMP_DIR, date)
-        if not os.path.exists(file_dir):
-            os.mkdir(file_dir)
-        if not filename:
-            filename = hashlib.md5(str(random.random()).encode()).hexdigest()
-        self.file_url = f"{TEMP_URL}/{date}/{filename}.xlsx"
-        self.filename = os.path.join(TEMP_DIR, date, filename + ".xlsx")
-        self.sheet_name = sheet_name
+    def __init__(self):
+        self.file_path = None
+        self.sheet_name = None
         self.wb = None
         self.sheet = None
 
-    def create_excel(self) -> None:
+    def create_excel(self, file_path: str = None, sheet_name: str = "sheet1", save_static: bool = False) -> None:
         """
         创建 excel 文件
+        :param file_path: 文件绝对路径或相对路径
+        :param sheet_name: sheet 名称
+        :param save_static: 保存方式 static 静态资源或者临时文件
+        :return:
         """
+        if not file_path or (file_path and not os.path.abspath(file_path)):
+            if save_static:
+                self.file_path = FileBase.generate_static_file_path("write_xlsx", file_path)
+            else:
+                self.file_path = FileBase.generate_temp_file_path(f"{generate_string(8)}.xlsx")
+        else:
+            self.file_path = file_path
+        self.sheet_name = sheet_name
+        self.wb = xlsxwriter.Workbook(self.file_path)
+        self.sheet = self.wb.add_worksheet(sheet_name)
 
-        self.wb = xlsxwriter.Workbook(self.filename)
-        self.sheet = self.wb.add_worksheet(self.sheet_name)
-
-    def generate_template(self, headers: list[dict] = None, max_row: int = 101) -> None:
+    def generate_template(self, headers: List[dict] = None, max_row: int = 101) -> None:
         """
         生成模板
         :param headers: 表头
         :param max_row: 设置下拉列表至最大行
         :return: 文件链接地址
         """
-        self.create_excel()
         max_row = max_row + 100
         for index, field in enumerate(headers):
             font_format = {
@@ -95,7 +99,6 @@ class WriteXlsx:
         # 设置列宽
         self.sheet.set_column(0, len(rows[0]) - 1, 22)
         # 设置行高
-        # self.sheet.set_row(row_number, 25)
         self.sheet.set_default_row(25)
 
     def close(self) -> None:
@@ -103,3 +106,19 @@ class WriteXlsx:
         关闭文件
         """
         self.wb.close()
+
+    def get_file_url(self) -> str:
+        """
+        获取访问文件的 url
+        :return:
+        """
+        if not self.file_path:
+            raise ValueError("还未创建文件，请先创建 excel 文件！")
+        assert isinstance(self.file_path, str)
+        if self.file_path.startswith(STATIC_ROOT):
+            return self.file_path.replace(STATIC_ROOT, STATIC_URL)
+        else:
+            print("write_xlsx 生成文件：", self.file_path)
+            raise ValueError("生成文件为临时文件，无法访问！")
+
+
