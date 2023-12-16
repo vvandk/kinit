@@ -22,7 +22,20 @@ class MongoManage:
     # 倒叙
     ORDER_FIELD = ["desc", "descending"]
 
-    def __init__(self, db: AsyncIOMotorDatabase, collection: str, schema: Any = None, is_object_id: bool = True):
+    def __init__(
+            self,
+            db: AsyncIOMotorDatabase = None,
+            collection: str = None,
+            schema: Any = None,
+            is_object_id: bool = True
+    ):
+        """
+        初始化
+        :param db:
+        :param collection: 集合
+        :param schema:
+        :param is_object_id: _id 列是否为 ObjectId 格式
+        """
         self.db = db
         self.collection = db[collection]
         self.schema = schema
@@ -37,7 +50,6 @@ class MongoManage:
     ) -> dict | None:
         """
         获取单个数据，默认使用 ID 查询，否则使用关键词查询
-
         :param _id: 数据 ID
         :param v_return_none: 是否返回空 None，否则抛出异常，默认抛出异常
         :param v_schema: 指定使用的序列化对象

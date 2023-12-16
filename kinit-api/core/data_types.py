@@ -17,7 +17,7 @@ from pydantic import AfterValidator, PlainSerializer, WithJsonSchema
 from .validator import *
 
 
-def DatetimeStrVali(value: str | datetime.datetime | int | float | dict):
+def datetime_str_vali(value: str | datetime.datetime | int | float | dict):
     """
     日期时间字符串验证
     如果我传入的是字符串，那么直接返回，如果我传入的是一个日期类型，那么会转为字符串格式后返回
@@ -48,7 +48,7 @@ def DatetimeStrVali(value: str | datetime.datetime | int | float | dict):
 # 实现自定义一个日期时间字符串的数据类型
 DatetimeStr = Annotated[
     str | datetime.datetime | int | float | dict,
-    AfterValidator(DatetimeStrVali),
+    AfterValidator(datetime_str_vali),
     PlainSerializer(lambda x: x, return_type=str),
     WithJsonSchema({'type': 'string'}, mode='serialization')
 ]
@@ -72,7 +72,7 @@ Email = Annotated[
 ]
 
 
-def DateStrVali(value: str | datetime.date | int | float):
+def date_str_vali(value: str | datetime.date | int | float):
     """
     日期字符串验证
     如果我传入的是字符串，那么直接返回，如果我传入的是一个日期类型，那么会转为字符串格式后返回
@@ -95,13 +95,13 @@ def DateStrVali(value: str | datetime.date | int | float):
 # 实现自定义一个日期字符串的数据类型
 DateStr = Annotated[
     str | datetime.date | int | float,
-    AfterValidator(DateStrVali),
+    AfterValidator(date_str_vali),
     PlainSerializer(lambda x: x, return_type=str),
     WithJsonSchema({'type': 'string'}, mode='serialization')
 ]
 
 
-def ObjectIdStrVali(value: str | dict | ObjectId):
+def object_id_str_vali(value: str | dict | ObjectId):
     """
     官方文档：https://docs.pydantic.dev/dev-v2/usage/types/datetime/
     """
@@ -116,7 +116,7 @@ def ObjectIdStrVali(value: str | dict | ObjectId):
 
 ObjectIdStr = Annotated[
     Any,  # 这里不能直接使用 any，需要使用 typing.Any
-    AfterValidator(ObjectIdStrVali),
+    AfterValidator(object_id_str_vali),
     PlainSerializer(lambda x: x, return_type=str),
     WithJsonSchema({'type': 'string'}, mode='serialization')
 ]
