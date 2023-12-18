@@ -7,6 +7,8 @@
 # @desc           : 缓存
 
 from typing import List
+
+from sqlalchemy import false
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 from core.logger import logger  # 注意：报错就在这里，如果只写 core.logger 会写入日志报错，很难排查
@@ -34,9 +36,9 @@ class Cache:
         model = VadminSystemSettingsTab
         v_options = [joinedload(model.settings)]
         sql = select(model).where(
-            model.is_delete == False,
+            model.is_delete == false(),
             model.tab_name.in_(tab_names),
-            model.disabled == False
+            model.disabled == false()
             ).options(*[load for load in v_options])
         queryset = await session.execute(sql)
         datas = queryset.scalars().unique().all()
@@ -74,7 +76,7 @@ class Cache:
         """
         获取系统配置
         :param tab_name: 配置表标签名称
-        :param retry_num: 重试次数
+        :param retry: 重试次数
         """
         result = await self.rd.get(tab_name)
         if not result and retry > 0:
