@@ -278,9 +278,9 @@ const generateCronExpression = () => {
 // 跳转到调度日志页面
 const toRecord = (row: any) => {
   if (row) {
-    push(`/system/record/task?job_id=${row._id}`)
+    push(`/record/task?job_id=${row._id}`)
   } else {
-    push(`/system/record/task`)
+    push(`/record/task`)
   }
 }
 
