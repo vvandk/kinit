@@ -14,7 +14,6 @@ from oss2.models import PutObjectResult
 from core.exception import CustomException
 from core.logger import logger
 from utils import status
-from utils.file.compress.cpressJPG import compress_jpg_png
 from utils.file.file_manage import FileManage
 from utils.file.file_base import FileBase
 
@@ -47,13 +46,12 @@ class AliyunOSS(FileBase):
         self.bucket = oss2.Bucket(auth, bucket.endpoint, bucket.bucket)
         self.baseUrl = bucket.baseUrl
 
-    async def upload_image(self, path: str, file: UploadFile, compress: bool = False, max_size: int = 10) -> str:
+    async def upload_image(self, path: str, file: UploadFile, max_size: int = 10) -> str:
         """
         上传图片
 
         :param path: path由包含文件后缀，不包含Bucket名称组成的Object完整路径，例如abc/efg/123.jpg。
         :param file: 文件对象
-        :param compress: 是否压缩该文件
         :param max_size: 图片文件最大值，单位 MB，默认 10MB
         :return: 上传后的文件oss链接
         """
@@ -61,14 +59,7 @@ class AliyunOSS(FileBase):
         await self.validate_file(file, max_size, self.IMAGE_ACCEPT)
         # 生成文件路径
         path = self.generate_static_file_path(path, file.filename)
-        if compress:
-            # 压缩图片
-            file_path = await FileManage.async_save_temp_file(file)
-            new_file = compress_jpg_png(file_path, originpath=os.path.abspath(file_path))
-            with open(new_file, "rb") as f:
-                file_data = f.read()
-        else:
-            file_data = await file.read()
+        file_data = await file.read()
         return await self.__upload_file_to_oss(path, file_data)
 
     async def upload_video(self, path: str, file: UploadFile, max_size: int = 100) -> str:

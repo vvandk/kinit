@@ -8,12 +8,10 @@
 import asyncio
 import io
 import os
-import shutil
 import zipfile
 from application.settings import STATIC_ROOT, BASE_DIR, STATIC_URL
 from fastapi import UploadFile
 import sys
-from pathlib import Path
 from core.exception import CustomException
 from utils.file.file_base import FileBase
 from aiopathlib import AsyncPath
