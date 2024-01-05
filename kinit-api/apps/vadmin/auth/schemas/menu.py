@@ -60,7 +60,7 @@ class RouterOut(BaseModel):
     children: list[dict] = []
 
 
-class TreeListOut(MenuSimpleOut):
+class MenuTreeListOut(MenuSimpleOut):
     model_config = ConfigDict(from_attributes=True)
 
     children: list[dict] = []

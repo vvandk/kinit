@@ -9,9 +9,9 @@
 
 from pydantic import BaseModel, ConfigDict, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
-
 from core.data_types import Telephone, DatetimeStr, Email
 from .role import RoleSimpleOut
+from .dept import DeptSimpleOut
 
 
 class User(BaseModel):
@@ -31,6 +31,7 @@ class UserIn(User):
     创建用户
     """
     role_ids: list[int] = []
+    dept_ids: list[int] = []
     password: str | None = ""
 
 
@@ -58,6 +59,7 @@ class UserUpdate(User):
     is_staff: bool | None = False
     gender: str | None = "0"
     role_ids: list[int] = []
+    dept_ids: list[int] = []
 
 
 class UserSimpleOut(User):
@@ -76,6 +78,7 @@ class UserOut(UserSimpleOut):
     model_config = ConfigDict(from_attributes=True)
 
     roles: list[RoleSimpleOut] = []
+    depts: list[DeptSimpleOut] = []
 
 
 class ResetPwd(BaseModel):

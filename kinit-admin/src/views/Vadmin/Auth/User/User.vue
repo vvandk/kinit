@@ -84,8 +84,8 @@ const tableColumns = reactive<TableColumn[]>([
     field: 'id',
     label: '用户编号',
     width: '100px',
-    show: true,
-    disabled: true
+    show: false,
+    disabled: false
   },
   {
     field: 'name',
@@ -113,7 +113,7 @@ const tableColumns = reactive<TableColumn[]>([
   {
     field: 'gender',
     label: '性别',
-    show: true,
+    show: false,
     slots: {
       default: (data: any) => {
         const row = data.row
@@ -141,9 +141,24 @@ const tableColumns = reactive<TableColumn[]>([
     }
   },
   {
+    field: 'depts',
+    label: '部门',
+    show: true,
+    slots: {
+      default: (data: any) => {
+        const row = data.row
+        return (
+          <>
+            <div class="text-truncate">{row.depts.map((item) => item.name).join()}</div>
+          </>
+        )
+      }
+    }
+  },
+  {
     field: 'is_active',
     label: '是否可用',
-    show: true,
+    show: false,
     slots: {
       default: (data: any) => {
         const row = data.row
@@ -180,7 +195,7 @@ const tableColumns = reactive<TableColumn[]>([
     field: 'create_datetime',
     label: '创建时间',
     width: '190px',
-    show: true
+    show: false
   },
   {
     field: 'action',
@@ -325,6 +340,7 @@ const editAction = async (row: any) => {
   if (res) {
     dialogTitle.value = '编辑用户'
     res.data.role_ids = res.data.roles.map((item: any) => item.id)
+    res.data.dept_ids = res.data.depts.map((item: any) => item.id)
     actionType.value = 'edit'
     currentRow.value = res.data
     dialogVisible.value = true

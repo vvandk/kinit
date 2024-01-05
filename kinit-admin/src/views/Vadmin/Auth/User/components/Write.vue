@@ -4,6 +4,7 @@ import { useForm } from '@/hooks/web/useForm'
 import { PropType, reactive, watch } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
 import { getRoleOptionsApi } from '@/api/vadmin/auth/role'
+import { getDeptUserTreeOptionsApi } from '@/api/vadmin/auth/dept'
 
 const { required, isTelephone, isEmail } = useValidator()
 
@@ -173,6 +174,28 @@ const formSchema = reactive<FormSchema[]>([
     },
     value: [],
     ifshow: (values) => values.is_staff
+  },
+  {
+    field: 'dept_ids',
+    label: '部门',
+    colProps: {
+      span: 24
+    },
+    component: 'TreeSelect',
+    componentProps: {
+      style: {
+        width: '100%'
+      },
+      multiple: true,
+      checkStrictly: true,
+      defaultExpandAll: true
+    },
+    optionApi: async () => {
+      const res = await getDeptUserTreeOptionsApi()
+      return res.data
+    },
+    value: [],
+    ifshow: (values) => values.is_staff
   }
 ])
 
@@ -181,6 +204,7 @@ const rules = reactive({
   is_active: [required()],
   is_staff: [required()],
   role_ids: [required()],
+  dept_ids: [required()],
   telephone: [required(), { validator: isTelephone, trigger: 'blur' }],
   email: [{ validator: isEmail, trigger: 'blur' }]
 })

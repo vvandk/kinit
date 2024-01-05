@@ -14,11 +14,14 @@ from apps.vadmin.auth.models import VadminUser
 from core.exception import CustomException
 from utils import status
 from datetime import timedelta, datetime
+from apps.vadmin.auth.crud import UserDal
 
 
 class Auth(BaseModel):
     user: VadminUser = None
     db: AsyncSession
+    data_range: int | None = None
+    dept_ids: list | None = []
 
     class Config:
         # 接收任意类型
@@ -80,9 +83,14 @@ class AuthValidation:
         return telephone
 
     @classmethod
-    async def validate_user(cls, request: Request, user: VadminUser, db: AsyncSession) -> Auth:
+    async def validate_user(cls, request: Request, user: VadminUser, db: AsyncSession, is_all: bool = True) -> Auth:
         """
         验证用户信息
+        :param request:
+        :param user:
+        :param db:
+        :param is_all: 是否所有人访问，不加权限
+        :return:
         """
         if user is None:
             raise CustomException(msg="未认证，请您重新登陆", code=cls.error_code, status_code=cls.error_code)
@@ -95,12 +103,17 @@ class AuthValidation:
             request.scope["body"] = await request.body()
         except RuntimeError:
             request.scope["body"] = "获取失败"
-        return Auth(user=user, db=db)
+        if is_all:
+            return Auth(user=user, db=db)
+        data_range, dept_ids = await cls.get_user_data_range(user, db)
+        return Auth(user=user, db=db, data_range=data_range, dept_ids=dept_ids)
 
     @classmethod
     def get_user_permissions(cls, user: VadminUser) -> set:
         """
         获取员工用户所有权限列表
+        :param user: 用户实例
+        :return:
         """
         if user.is_admin():
             return {'*.*.*'}
@@ -110,3 +123,36 @@ class AuthValidation:
                 if menu.perms and not menu.disabled:
                     permissions.add(menu.perms)
         return permissions
+
+    @classmethod
+    async def get_user_data_range(cls, user: VadminUser, db: AsyncSession) -> tuple:
+        """
+        获取用户数据范围
+        0 仅本人数据权限  create_user_id 查询
+        1 本部门数据权限  部门 id 左连接查询
+        2 本部门及以下数据权限 部门 id 左连接查询
+        3 自定义数据权限  部门 id 左连接查询
+        4 全部数据权限  无
+        :param user:
+        :param db:
+        :return:
+        """
+        if user.is_admin():
+            return 4, ["*"]
+        data_range = max([i.data_range for i in user.roles])
+        dept_ids = set()
+        if data_range == 0:
+            pass
+        elif data_range == 1:
+            for dept in user.depts:
+                dept_ids.add(dept.id)
+        elif data_range == 2:
+            # 递归获取部门列表
+            dept_ids = await UserDal(db).recursion_get_dept_ids(user)
+        elif data_range == 3:
+            for role_obj in user.roles:
+                for dept in role_obj.depts:
+                    dept_ids.add(dept.id)
+        elif data_range == 4:
+            dept_ids.add("*")
+        return data_range, list(dept_ids)

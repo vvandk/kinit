@@ -40,7 +40,7 @@ class OpenAuth(AuthValidation):
         try:
             telephone = self.validate_token(request, token)
             user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
-            return await self.validate_user(request, user, db)
+            return await self.validate_user(request, user, db, is_all=True)
         except CustomException:
             return Auth(db=db)
 
@@ -65,7 +65,7 @@ class AllUserAuth(AuthValidation):
             return Auth(db=db)
         telephone = self.validate_token(request, token)
         user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
-        return await self.validate_user(request, user, db)
+        return await self.validate_user(request, user, db, is_all=True)
 
 
 class FullAdminAuth(AuthValidation):
@@ -94,9 +94,9 @@ class FullAdminAuth(AuthValidation):
         if not settings.OAUTH_ENABLE:
             return Auth(db=db)
         telephone = self.validate_token(request, token)
-        options = [joinedload(VadminUser.roles).subqueryload(VadminRole.menus)]
+        options = [joinedload(VadminUser.roles).subqueryload(VadminRole.menus), joinedload(VadminUser.depts)]
         user = await UserDal(db).get_data(telephone=telephone, v_return_none=True, v_options=options, is_staff=True)
-        result = await self.validate_user(request, user, db)
+        result = await self.validate_user(request, user, db, is_all=False)
         permissions = self.get_user_permissions(user)
         if permissions != {'*.*.*'} and self.permissions:
             if not (self.permissions & permissions):

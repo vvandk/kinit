@@ -1,11 +1,11 @@
 <script setup lang="tsx">
 import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
-import { PropType, nextTick, reactive, ref, unref, watch } from 'vue'
+import { PropType, reactive, watch } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
-import { ElCheckbox, ElTree } from 'element-plus'
-import { getMenuRoleTreeOptionsApi } from '@/api/vadmin/auth/menu'
-import { eachTree } from '@/utils/tree'
+// import { ElTree } from 'element-plus'
+// import { getMenuRoleTreeOptionsApi } from '@/api/vadmin/auth/menu'
+// import { eachTree } from '@/utils/tree'
 
 const { required } = useValidator()
 
@@ -16,39 +16,38 @@ const props = defineProps({
   }
 })
 
-let treeData = ref([] as any[])
+// let treeData = ref([] as any[])
+// const treeRef = ref<InstanceType<typeof ElTree>>()
 
-const treeRef = ref<InstanceType<typeof ElTree>>()
+// const getMenuRoleTreeOptions = async () => {
+//   const res = await getMenuRoleTreeOptionsApi()
+//   if (res) {
+//     treeData.value = res.data
+//     await nextTick()
+//     if (props.currentRow) {
+//       const menu_ids: number[] = props.currentRow.menus.map((item) => item.id)
+//       const checked: number[] = []
+//       // 递归按顺序添加选中的菜单项，用于处理半选状态的菜单项
+//       eachTree(res.data, (v) => {
+//         if (menu_ids.includes(v.value)) {
+//           checked.push(v.value)
+//         }
+//       })
+//       for (const item of checked) {
+//         unref(treeRef)?.setChecked(item, true, false)
+//       }
+//     }
+//   }
+// }
 
-const getMenuRoleTreeOptions = async () => {
-  const res = await getMenuRoleTreeOptionsApi()
-  if (res) {
-    treeData.value = res.data
-    await nextTick()
-    if (props.currentRow) {
-      const menu_ids: number[] = props.currentRow.menus.map((item) => item.id)
-      const checked: number[] = []
-      // 递归按顺序添加选中的菜单项，用于处理半选状态的菜单项
-      eachTree(res.data, (v) => {
-        if (menu_ids.includes(v.value)) {
-          checked.push(v.value)
-        }
-      })
-      for (const item of checked) {
-        unref(treeRef)?.setChecked(item, true, false)
-      }
-    }
-  }
-}
+// const defaultProps = {
+//   children: 'children',
+//   label: 'label'
+// }
 
-const defaultProps = {
-  children: 'children',
-  label: 'label'
-}
-
-let selectAll = ref(false)
-let defaultExpandAll = ref(true)
-let checkStrictly = ref(true)
+// let selectAll = ref(false)
+// let defaultExpandAll = ref(true)
+// let checkStrictly = ref(true)
 
 // 获取所有节点的key
 const getTreeNodeKeys = (nodes: Recordable[]): number[] => {
@@ -62,19 +61,19 @@ const getTreeNodeKeys = (nodes: Recordable[]): number[] => {
   return keys
 }
 
-// 展开/折叠
-const handleCheckedTreeExpand = (value: boolean) => {
-  defaultExpandAll.value = value
-  for (let i = 0; i < treeData.value.length; i++) {
-    treeRef.value!.store.nodesMap[treeData.value[i].value].expanded = value
-  }
-}
+// // 展开/折叠
+// const handleCheckedTreeExpand = (value: boolean) => {
+//   defaultExpandAll.value = value
+//   for (let i = 0; i < treeData.value.length; i++) {
+//     treeRef.value!.store.nodesMap[treeData.value[i].value].expanded = value
+//   }
+// }
 
-//全选/全不选
-const handleCheckedTreeNodeAll = (value: boolean) => {
-  selectAll.value = value
-  treeRef.value!.setCheckedKeys(value ? getTreeNodeKeys(treeData.value) : [])
-}
+// //全选/全不选
+// const handleCheckedTreeNodeAll = (value: boolean) => {
+//   selectAll.value = value
+//   treeRef.value!.setCheckedKeys(value ? getTreeNodeKeys(treeData.value) : [])
+// }
 
 const formSchema = reactive<FormSchema[]>([
   {
@@ -156,57 +155,64 @@ const formSchema = reactive<FormSchema[]>([
   },
   {
     field: 'desc',
-    label: '描述',
-    colProps: {
-      span: 12
-    },
-    component: 'Input'
-  },
-  {
-    field: 'menu_ids',
-    label: '菜单权限',
+    label: '角色描述',
     colProps: {
       span: 24
     },
-    formItemProps: {
-      slots: {
-        default: () => {
-          return (
-            <>
-              <div>
-                <div>
-                  <ElCheckbox
-                    modelValue={defaultExpandAll.value}
-                    onChange={handleCheckedTreeExpand}
-                    label="展开/折叠"
-                    size="large"
-                  />
-                  <ElCheckbox
-                    modelValue={selectAll.value}
-                    onChange={handleCheckedTreeNodeAll}
-                    label="全选/全不选"
-                    size="large"
-                  />
-                  <ElCheckbox v-model={checkStrictly.value} label="父子联动" size="large" />
-                </div>
-                <div class="max-h-420px b-1 b-solid b-[#e5e7eb] p-10px overflow-auto">
-                  <ElTree
-                    ref={treeRef}
-                    data={treeData.value}
-                    show-checkbox
-                    node-key="value"
-                    props={defaultProps}
-                    default-expand-all={defaultExpandAll.value}
-                    check-strictly={!checkStrictly.value}
-                  ></ElTree>
-                </div>
-              </div>
-            </>
-          )
-        }
+    component: 'Input',
+    componentProps: {
+      rows: 4,
+      type: 'textarea',
+      style: {
+        width: '600px'
       }
     }
   }
+  // {
+  //   field: 'menu_ids',
+  //   label: '菜单权限',
+  //   colProps: {
+  //     span: 24
+  //   },
+  //   formItemProps: {
+  //     slots: {
+  //       default: () => {
+  //         return (
+  //           <>
+  //             <div>
+  //               <div>
+  //                 <ElCheckbox
+  //                   modelValue={defaultExpandAll.value}
+  //                   onChange={handleCheckedTreeExpand}
+  //                   label="展开/折叠"
+  //                   size="large"
+  //                 />
+  //                 <ElCheckbox
+  //                   modelValue={selectAll.value}
+  //                   onChange={handleCheckedTreeNodeAll}
+  //                   label="全选/全不选"
+  //                   size="large"
+  //                 />
+  //                 <ElCheckbox v-model={checkStrictly.value} label="父子联动" size="large" />
+  //               </div>
+  //               <div class="max-h-420px b-1 b-solid b-[#e5e7eb] p-10px overflow-auto">
+  //                 <ElTree
+  //                   ref={treeRef}
+  //                   data={treeData.value}
+  //                   show-checkbox
+  //                   node-key="value"
+  //                   props={defaultProps}
+  //                   default-expand-all={defaultExpandAll.value}
+  //                   check-strictly={!checkStrictly.value}
+  //                 ></ElTree>
+  //               </div>
+  //             </div>
+  //           </>
+  //         )
+  //       }
+  //     }
+  //   }
+  // }
 ])
 
 const rules = reactive({
@@ -223,10 +229,10 @@ const submit = async () => {
   const valid = await elForm?.validate()
   if (valid) {
     const formData = await getFormData()
-    formData.menu_ids = [
-      ...(unref(treeRef)?.getCheckedKeys() || []),
-      ...(unref(treeRef)?.getHalfCheckedKeys() || [])
-    ]
+    // formData.menu_ids = [
+    //   ...(unref(treeRef)?.getCheckedKeys() || []),
+    //   ...(unref(treeRef)?.getHalfCheckedKeys() || [])
+    // ]
     return formData
   }
 }
@@ -243,7 +249,7 @@ watch(
   }
 )
 
-getMenuRoleTreeOptions()
+// getMenuRoleTreeOptions()
 
 defineExpose({
   submit

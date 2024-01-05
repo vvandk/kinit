@@ -13,11 +13,20 @@ from core.database import redis_getter
 from utils.response import SuccessResponse, ErrorResponse
 from . import schemas, crud, models
 from core.dependencies import IdList
-from apps.vadmin.auth.utils.current import AllUserAuth, FullAdminAuth
+from apps.vadmin.auth.utils.current import AllUserAuth, FullAdminAuth, OpenAuth
 from apps.vadmin.auth.utils.validation.auth import Auth
-from .params import UserParams, RoleParams
+from .params import UserParams, RoleParams, DeptParams
 
 app = APIRouter()
+
+
+###########################################################
+#    接口测试
+###########################################################
+@app.get("/test", summary="接口测试")
+async def test(auth: Auth = Depends(FullAdminAuth())):
+    print(auth)
+    return SuccessResponse()
 
 
 ###########################################################
@@ -29,7 +38,7 @@ async def get_users(
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.list"]))
 ):
     model = models.VadminUser
-    options = [joinedload(model.roles)]
+    options = [joinedload(model.roles), joinedload(model.depts)]
     schema = schemas.UserOut
     datas, count = await crud.UserDal(auth.db).get_datas(
         **params.dict(),
@@ -70,7 +79,7 @@ async def get_user(
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.user.view", "auth.user.update"]))
 ):
     model = models.VadminUser
-    options = [joinedload(model.roles)]
+    options = [joinedload(model.roles), joinedload(model.depts)]
     schema = schemas.UserOut
     return SuccessResponse(await crud.UserDal(auth.db).get_data(data_id, v_options=options, v_schema=schema))
 
@@ -189,7 +198,7 @@ async def get_role(
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.role.view", "auth.role.update"]))
 ):
     model = models.VadminRole
-    options = [joinedload(model.menus)]
+    options = [joinedload(model.menus), joinedload(model.depts)]
     schema = schemas.RoleOut
     return SuccessResponse(await crud.RoleDal(auth.db).get_data(data_id, v_options=options, v_schema=schema))
 
@@ -254,3 +263,46 @@ async def get_role_menu_tree(
     tree_data = await crud.MenuDal(auth.db).get_tree_list(mode=3)
     role_menu_tree = await crud.RoleDal(auth.db).get_role_menu_tree(role_id)
     return SuccessResponse({"role_menu_tree": role_menu_tree, "menus": tree_data})
+
+
+###########################################################
+#    部门管理
+###########################################################
+@app.get("/depts", summary="获取部门列表")
+async def get_depts(
+        params: DeptParams = Depends(),
+        auth: Auth = Depends(FullAdminAuth())
+):
+    datas = await crud.DeptDal(auth.db).get_tree_list(1)
+    return SuccessResponse(datas)
+
+
+@app.get("/dept/tree/options", summary="获取部门树选择项，添加/修改部门时使用")
+async def get_dept_options(auth: Auth = Depends(FullAdminAuth())):
+    datas = await crud.DeptDal(auth.db).get_tree_list(mode=2)
+    return SuccessResponse(datas)
+
+
+@app.get("/dept/user/tree/options", summary="获取部门树选择项，添加/修改用户时使用")
+async def get_dept_treeselect(auth: Auth = Depends(FullAdminAuth())):
+    return SuccessResponse(await crud.DeptDal(auth.db).get_tree_list(mode=3))
+
+
+@app.post("/depts", summary="创建部门信息")
+async def create_dept(data: schemas.Dept, auth: Auth = Depends(FullAdminAuth())):
+    return SuccessResponse(await crud.DeptDal(auth.db).create_data(data=data))
+
+
+@app.delete("/depts", summary="批量删除部门", description="硬删除, 如果存在用户关联则无法删除")
+async def delete_depts(ids: IdList = Depends(), auth: Auth = Depends(FullAdminAuth())):
+    await crud.DeptDal(auth.db).delete_datas(ids.ids, v_soft=False)
+    return SuccessResponse("删除成功")
+
+
+@app.put("/depts/{data_id}", summary="更新部门信息")
+async def put_dept(
+        data_id: int,
+        data: schemas.Dept,
+        auth: Auth = Depends(FullAdminAuth())
+):
+    return SuccessResponse(await crud.DeptDal(auth.db).put_data(data_id, data))

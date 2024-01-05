@@ -10,6 +10,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 from core.data_types import DatetimeStr
 from .menu import MenuSimpleOut
+from .dept import DeptSimpleOut
 
 
 class Role(BaseModel):
@@ -17,6 +18,7 @@ class Role(BaseModel):
     disabled: bool = False
     order: int | None = None
     desc: str | None = None
+    data_range: int = 4
     role_key: str
     is_admin: bool = False
 
@@ -33,10 +35,12 @@ class RoleOut(RoleSimpleOut):
     model_config = ConfigDict(from_attributes=True)
 
     menus: list[MenuSimpleOut] = []
+    depts: list[DeptSimpleOut] = []
 
 
 class RoleIn(Role):
     menu_ids: list[int] = []
+    dept_ids: list[int] = []
 
 
 class RoleOptionsOut(BaseModel):

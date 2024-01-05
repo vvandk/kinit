@@ -15,7 +15,10 @@ import { Search } from '@/components/Search'
 import { FormSchema } from '@/components/Form'
 import { ContentWrap } from '@/components/ContentWrap'
 import Write from './components/Write.vue'
+import AuthManage from './components/AuthManage.vue'
 import { Dialog } from '@/components/Dialog'
+import { DictDetail, selectDictLabel } from '@/utils/dict'
+import { useDictStore } from '@/store/modules/dict'
 
 defineOptions({
   name: 'AuthRole'
@@ -45,12 +48,22 @@ const { tableRegister, tableState, tableMethods } = useTable({
 const { dataList, loading, total, pageSize, currentPage } = tableState
 const { getList, delList } = tableMethods
 
+let dataRangeOptions = ref<DictDetail[]>([])
+
+const getOptions = async () => {
+  const dictStore = useDictStore()
+  const dictOptions = await dictStore.getDictObj(['sys_vadmin_data_range'])
+  dataRangeOptions.value = dictOptions.sys_vadmin_data_range
+}
+
+getOptions()
+
 const tableColumns = reactive<TableColumn[]>([
   {
     field: 'id',
     label: '角色编号',
-    show: true,
-    disabled: true
+    show: false,
+    disabled: false
   },
   {
     field: 'name',
@@ -62,6 +75,21 @@ const tableColumns = reactive<TableColumn[]>([
     field: 'role_key',
     label: '权限字符',
     show: true
+  },
+  {
+    field: 'data_range',
+    label: '数据范围',
+    show: true,
+    slots: {
+      default: (data: any) => {
+        const row = data.row
+        return (
+          <>
+            <div>{selectDictLabel(unref(dataRangeOptions), row.data_range.toString())}</div>
+          </>
+        )
+      }
+    }
   },
   {
     field: 'order',
@@ -92,7 +120,7 @@ const tableColumns = reactive<TableColumn[]>([
         const row = data.row
         return (
           <>
-            <ElSwitch value={!row.is_admin} disabled />
+            <ElSwitch value={row.is_admin} disabled />
           </>
         )
       }
@@ -105,7 +133,7 @@ const tableColumns = reactive<TableColumn[]>([
   },
   {
     field: 'action',
-    width: '150px',
+    width: '170px',
     label: '操作',
     show: true,
     slots: {
@@ -124,6 +152,15 @@ const tableColumns = reactive<TableColumn[]>([
               onClick={() => editAction(row)}
             >
               编辑
+            </ElButton>
+            <ElButton
+              v-show={row.id !== 1}
+              type="primary"
+              link
+              size="small"
+              onClick={() => authManageActive(row)}
+            >
+              权限管理
             </ElButton>
             <ElButton
               v-show={row.id !== 1}
@@ -204,6 +241,18 @@ const delData = async (row: any) => {
   })
 }
 
+const authManageRef = ref<ComponentRef<typeof AuthManage>>()
+
+// 权限管理
+const authManageActive = async (row: any) => {
+  const res = await getRoleApi(row.id)
+  if (res) {
+    res.data.data_range = res.data.data_range.toString()
+    currentRow.value = res.data
+    authManageRef.value?.openDrawer()
+  }
+}
+
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 
@@ -217,15 +266,16 @@ const saveLoading = ref(false)
 const editAction = async (row: any) => {
   const res = await getRoleApi(row.id)
   if (res) {
-    dialogTitle.value = '编辑'
+    dialogTitle.value = '编辑角色'
     actionType.value = 'edit'
+    res.data.data_range = res.data.data_range.toString()
     currentRow.value = res.data
     dialogVisible.value = true
   }
 }
 
 const addAction = () => {
-  dialogTitle.value = '新增'
+  dialogTitle.value = '新增角色'
   actionType.value = 'add'
   currentRow.value = undefined
   dialogVisible.value = true
@@ -298,4 +348,6 @@ const save = async () => {
       <ElButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</ElButton>
     </template>
   </Dialog>
+
+  <AuthManage ref="authManageRef" :current-row="currentRow" @get-list="getList" />
 </template>

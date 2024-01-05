@@ -25,3 +25,17 @@ vadmin_auth_role_menus = Table(
     Column("menu_id", Integer, ForeignKey("vadmin_auth_menu.id", ondelete="CASCADE")),
 )
 
+vadmin_auth_user_depts = Table(
+    "vadmin_auth_user_depts",
+    Base.metadata,
+    Column("user_id", Integer, ForeignKey("vadmin_auth_user.id", ondelete="CASCADE")),
+    Column("dept_id", Integer, ForeignKey("vadmin_auth_dept.id", ondelete="CASCADE")),
+)
+
+vadmin_auth_role_depts = Table(
+    "vadmin_auth_role_depts",
+    Base.metadata,
+    Column("role_id", Integer, ForeignKey("vadmin_auth_role.id", ondelete="CASCADE")),
+    Column("dept_id", Integer, ForeignKey("vadmin_auth_dept.id", ondelete="CASCADE")),
+)
+
