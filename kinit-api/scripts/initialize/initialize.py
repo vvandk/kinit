@@ -48,10 +48,7 @@ class InitializeData:
         """
         模型迁移映射到数据库
         """
-        subprocess.check_call(
-            ['alembic', '--name', f'{env.value}', 'revision', '--autogenerate', '-m', f'{VERSION}'],
-            cwd=BASE_DIR
-        )
+        subprocess.check_call(['alembic', '--name', f'{env.value}', 'revision', '--autogenerate', '-m', f'{VERSION}'], cwd=BASE_DIR)
         subprocess.check_call(['alembic', '--name', f'{env.value}', 'upgrade', 'head'], cwd=BASE_DIR)
         print(f"环境：{env}  {VERSION} 数据库表迁移完成")
 
@@ -90,6 +87,18 @@ class InitializeData:
         await db.flush()
         await db.commit()
         print(f"{table_name} 表数据已生成")
+
+    async def generate_dept(self):
+        """
+        生成部门详情数据
+        """
+        await self.__generate_data("vadmin_auth_dept", auth_models.VadminDept)
+
+    async def generate_user_dept(self):
+        """
+        生成用户关联部门详情数据
+        """
+        await self.__generate_data("vadmin_auth_user_depts", auth_models.vadmin_auth_user_depts)
 
     async def generate_menu(self):
         """
@@ -158,7 +167,9 @@ class InitializeData:
         self.migrate_model(env)
         await self.generate_menu()
         await self.generate_role()
+        await self.generate_dept()
         await self.generate_user()
+        await self.generate_user_dept()
         await self.generate_user_role()
         await self.generate_system_tab()
         await self.generate_dict_type()
