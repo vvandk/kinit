@@ -11,7 +11,6 @@
 """
 import datetime
 from typing import Annotated, Any
-
 from bson import ObjectId
 from pydantic import AfterValidator, PlainSerializer, WithJsonSchema
 from .validator import *

@@ -16,12 +16,11 @@ from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func, delete, update, BinaryExpression, ScalarResult, select, false, insert
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.orm.strategy_options import _AbstractLoad
 from starlette import status
 from core.exception import CustomException
 from sqlalchemy.sql.selectable import Select as SelectType
-from typing import Any, List, Union
+from typing import Any, Union
 
 
 class DalBase:
@@ -37,20 +36,20 @@ class DalBase:
             self,
             data_id: int = None,
             v_start_sql: SelectType = None,
-            v_select_from: List[Any] = None,
-            v_join: List[Any] = None,
-            v_outer_join: List[Any] = None,
-            v_options: List[_AbstractLoad] = None,
-            v_where: List[BinaryExpression] = None,
+            v_select_from: list[Any] = None,
+            v_join: list[Any] = None,
+            v_outer_join: list[Any] = None,
+            v_options: list[_AbstractLoad] = None,
+            v_where: list[BinaryExpression] = None,
             v_order: str = None,
             v_order_field: str = None,
             v_return_none: bool = False,
             v_schema: Any = None,
+            v_expire_all: bool = False,
             **kwargs
     ) -> Any:
         """
         获取单个数据，默认使用 ID 查询，否则使用关键词查询
-
         :param data_id: 数据 ID
         :param v_start_sql: 初始 sql
         :param v_select_from: 用于指定查询从哪个表开始，通常与 .join() 等方法一起使用。
@@ -62,9 +61,13 @@ class DalBase:
         :param v_order_field: 排序字段
         :param v_return_none: 是否返回空 None，否认 抛出异常，默认抛出异常
         :param v_schema: 指定使用的序列化对象
+        :param v_expire_all: 使当前会话（Session）中所有已加载的对象过期，确保您获取的是数据库中的最新数据，但可能会有性能损耗，博客：https://blog.csdn.net/k_genius/article/details/135490378。
         :param kwargs: 查询参数
         :return: 默认返回 ORM 对象，如果存在 v_schema 则会返回 v_schema 结果
         """
+        if v_expire_all:
+            self.db.expire_all()
+
         if not isinstance(v_start_sql, SelectType):
             v_start_sql = select(self.model).where(self.model.is_delete == false())
 
@@ -105,11 +108,11 @@ class DalBase:
             page: int = 1,
             limit: int = 10,
             v_start_sql: SelectType = None,
-            v_select_from: List[Any] = None,
-            v_join: List[Any] = None,
-            v_outer_join: List[Any] = None,
-            v_options: List[_AbstractLoad] = None,
-            v_where: List[BinaryExpression] = None,
+            v_select_from: list[Any] = None,
+            v_join: list[Any] = None,
+            v_outer_join: list[Any] = None,
+            v_options: list[_AbstractLoad] = None,
+            v_where: list[BinaryExpression] = None,
             v_order: str = None,
             v_order_field: str = None,
             v_return_count: bool = False,
@@ -117,11 +120,11 @@ class DalBase:
             v_return_objs: bool = False,
             v_schema: Any = None,
             v_distinct: bool = False,
+            v_expire_all: bool = False,
             **kwargs
-    ) -> Union[List[Any], ScalarResult, tuple]:
+    ) -> Union[list[Any], ScalarResult, tuple]:
         """
         获取数据列表
-
         :param page: 页码
         :param limit: 当前页数据量
         :param v_start_sql: 初始 sql
@@ -137,9 +140,13 @@ class DalBase:
         :param v_return_objs: 是否返回对象
         :param v_schema: 指定使用的序列化对象
         :param v_distinct: 是否结果去重
+        :param v_expire_all: 使当前会话（Session）中所有已加载的对象过期，确保您获取的是数据库中的最新数据，但可能会有性能损耗，博客：https://blog.csdn.net/k_genius/article/details/135490378。
         :param kwargs: 查询参数，使用的是自定义表达式
         :return: 返回值优先级：v_return_scalars > v_return_objs > v_schema
         """
+        if v_expire_all:
+            self.db.expire_all()
+
         sql: SelectType = await self.filter_core(
             v_start_sql=v_start_sql,
             v_select_from=v_select_from,
@@ -189,15 +196,14 @@ class DalBase:
 
     async def get_count(
             self,
-            v_select_from: List[Any] = None,
-            v_join: List[Any] = None,
-            v_outer_join: List[Any] = None,
-            v_where: List[BinaryExpression] = None,
+            v_select_from: list[Any] = None,
+            v_join: list[Any] = None,
+            v_outer_join: list[Any] = None,
+            v_where: list[BinaryExpression] = None,
             **kwargs
     ) -> int:
         """
         获取数据总数
-
         :param v_select_from: 用于指定查询从哪个表开始，通常与 .join() 等方法一起使用。
         :param v_join: 创建内连接（INNER JOIN）操作，返回两个表中满足连接条件的交集。
         :param v_outer_join: 用于创建外连接（OUTER JOIN）操作，返回两个表中满足连接条件的并集，包括未匹配的行，并用 NULL 值填充。
@@ -220,7 +226,7 @@ class DalBase:
     async def create_data(
             self,
             data,
-            v_options: List[_AbstractLoad] = None,
+            v_options: list[_AbstractLoad] = None,
             v_return_obj: bool = False,
             v_schema: Any = None
     ) -> Any:
@@ -238,12 +244,11 @@ class DalBase:
         await self.flush(obj)
         return await self.out_dict(obj, v_options, v_return_obj, v_schema)
 
-    async def create_datas(self, datas: List[dict]) -> None:
+    async def create_datas(self, datas: list[dict]) -> None:
         """
         批量创建数据
         SQLAlchemy 2.0 批量插入不支持 MySQL 返回值：
         https://docs.sqlalchemy.org/en/20/orm/queryguide/dml.html#getting-new-objects-with-returning
-
         :param datas: 字典数据列表
         """
         await self.db.execute(insert(self.model), datas)
@@ -253,7 +258,7 @@ class DalBase:
             self,
             data_id: int,
             data: Any,
-            v_options: List[_AbstractLoad] = None,
+            v_options: list[_AbstractLoad] = None,
             v_return_obj: bool = False,
             v_schema: Any = None
     ) -> Any:
@@ -272,7 +277,7 @@ class DalBase:
         await self.flush(obj)
         return await self.out_dict(obj, None, v_return_obj, v_schema)
 
-    async def delete_datas(self, ids: List[int], v_soft: bool = False, **kwargs) -> None:
+    async def delete_datas(self, ids: list[int], v_soft: bool = False, **kwargs) -> None:
         """
         删除多条数据
         :param ids: 数据集
@@ -301,14 +306,14 @@ class DalBase:
             self.db.add(obj)
         await self.db.flush()
         if obj:
-            # 使用 get_data 或者 get_datas 获取到实例后如何更新了实例，并需要序列化实例，那么需要执行 refresh 刷新才能正常序列化
+            # 使用 get_data 或者 get_datas 获取到实例后如果更新了实例，并需要序列化实例，那么需要执行 refresh 刷新才能正常序列化
             await self.db.refresh(obj)
         return obj
 
     async def out_dict(
             self,
             obj: Any,
-            v_options: List[_AbstractLoad] = None,
+            v_options: list[_AbstractLoad] = None,
             v_return_obj: bool = False,
             v_schema: Any = None
     ) -> Any:
@@ -331,11 +336,11 @@ class DalBase:
     async def filter_core(
             self,
             v_start_sql: SelectType = None,
-            v_select_from: List[Any] = None,
-            v_join: List[Any] = None,
-            v_outer_join: List[Any] = None,
-            v_options: List[_AbstractLoad] = None,
-            v_where: List[BinaryExpression] = None,
+            v_select_from: list[Any] = None,
+            v_join: list[Any] = None,
+            v_outer_join: list[Any] = None,
+            v_options: list[_AbstractLoad] = None,
+            v_where: list[BinaryExpression] = None,
             v_order: str = None,
             v_order_field: str = None,
             v_return_sql: bool = False,
@@ -343,7 +348,6 @@ class DalBase:
     ) -> Union[ScalarResult, SelectType]:
         """
         数据过滤核心功能
-
         :param v_start_sql: 初始 sql
         :param v_select_from: 用于指定查询从哪个表开始，通常与 .join() 等方法一起使用。
         :param v_join: 创建内连接（INNER JOIN）操作，返回两个表中满足连接条件的交集。
@@ -388,12 +392,13 @@ class DalBase:
     def add_relation(
             self,
             v_start_sql: SelectType,
-            v_select_from: List[Any] = None,
-            v_join: List[Any] = None,
-            v_outer_join: List[Any] = None,
-            v_options: List[_AbstractLoad] = None,
+            v_select_from: list[Any] = None,
+            v_join: list[Any] = None,
+            v_outer_join: list[Any] = None,
+            v_options: list[_AbstractLoad] = None,
     ) -> SelectType:
         """
+        关系查询，关系加载
         :param v_start_sql: 初始 sql
         :param v_select_from: 用于指定查询从哪个表开始，通常与 .join() 等方法一起使用。
         :param v_join: 创建内连接（INNER JOIN）操作，返回两个表中满足连接条件的交集。
@@ -439,7 +444,7 @@ class DalBase:
             sql = sql.where(*conditions)
         return sql
 
-    def __dict_filter(self, **kwargs) -> List[BinaryExpression]:
+    def __dict_filter(self, **kwargs) -> list[BinaryExpression]:
         """
         字典过滤
         :param model:
