@@ -1,26 +1,27 @@
 <script setup lang="tsx">
 import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
-import { ElButton, ElUpload } from 'element-plus'
+import { ElUpload } from 'element-plus'
 import { getSystemSettingsApi, putSystemSettingsApi } from '@/api/vadmin/system/settings'
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import { ElMessage, ElIcon } from 'element-plus'
 import type { UploadProps } from 'element-plus'
-import { useStorage } from '@/hooks/web/useStorage'
+import { useAuthStore } from '@/store/modules/auth'
 import { useAppStore } from '@/store/modules/app'
 import { propTypes } from '@/utils/propTypes'
 import { Icon } from '@/components/Icon'
 import { useValidator } from '@/hooks/web/useValidator'
+import { BaseButton } from '@/components/Button'
 
 const { required } = useValidator()
-const { getStorage } = useStorage()
+const authStore = useAuthStore()
 const appStore = useAppStore()
 
 const props = defineProps({
   tabId: propTypes.number
 })
 
-const token = getStorage(appStore.getToken)
+const token = computed(() => authStore.getToken)
 
 const formSchema = reactive<FormSchema[]>([
   {
@@ -211,9 +212,9 @@ const formSchema = reactive<FormSchema[]>([
         default: () => {
           return (
             <>
-              <ElButton loading={loading.value} type="primary" onClick={save}>
+              <BaseButton loading={loading.value} type="primary" onClick={save}>
                 立即提交
-              </ElButton>
+              </BaseButton>
             </>
           )
         }

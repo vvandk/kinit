@@ -7,12 +7,6 @@ import { ElInput, ElPopover, ElScrollbar, ElTabs, ElTabPane, ElPagination } from
 import { useAppStore } from '@/store/modules/app'
 import { computed, CSSProperties, ref, unref, watch } from 'vue'
 import { nextTick } from 'vue'
-import { propTypes } from '@/utils/propTypes'
-
-defineProps({
-  // 是否显示密码强度
-  inputDisabled: propTypes.bool.def(false)
-})
 
 const init = async (icon?: string) => {
   if (!icon) return
@@ -36,8 +30,8 @@ const iconSize = computed(() => {
   return unref(size) === 'small'
     ? 'var(--el-component-size-small)'
     : unref(size) === 'large'
-    ? 'var(--el-component-size-large)'
-    : 'var(--el-component-size)'
+      ? 'var(--el-component-size-large)'
+      : 'var(--el-component-size)'
 })
 
 const iconWrapStyle = computed((): CSSProperties => {
@@ -96,6 +90,11 @@ const popoverShow = () => {
 }
 
 const iconSelect = (icon: string) => {
+  // 如果是同一个icon则不做处理，则相当于点击了清空按钮
+  if (icon === unref(modelValue)) {
+    modelValue.value = ''
+    return
+  }
   modelValue.value = icon
 }
 
@@ -112,7 +111,7 @@ const inputClear = () => {
 
 <template>
   <div :class="prefixCls" class="flex justify-center items-center box">
-    <ElInput :disabled="inputDisabled" v-model="modelValue" />
+    <ElInput disabled v-model="modelValue" clearable />
     <ElPopover
       placement="bottom"
       trigger="click"
@@ -123,7 +122,6 @@ const inputClear = () => {
       <template #reference>
         <div :style="iconWrapStyle">
           <Icon v-if="modelValue" :icon="modelValue" />
-          <Icon v-else icon="ep:setting" />
         </div>
       </template>
       <ElScrollbar class="h-[calc(100%-50px)]!">
@@ -151,8 +149,10 @@ const inputClear = () => {
                     icon === modelValue ? 'var(--el-color-primary)' : 'var(--el-border-color)'
                   }`,
                   boxSizing: 'border-box',
-                  margin: '2px'
+                  margin: '2px',
+                  transition: 'all 0.3s'
                 }"
+                class="hover:border-color-[var(--el-color-primary)]!"
                 @click="iconSelect(icon)"
               >
                 <Icon

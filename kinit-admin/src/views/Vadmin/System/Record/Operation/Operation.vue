@@ -4,12 +4,12 @@ import { getRecordOperationListApi } from '@/api/vadmin/system/record/operation'
 import { useTable } from '@/hooks/web/useTable'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Table, TableColumn } from '@/components/Table'
-import { ElButton } from 'element-plus'
 import { Search } from '@/components/Search'
 import { FormSchema } from '@/components/Form'
 import { ContentWrap } from '@/components/ContentWrap'
 import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
+import { BaseButton } from '@/components/Button'
 
 defineOptions({
   name: 'SystemRecordOperation'
@@ -141,9 +141,9 @@ const tableColumns = reactive<TableColumn[]>([
         const row = data.row
         return (
           <>
-            <ElButton type="primary" link onClick={() => action(row, 'detail')}>
+            <BaseButton type="primary" link onClick={() => action(row, 'detail')}>
               详情
-            </ElButton>
+            </BaseButton>
           </>
         )
       }
@@ -222,7 +222,7 @@ const action = (row: any, type: string) => {
     <Detail v-if="actionType === 'detail'" :current-row="currentRow" />
 
     <template #footer>
-      <ElButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</ElButton>
+      <BaseButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</BaseButton>
     </template>
   </Dialog>
 </template>

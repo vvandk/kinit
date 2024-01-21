@@ -10,7 +10,6 @@ const props = defineProps({
   modelValue: propTypes.bool.def(false),
   title: propTypes.string.def('Dialog'),
   fullscreen: propTypes.bool.def(true),
-
   top: propTypes.string.def('8vh'),
   height: propTypes.oneOfType([String, Number]).def('500px'),
   width: propTypes.oneOfType([String, Number]).def('700px')
@@ -109,26 +108,30 @@ const dialogStyle = computed(() => {
 </template>
 
 <style lang="less">
-// .@{elNamespace}-overlay-dialog {
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// }
+.@{elNamespace}-overlay-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .@{elNamespace}-dialog {
-  // margin: 0 !important;
+  margin: 0 !important;
+
   &__header {
+    height: 54px;
+    padding: 0;
     margin-right: 0 !important;
     border-bottom: 1px solid var(--el-border-color);
-    padding: 0;
-    height: 54px;
   }
+
   &__body {
     padding: 15px !important;
   }
+
   &__footer {
     border-top: 1px solid var(--el-border-color);
   }
+
   &__headerbtn {
     top: 0;
   }

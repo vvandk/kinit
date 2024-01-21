@@ -9,7 +9,6 @@ import {
   ElPopover,
   ElCheckbox,
   ElScrollbar,
-  ElButton,
   ElTable,
   ElDivider
 } from 'element-plus'
@@ -23,6 +22,7 @@ import { useStorage } from '@/hooks/web/useStorage'
 import cloneDeep from 'lodash/cloneDeep'
 import { propTypes } from '@/utils/propTypes'
 import { moveElementToIndex } from '@/utils/index'
+import { BaseButton } from '@/components/Button'
 
 const appStore = useAppStore()
 const sizeMap = computed(() => appStore.sizeMap)
@@ -263,9 +263,9 @@ export default defineComponent({
                             {t('common.SerialNumberColumn')}
                           </ElCheckbox>
                         </div>
-                        <ElButton type="primary" link onClick={resetTableColumns}>
+                        <BaseButton type="primary" link onClick={resetTableColumns}>
                           {t('common.reset')}
-                        </ElButton>
+                        </BaseButton>
                       </div>
                       <ElScrollbar max-height="400px">
                         <VueDraggable

@@ -46,7 +46,7 @@ const detailSchema = reactive<DescriptionsSchema[]>([
       default: (data: any) => {
         return (
           <>
-            <ElSwitch value={data.status} size="small" disabled />
+            <ElSwitch modelValue={data.status} size="small" disabled />
           </>
         )
       }

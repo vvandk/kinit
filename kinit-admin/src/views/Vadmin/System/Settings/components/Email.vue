@@ -1,12 +1,12 @@
 <script setup lang="tsx">
 import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
-import { ElButton } from 'element-plus'
 import { getSystemSettingsApi, putSystemSettingsApi } from '@/api/vadmin/system/settings'
 import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { propTypes } from '@/utils/propTypes'
 import { useValidator } from '@/hooks/web/useValidator'
+import { BaseButton } from '@/components/Button'
 
 const { required } = useValidator()
 
@@ -78,9 +78,9 @@ const formSchema = reactive<FormSchema[]>([
         default: () => {
           return (
             <>
-              <ElButton loading={loading.value} type="primary" onClick={save}>
+              <BaseButton loading={loading.value} type="primary" onClick={save}>
                 立即提交
-              </ElButton>
+              </BaseButton>
             </>
           )
         }

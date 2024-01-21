@@ -4,7 +4,7 @@ import { useForm } from '@/hooks/web/useForm'
 import { reactive, ref } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useRouter } from 'vue-router'
-import { ElButton, ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { ContentWrap } from '@/components/ContentWrap'
 // import { useTagsViewStore } from '@/store/modules/tagsView'
 import {
@@ -13,6 +13,7 @@ import {
   putIssueApi,
   getIssueCategoryOptionsApi
 } from '@/api/vadmin/help/issue'
+import { BaseButton } from '@/components/Button'
 
 defineOptions({
   name: 'HelpIssueForm'
@@ -114,9 +115,9 @@ const formSchema = reactive<FormSchema[]>([
         default: () => {
           return (
             <>
-              <ElButton loading={saveLoading.value} type="primary" onClick={submit}>
+              <BaseButton loading={saveLoading.value} type="primary" onClick={submit}>
                 立即保存
-              </ElButton>
+              </BaseButton>
             </>
           )
         }

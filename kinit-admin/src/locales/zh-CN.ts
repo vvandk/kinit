@@ -50,6 +50,7 @@ export default {
     notSpace: '不能包含空格',
     notSpecialCharacters: '不能包含特殊字符',
     isEqual: '两次输入不一致',
+    setting: '设置',
     selectAll: '全选',
     SerialNumberColumn: '序号列'
   },
@@ -84,7 +85,7 @@ export default {
     sizeIcon: '尺寸图标',
     localeIcon: '多语言图标',
     tagsView: '标签页',
-    logo: '标志',
+    logo: 'Logo',
     greyMode: '灰色模式',
     fixedHeader: '固定头部',
     headerTheme: '头部主题',
@@ -185,7 +186,13 @@ export default {
     function: '功能',
     multipleTabs: '多开标签页',
     details: '详情页',
-    iconPicker: '图标选择器'
+    iconPicker: '图标选择器',
+    request: '请求',
+    waterfall: '瀑布流',
+    imageCropping: '图片裁剪',
+    videoPlayer: '视频播放器',
+    tableVideoPreview: '表格视频预览',
+    cardTable: '卡片表格'
   },
   permission: {
     hasPermission: '请设置操作权限值'
@@ -328,7 +335,8 @@ export default {
     customContent: '自定义内容',
     lazyLoad: '懒加载',
     upload: '上传',
-    userAvatar: '用户头像'
+    userAvatar: '用户头像',
+    iconPicker: '图标选择器'
   },
   guideDemo: {
     guide: '引导页',
@@ -455,7 +463,9 @@ export default {
     fixedHeaderOrAuto: '固定头部/自动',
     getSelections: '获取多选数据',
     preview: '封面',
-    showOrHiddenSortable: '显示/隐藏排序'
+    showOrHiddenSortable: '显示/隐藏排序',
+    videoPreview: '视频预览',
+    cardTable: '卡片表格'
   },
   richText: {
     richText: '富文本',
@@ -531,7 +541,7 @@ export default {
   menu: {
     menuName: '菜单名称',
     icon: '图标',
-    permission: '权限标识',
+    permission: '按钮权限',
     component: '组件',
     path: '路径',
     status: '状态',

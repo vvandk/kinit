@@ -79,19 +79,14 @@ const filterSearchSchema = (crudSchema: CrudSchema[]): FormSchema[] => {
   for (let i = 0; i < length; i++) {
     const schemaItem = crudSchema[i]
     // 判断是否隐藏
-    if (!schemaItem?.search?.hidden) {
-      const searchSchemaItem = {
-        component: schemaItem?.search?.component || 'Input',
-        ...schemaItem.search,
-        field: schemaItem.field,
-        label: schemaItem.search?.label || schemaItem.label
-      }
-
-      // 删除不必要的字段
-      delete searchSchemaItem.hidden
-
-      searchSchema.push(searchSchemaItem)
+    const searchSchemaItem = {
+      component: schemaItem?.search?.component || 'Input',
+      ...schemaItem.search,
+      field: schemaItem.field,
+      label: schemaItem.search?.label || schemaItem.label
     }
+
+    searchSchema.push(searchSchemaItem)
   }
 
   return searchSchema
@@ -127,19 +122,14 @@ const filterFormSchema = (crudSchema: CrudSchema[]): FormSchema[] => {
   for (let i = 0; i < length; i++) {
     const formItem = crudSchema[i]
     // 判断是否隐藏
-    if (!formItem?.form?.hidden) {
-      const formSchemaItem = {
-        component: formItem?.form?.component || 'Input',
-        ...formItem.form,
-        field: formItem.field,
-        label: formItem.form?.label || formItem.label
-      }
-
-      // 删除不必要的字段
-      delete formSchemaItem.hidden
-
-      formSchema.push(formSchemaItem)
+    const formSchemaItem = {
+      component: formItem?.form?.component || 'Input',
+      ...formItem.form,
+      field: formItem.field,
+      label: formItem.form?.label || formItem.label
     }
+
+    formSchema.push(formSchemaItem)
   }
 
   return formSchema

@@ -56,6 +56,7 @@ export enum ComponentNameEnum {
   TREE_SELECT = 'TreeSelect',
   UPLOAD = 'Upload',
   JSON_EDITOR = 'JsonEditor',
+  ICON_PICKER = 'IconPicker',
   Text = 'Text'
 }
 

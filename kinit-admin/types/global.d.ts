@@ -1,4 +1,6 @@
 import type { CSSProperties } from 'vue'
+import { RawAxiosRequestHeaders } from 'axios'
+
 declare global {
   declare interface Fn<T = any> {
     (...arg: T[]): T
@@ -29,6 +31,7 @@ declare global {
     | 'application/json'
     | 'application/x-www-form-urlencoded'
     | 'multipart/form-data'
+    | 'text/plain'
 
   declare type AxiosMethod = 'get' | 'post' | 'delete' | 'put'
 
@@ -39,7 +42,7 @@ declare global {
     data?: any
     url?: string
     method?: AxiosMethod
-    headersType?: string
+    headers?: RawAxiosRequestHeaders
     responseType?: AxiosResponseType
   }
 

@@ -5,11 +5,11 @@ import { isArray } from '@/utils/is'
 import { useAuthStoreWithOut } from '@/store/modules/auth'
 
 const { t } = useI18n()
-const authStore = useAuthStoreWithOut()
 
 // 全部权限
 const all_permission = ['*.*.*']
 const hasPermission = (value: string | string[]): boolean => {
+  const authStore = useAuthStoreWithOut()
   const permissions = authStore.getPermissions
   if (!value) {
     throw new Error(t('permission.hasPermission'))

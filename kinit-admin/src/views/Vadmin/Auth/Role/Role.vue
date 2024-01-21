@@ -10,7 +10,7 @@ import {
 import { useTable } from '@/hooks/web/useTable'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Table, TableColumn } from '@/components/Table'
-import { ElButton, ElSwitch } from 'element-plus'
+import { ElSwitch } from 'element-plus'
 import { Search } from '@/components/Search'
 import { FormSchema } from '@/components/Form'
 import { ContentWrap } from '@/components/ContentWrap'
@@ -19,6 +19,7 @@ import AuthManage from './components/AuthManage.vue'
 import { Dialog } from '@/components/Dialog'
 import { DictDetail, selectDictLabel } from '@/utils/dict'
 import { useDictStore } from '@/store/modules/dict'
+import { BaseButton } from '@/components/Button'
 
 defineOptions({
   name: 'AuthRole'
@@ -105,7 +106,7 @@ const tableColumns = reactive<TableColumn[]>([
         const row = data.row
         return (
           <>
-            <ElSwitch value={!row.disabled} disabled />
+            <ElSwitch modelValue={!row.disabled} disabled />
           </>
         )
       }
@@ -120,7 +121,7 @@ const tableColumns = reactive<TableColumn[]>([
         const row = data.row
         return (
           <>
-            <ElSwitch value={row.is_admin} disabled />
+            <ElSwitch modelValue={row.is_admin} disabled />
           </>
         )
       }
@@ -143,7 +144,7 @@ const tableColumns = reactive<TableColumn[]>([
         const del = ['auth.role.delete']
         return (
           <>
-            <ElButton
+            <BaseButton
               v-show={row.id !== 1}
               type="primary"
               v-hasPermi={update}
@@ -152,8 +153,8 @@ const tableColumns = reactive<TableColumn[]>([
               onClick={() => editAction(row)}
             >
               编辑
-            </ElButton>
-            <ElButton
+            </BaseButton>
+            <BaseButton
               v-show={row.id !== 1}
               type="primary"
               link
@@ -161,8 +162,8 @@ const tableColumns = reactive<TableColumn[]>([
               onClick={() => authManageActive(row)}
             >
               权限管理
-            </ElButton>
-            <ElButton
+            </BaseButton>
+            <BaseButton
               v-show={row.id !== 1}
               type="danger"
               v-hasPermi={del}
@@ -172,7 +173,7 @@ const tableColumns = reactive<TableColumn[]>([
               onClick={() => delData(row)}
             >
               删除
-            </ElButton>
+            </BaseButton>
           </>
         )
       }
@@ -329,8 +330,8 @@ const save = async () => {
       <template #toolbar>
         <ElRow :gutter="10">
           <ElCol :span="1.5">
-            <ElButton type="primary" v-hasPermi="['auth.role.create']" @click="addAction"
-              >新增角色</ElButton
+            <BaseButton type="primary" v-hasPermi="['auth.role.create']" @click="addAction"
+              >新增角色</BaseButton
             >
           </ElCol>
         </ElRow>
@@ -342,10 +343,10 @@ const save = async () => {
     <Write ref="writeRef" :current-row="currentRow" />
 
     <template #footer>
-      <ElButton type="primary" :loading="saveLoading" @click="save">
+      <BaseButton type="primary" :loading="saveLoading" @click="save">
         {{ t('exampleDemo.save') }}
-      </ElButton>
-      <ElButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</ElButton>
+      </BaseButton>
+      <BaseButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</BaseButton>
     </template>
   </Dialog>
 

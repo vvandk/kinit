@@ -67,7 +67,7 @@ const layout = computed(() => appStore.getLayout)
     border: 2px solid #e5e7eb;
     border-radius: 4px;
 
-    &:before {
+    &::before {
       position: absolute;
       top: 0;
       left: 0;
@@ -79,7 +79,7 @@ const layout = computed(() => appStore.getLayout)
       content: '';
     }
 
-    &:after {
+    &::after {
       position: absolute;
       top: 0;
       left: 0;
@@ -95,7 +95,7 @@ const layout = computed(() => appStore.getLayout)
     border: 2px solid #e5e7eb;
     border-radius: 4px;
 
-    &:before {
+    &::before {
       position: absolute;
       top: 0;
       left: 0;
@@ -107,7 +107,7 @@ const layout = computed(() => appStore.getLayout)
       content: '';
     }
 
-    &:after {
+    &::after {
       position: absolute;
       top: 0;
       left: 0;
@@ -123,7 +123,7 @@ const layout = computed(() => appStore.getLayout)
     border: 2px solid #e5e7eb;
     border-radius: 4px;
 
-    &:before {
+    &::before {
       position: absolute;
       top: 0;
       left: 0;
@@ -140,7 +140,7 @@ const layout = computed(() => appStore.getLayout)
     border: 2px solid #e5e7eb;
     border-radius: 4px;
 
-    &:before {
+    &::before {
       position: absolute;
       top: 0;
       left: 0;
@@ -152,7 +152,7 @@ const layout = computed(() => appStore.getLayout)
       content: '';
     }
 
-    &:after {
+    &::after {
       position: absolute;
       top: 0;
       left: 0;

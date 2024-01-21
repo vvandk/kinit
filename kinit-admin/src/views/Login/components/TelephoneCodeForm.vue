@@ -3,16 +3,16 @@ import { Form } from '@/components/Form'
 import { reactive, ref, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useForm } from '@/hooks/web/useForm'
-import { ElButton, ElInput, FormRules, ElDivider, ElMessage } from 'element-plus'
+import { ElInput, FormRules, ElDivider, ElMessage } from 'element-plus'
 import { useValidator } from '@/hooks/web/useValidator'
 import { FormSchema } from '@/components/Form'
 import { postSMSCodeApi } from '@/api/login'
 import { UserLoginType } from '@/api/login/types'
-import { useAuthStoreWithOut } from '@/store/modules/auth'
+import { useAuthStore } from '@/store/modules/auth'
 import { RouteLocationNormalizedLoaded, useRouter, RouteRecordRaw } from 'vue-router'
 import { getRoleMenusApi } from '@/api/login'
-import { useStorage } from '@/hooks/web/useStorage'
 import { usePermissionStore } from '@/store/modules/permission'
+import { BaseButton } from '@/components/Button'
 
 const emit = defineEmits(['to-password'])
 
@@ -22,8 +22,7 @@ const { t } = useI18n()
 const { required } = useValidator()
 const { currentRoute, addRoute, push } = useRouter()
 const permissionStore = usePermissionStore()
-const authStore = useAuthStoreWithOut()
-const { setStorage } = useStorage()
+const authStore = useAuthStore()
 
 const schema = reactive<FormSchema[]>([
   {
@@ -74,13 +73,13 @@ const schema = reactive<FormSchema[]>([
                     <>
                       <ElDivider direction="vertical" />
                       {SMSCodeStatus.value ? (
-                        <ElButton type="primary" link onClick={getSMSCode}>
+                        <BaseButton type="primary" link onClick={getSMSCode}>
                           {t('login.getSMSCode')}
-                        </ElButton>
+                        </BaseButton>
                       ) : (
-                        <ElButton type="primary" disabled={!SMSCodeStatus.value} link>
+                        <BaseButton type="primary" disabled={!SMSCodeStatus.value} link>
                           {SMSCodeNumber.value + t('login.SMSCodeRetry')}
-                        </ElButton>
+                        </BaseButton>
                       )}
                     </>
                   )
@@ -110,19 +109,19 @@ const schema = reactive<FormSchema[]>([
           return (
             <div class="w-[100%]">
               <div class="w-[100%]">
-                <ElButton
+                <BaseButton
                   type="primary"
                   class="w-[100%]"
                   loading={loading.value}
                   onClick={telephoneCodeLogin}
                 >
                   {t('login.login')}
-                </ElButton>
+                </BaseButton>
               </div>
               <div class="w-[100%] mt-15px">
-                <ElButton class="w-[100%]" onClick={toPasswordLogin}>
+                <BaseButton class="w-[100%]" onClick={toPasswordLogin}>
                   {t('login.passwordLogin')}
-                </ElButton>
+                </BaseButton>
               </div>
             </div>
           )
@@ -216,7 +215,6 @@ const getMenu = async () => {
   const res = await getRoleMenusApi()
   if (res) {
     const routers = res.data || []
-    setStorage('roleRouters', routers)
     await permissionStore.generateRoutes(routers).catch(() => {})
     permissionStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表

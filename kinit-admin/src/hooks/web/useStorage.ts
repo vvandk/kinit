@@ -4,7 +4,7 @@ const getValueType = (value: any) => {
   return type.slice(8, -1)
 }
 
-export const useStorage = (type: 'sessionStorage' | 'localStorage' = 'sessionStorage') => {
+export const useStorage = (type: 'sessionStorage' | 'localStorage' = 'localStorage') => {
   const setStorage = (key: string, value: any) => {
     const valueType = getValueType(value)
     window[type].setItem(key, JSON.stringify({ type: valueType, value }))

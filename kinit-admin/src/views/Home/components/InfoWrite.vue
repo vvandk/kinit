@@ -3,13 +3,14 @@ import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
 import { reactive, ref } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
-import { useAuthStoreWithOut } from '@/store/modules/auth'
-import { ElButton, ElMessage } from 'element-plus'
+import { useAuthStore } from '@/store/modules/auth'
+import { ElMessage } from 'element-plus'
 import { postCurrentUserUpdateInfo } from '@/api/vadmin/auth/user'
+import { BaseButton } from '@/components/Button'
 
 const { required, isTelephone } = useValidator()
 
-const authStore = useAuthStoreWithOut()
+const authStore = useAuthStore()
 
 const formSchema = reactive<FormSchema[]>([
   {
@@ -92,9 +93,9 @@ const formSchema = reactive<FormSchema[]>([
           return (
             <>
               <div class="w-[50%]">
-                <ElButton loading={loading.value} type="primary" class="w-[100%]" onClick={save}>
+                <BaseButton loading={loading.value} type="primary" class="w-[100%]" onClick={save}>
                   保存
-                </ElButton>
+                </BaseButton>
               </div>
             </>
           )

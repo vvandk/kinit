@@ -5,8 +5,8 @@ import { PropType, reactive, watch } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
 import { propTypes } from '@/utils/propTypes'
 import { getMenuTreeOptionsApi } from '@/api/vadmin/auth/menu'
-import { ElButton } from 'element-plus'
 import { IconPicker } from '@/components/IconPicker'
+import { BaseButton } from '@/components/Button'
 
 const { required } = useValidator()
 
@@ -88,9 +88,9 @@ const formSchema = reactive<FormSchema[]>([
               <div style="display: flex; justify-content: space-between">
                 <IconPicker style="width: 470px" input-disabled={false} v-model={data['icon']} />
                 <div style="margin-left: 10px">
-                  <ElButton type="primary" onClick={toIconify}>
+                  <BaseButton type="primary" onClick={toIconify}>
                     Iconify
-                  </ElButton>
+                  </BaseButton>
                 </div>
               </div>
             </>

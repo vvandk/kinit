@@ -10,7 +10,11 @@ export const useDictStore = defineStore('dict', {
   state: (): DictState => ({
     dictObj: {}
   }),
-  getters: {},
+  getters: {
+    getDictObjData(): Recordable {
+      return this.dictObj
+    }
+  },
   actions: {
     async getDictObj(dictTypes: string[]) {
       const result: Recordable = {}
@@ -34,7 +38,8 @@ export const useDictStore = defineStore('dict', {
       }
       return result
     }
-  }
+  },
+  persist: true
 })
 
 export const useDictStoreWithOut = () => {

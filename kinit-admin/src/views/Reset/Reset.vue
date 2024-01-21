@@ -3,21 +3,19 @@ import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
 import { computed, reactive, ref, watch } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
-import { useAuthStoreWithOut } from '@/store/modules/auth'
-import { ElButton, ElMessage } from 'element-plus'
+import { useAuthStore } from '@/store/modules/auth'
+import { ElMessage } from 'element-plus'
 import { postCurrentUserResetPassword } from '@/api/vadmin/auth/user'
 import { getRoleMenusApi } from '@/api/login'
-import { useStorage } from '@/hooks/web/useStorage'
 import { usePermissionStore } from '@/store/modules/permission'
 import { RouteLocationNormalizedLoaded, RouteRecordRaw, useRouter } from 'vue-router'
 import { useAppStore } from '@/store/modules/app'
 import { Footer } from '@/components/Footer'
 
 const { required } = useValidator()
-const { setStorage } = useStorage()
 const { addRoute, push, currentRoute } = useRouter()
 
-const authStore = useAuthStoreWithOut()
+const authStore = useAuthStore()
 const appStore = useAppStore()
 const permissionStore = usePermissionStore()
 
@@ -112,7 +110,6 @@ const getMenu = async () => {
   const res = await getRoleMenusApi()
   if (res) {
     const routers = res.data || []
-    setStorage('roleRouters', routers)
     await permissionStore.generateRoutes(routers).catch(() => {})
     permissionStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
@@ -137,9 +134,9 @@ const getMenu = async () => {
         class="dark:(border-1 border-[var(--el-border-color)] border-solid)"
       />
       <div class="w-[100%]">
-        <ElButton :loading="loading" type="primary" class="w-[100%]" @click="save">
+        <BaseButton :loading="loading" type="primary" class="w-[100%]" @click="save">
           重置密码
-        </ElButton>
+        </BaseButton>
       </div>
     </div>
 

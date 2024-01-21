@@ -7,7 +7,6 @@ import { useForm } from '@/hooks/web/useForm'
 import { reactive, computed } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
 import { FormSchema } from '@/components/Form'
-import { ElButton } from 'element-plus'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useLockStore } from '@/store/modules/lock'
 
@@ -87,14 +86,14 @@ const handleLock = async () => {
     </div>
     <Form :is-col="false" :schema="schema" :rules="rules" @register="formRegister" />
     <template #footer>
-      <ElButton type="primary" @click="handleLock">{{ t('lock.lock') }}</ElButton>
+      <BaseButton type="primary" @click="handleLock">{{ t('lock.lock') }}</BaseButton>
     </template>
   </Dialog>
 </template>
 
 <style lang="less" scoped>
 :global(.v-lock-dialog) {
-  @media (max-width: 767px) {
+  @media (width <= 767px) {
     max-width: calc(100vw - 16px);
   }
 }

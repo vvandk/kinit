@@ -155,12 +155,12 @@ initMap()
   background-color: #f13737;
   box-shadow: 0px 0px 15px #f61212;
   border-radius: 50%;
-  -webkit-animation-name: 'alarmDeviceBreath'; /*动画属性名，也就是我们前面keyframes定义的动画名*/
-  -webkit-animation-duration: 1s; /*动画持续时间*/
-  -webkit-animation-timing-function: ease; /*动画频率，和transition-timing-function是一样的*/
-  -webkit-animation-delay: 0s; /*动画延迟时间*/
-  -webkit-animation-iteration-count: infinite; /*定义循环资料，infinite为无限次*/
-  -webkit-animation-direction: alternate; /*定义动画方式*/
+  --webkit-animation-name: 'alarmDeviceBreath'; /*动画属性名，也就是我们前面keyframes定义的动画名*/
+  --webkit-animation-duration: 1s; /*动画持续时间*/
+  --webkit-animation-timing-function: ease; /*动画频率，和transition-timing-function是一样的*/
+  --webkit-animation-delay: 0s; /*动画延迟时间*/
+  --webkit-animation-iteration-count: infinite; /*定义循环资料，infinite为无限次*/
+  --webkit-animation-direction: alternate; /*定义动画方式*/
 }
 </style>
 

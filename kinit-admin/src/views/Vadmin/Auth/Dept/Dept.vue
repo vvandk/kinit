@@ -9,10 +9,11 @@ import {
 import { useTable } from '@/hooks/web/useTable'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Table, TableColumn } from '@/components/Table'
-import { ElButton, ElSwitch, ElRow, ElCol } from 'element-plus'
+import { ElSwitch, ElRow, ElCol } from 'element-plus'
 import { ContentWrap } from '@/components/ContentWrap'
 import Write from './components/Write.vue'
 import { Dialog } from '@/components/Dialog'
+import { BaseButton } from '@/components/Button'
 
 defineOptions({
   name: 'AuthDept'
@@ -89,7 +90,7 @@ const tableColumns = reactive<TableColumn[]>([
         const row = data.row
         return (
           <>
-            <ElSwitch value={!row.disabled} disabled />
+            <ElSwitch modelValue={!row.disabled} disabled />
           </>
         )
       }
@@ -105,13 +106,13 @@ const tableColumns = reactive<TableColumn[]>([
         const row = data.row
         return (
           <>
-            <ElButton type="primary" link size="small" onClick={() => editAction(row)}>
+            <BaseButton type="primary" link size="small" onClick={() => editAction(row)}>
               编辑
-            </ElButton>
-            <ElButton type="primary" link size="small" onClick={() => addSonAction(row)}>
+            </BaseButton>
+            <BaseButton type="primary" link size="small" onClick={() => addSonAction(row)}>
               添加子部门
-            </ElButton>
-            <ElButton
+            </BaseButton>
+            <BaseButton
               type="danger"
               loading={delLoading.value}
               link
@@ -119,7 +120,7 @@ const tableColumns = reactive<TableColumn[]>([
               onClick={() => delData(row)}
             >
               删除
-            </ElButton>
+            </BaseButton>
           </>
         )
       }
@@ -212,7 +213,7 @@ const save = async () => {
       <template #toolbar>
         <ElRow :gutter="10">
           <ElCol :span="1.5">
-            <ElButton type="primary" @click="addAction">新增部门</ElButton>
+            <BaseButton type="primary" @click="addAction">新增部门</BaseButton>
           </ElCol>
         </ElRow>
       </template>
@@ -223,10 +224,15 @@ const save = async () => {
     <Write ref="writeRef" :current-row="currentRow" :parent-id="parentId" />
 
     <template #footer>
-      <ElButton v-if="actionType !== 'detail'" type="primary" :loading="saveLoading" @click="save">
+      <BaseButton
+        v-if="actionType !== 'detail'"
+        type="primary"
+        :loading="saveLoading"
+        @click="save"
+      >
         {{ t('exampleDemo.save') }}
-      </ElButton>
-      <ElButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</ElButton>
+      </BaseButton>
+      <BaseButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</BaseButton>
     </template>
   </Dialog>
 </template>

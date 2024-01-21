@@ -2,9 +2,7 @@
 import { computed } from 'vue'
 import { useAppStore } from '@/store/modules/app'
 import { ConfigGlobal } from '@/components/ConfigGlobal'
-import { isDark } from '@/utils/is'
 import { useDesign } from '@/hooks/web/useDesign'
-import { useStorage } from '@/hooks/web/useStorage'
 import { getSystemBaseConfigApi } from '@/api/vadmin/system/settings'
 
 const { getPrefixCls } = useDesign()
@@ -17,18 +15,6 @@ const currentSize = computed(() => appStore.getCurrentSize)
 
 const greyMode = computed(() => appStore.getGreyMode)
 
-const { getStorage } = useStorage()
-
-// 根据浏览器当前主题设置系统主题色
-const setDefaultTheme = () => {
-  if (getStorage('isDark') !== null) {
-    appStore.setIsDark(getStorage('isDark'))
-    return
-  }
-  const isDarkTheme = isDark()
-  appStore.setIsDark(isDarkTheme)
-}
-
 // 添加mate标签
 const addMeta = (name: string, content: string) => {
   const meta = document.createElement('meta')
@@ -39,6 +25,9 @@ const addMeta = (name: string, content: string) => {
 
 // 获取并设置系统配置
 const setSystemConfig = async () => {
+  if (appStore.getLogoImage) {
+    return
+  }
   const res = await getSystemBaseConfigApi()
   if (res) {
     appStore.setTitle(res.data.web_title || import.meta.env.VITE_APP_TITLE)
@@ -52,7 +41,7 @@ const setSystemConfig = async () => {
   }
 }
 
-setDefaultTheme()
+appStore.initTheme()
 setSystemConfig()
 </script>
 

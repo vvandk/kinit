@@ -50,6 +50,8 @@ export default {
     notSpace: 'Spaces are not allowed',
     notSpecialCharacters: 'Special characters are not allowed',
     isEqual: 'The two are not equal',
+    // 列设置
+    setting: 'Setting',
     selectAll: 'Select all',
     SerialNumberColumn: 'Index column'
   },
@@ -187,7 +189,14 @@ export default {
     function: 'Function',
     multipleTabs: 'Multiple tabs',
     details: 'Details',
-    iconPicker: 'Icon picker'
+    iconPicker: 'Icon picker',
+    request: 'Request',
+    waterfall: 'Waterfall',
+    imageCropping: 'Image cropping',
+    videoPlayer: 'Video player',
+    // 表格视频预览
+    tableVideoPreview: 'Table video preview',
+    cardTable: 'Card table'
   },
   permission: {
     hasPermission: 'Please set the operation permission value'
@@ -333,7 +342,8 @@ export default {
     lazyLoad: 'Lazy load',
     upload: 'Upload',
     // 用户头像
-    userAvatar: 'User avatar'
+    userAvatar: 'User avatar',
+    iconPicker: 'Icon picker'
   },
   guideDemo: {
     guide: 'Guide',
@@ -462,7 +472,9 @@ export default {
     fixedHeaderOrAuto: 'Fixed header or auto',
     getSelections: 'Get selections',
     preview: 'Preview',
-    showOrHiddenSortable: 'Show or hidden sortable'
+    showOrHiddenSortable: 'Show or hidden sortable',
+    videoPreview: 'Video preview',
+    cardTable: 'Card table'
   },
   richText: {
     richText: 'Rich text',
