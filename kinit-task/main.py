@@ -158,7 +158,8 @@ class ScheduledTask:
         self.mongo.close_database_connection()
         if self.scheduler:
             self.scheduler.shutdown()
-        self.rd.close_database_connection()
+        if self.rd:
+            self.rd.close_database_connection()
 
 
 if __name__ == '__main__':
