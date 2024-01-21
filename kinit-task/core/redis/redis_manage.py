@@ -12,10 +12,27 @@ class RedisManage:
         """
         连接 redis 数据库
 
-        :param path: mongodb 链接地址
+        :param path: redis 链接地址
         :return:
         """
         self.rd = redis.from_url(path)
+        self.test_connect()
+
+    def test_connect(self) -> None:
+        """
+        测试链接
+        :return:
+        """
+        try:
+            # 发送PING命令
+            response = self.rd.ping()
+            if response:
+                print("Redis 连接成功")
+            else:
+                print("Redis 连接失败")
+        except redis.exceptions.RedisError as e:
+            # 捕获并处理任何Redis错误
+            raise redis.exceptions.RedisError(f"Redis 连接失败: {e}")
 
     def close_database_connection(self) -> None:
         """

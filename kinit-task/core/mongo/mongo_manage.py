@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from pymongo.results import InsertOneResult, UpdateResult
 from pymongo.mongo_client import MongoClient as MongoClientType
 from pymongo.database import Database
+from pymongo.errors import ServerSelectionTimeoutError
 
 
 class MongoManage:
@@ -25,8 +26,30 @@ class MongoManage:
         :param db_name: 数据库名称
         :return:
         """
-        self.client = MongoClient(path)
+        # 设置连接超时时长为5秒
+        self.client = MongoClient(path, serverSelectionTimeoutMS=5000)
         self.db = self.client[db_name]
+        self.test_connect()
+
+    def get_databases(self):
+        """
+        获取数据库列表，用来测试是否真的连接成功
+        :return:
+        """
+        return self.client.list_database_names()
+
+    def test_connect(self):
+        """
+        测试连接是否成功
+        :return:
+        """
+        # 尝试连接并捕获可能的超时异常
+        try:
+            # 触发一次服务器通信来确认连接
+            self.client.server_info()
+            print("MongoDB 连接成功")
+        except ServerSelectionTimeoutError as e:
+            raise ServerSelectionTimeoutError(f"MongoDB 连接失败: {e}")
 
     def close_database_connection(self) -> None:
         """

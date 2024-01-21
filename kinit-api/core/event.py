@@ -12,6 +12,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from application.settings import REDIS_DB_URL, MONGO_DB_URL, MONGO_DB_NAME, EVENTS
 from utils.cache import Cache
 from redis import asyncio as aioredis
+from redis.exceptions import AuthenticationError, TimeoutError, RedisError
 from contextlib import asynccontextmanager
 from utils.tools import import_modules_async
 from sqlalchemy.exc import ProgrammingError
@@ -64,15 +65,27 @@ async def connect_redis(app: FastAPI, status: bool):
     :return:
     """
     if status:
-        print("Connecting to Redis")
-        app.state.redis = aioredis.from_url(REDIS_DB_URL, decode_responses=True, health_check_interval=1)
+        rd = aioredis.from_url(REDIS_DB_URL, decode_responses=True, health_check_interval=1)
+        app.state.redis = rd
+        try:
+            response = await rd.ping()
+            if response:
+                print("Redis 连接成功")
+            else:
+                print("Redis 连接失败")
+        except AuthenticationError as e:
+            raise AuthenticationError(f"Redis 连接认证失败，用户名或密码错误: {e}")
+        except TimeoutError as e:
+            raise AuthenticationError(f"Redis 连接超时，地址或者端口错误: {e}")
+        except RedisError as e:
+            raise RedisError(f"Redis 连接失败: {e}")
         try:
             await Cache(app.state.redis).cache_tab_names()
         except ProgrammingError as e:
             logger.error(f"sqlalchemy.exc.ProgrammingError: {e}")
             print(f"sqlalchemy.exc.ProgrammingError: {e}")
     else:
-        print("Redis connection closed")
+        print("Redis 连接关闭")
         await app.state.redis.close()
 
 
@@ -88,14 +101,21 @@ async def connect_mongo(app: FastAPI, status: bool):
     :return:
     """
     if status:
-        client: AsyncIOMotorClient = AsyncIOMotorClient(MONGO_DB_URL, maxPoolSize=10, minPoolSize=10)
+        client: AsyncIOMotorClient = AsyncIOMotorClient(
+            MONGO_DB_URL,
+            maxPoolSize=10,
+            minPoolSize=10,
+            serverSelectionTimeoutMS=5000
+        )
         app.state.mongo_client = client
         app.state.mongo = client[MONGO_DB_NAME]
-        print("Connecting to Mongo")
+        # 尝试连接并捕获可能的超时异常
+        try:
+            # 触发一次服务器通信来确认连接
+            data = await client.server_info()
+            print("MongoDB 连接成功", data)
+        except Exception as e:
+            raise ValueError(f"MongoDB 连接失败: {e}")
     else:
-        print("Mongo connection closed")
+        print("MongoDB 连接关闭")
         app.state.mongo_client.close()
-
-
-
-
