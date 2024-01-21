@@ -115,9 +115,7 @@ if __name__ == '__main__':
 
 目前不会去检测已有的代码，比如 `UserDal` 已经存在，还是会继续添加的。
 
-<video src="https://ktianc.oss-cn-beijing.aliyuncs.com/kinit/public/videos/8832f2bc5da4bcacc8f472cfbee6f18f.mp4"></video>
-
-
+B站 视频演示：https://www.bilibili.com/video/BV19e411a7zP/
 
 ## 源码地址
 
