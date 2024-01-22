@@ -1,3 +1,4 @@
+import { hasRoute } from './router'
 import router from './router'
 import type { RouteRecordRaw } from 'vue-router'
 import { useTitle } from '@/hooks/web/useTitle'
@@ -18,6 +19,7 @@ router.beforeEach(async (to, from, next) => {
   loadStart()
   const permissionStore = usePermissionStoreWithOut()
   const authStore = useAuthStoreWithOut()
+
   if (authStore.getToken) {
     if (to.path === '/login') {
       next({ path: '/' })
@@ -28,6 +30,9 @@ router.beforeEach(async (to, from, next) => {
         await authStore.setUserInfo()
       }
       if (permissionStore.getIsAddRouters) {
+        if (!hasRoute(to.path)) {
+          authStore.logout('认证已过期，请重新登录！')
+        }
         next()
         return
       }

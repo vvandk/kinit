@@ -124,6 +124,12 @@ export const resetRouter = (): void => {
   })
 }
 
+// 判断是否已经有某个路径的路由配置
+export const hasRoute = (path: string): boolean => {
+  const resolvedRoute = router.resolve(path)
+  return resolvedRoute.matched.length > 0
+}
+
 export const setupRouter = (app: App<Element>) => {
   app.use(router)
 }
