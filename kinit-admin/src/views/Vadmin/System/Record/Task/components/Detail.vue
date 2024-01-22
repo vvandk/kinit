@@ -50,7 +50,7 @@ const detailSchema = reactive<DescriptionsSchema[]>([
     span: 24,
     slots: {
       default: (data: any) => {
-        const row = data.row
+        const row = data
         return (
           <>
             <div>{selectDictLabel(execStrategyOptions.value, row.exec_strategy)}</div>
@@ -85,7 +85,13 @@ const detailSchema = reactive<DescriptionsSchema[]>([
   {
     field: 'retval',
     label: '任务返回值',
-    span: 24
+    span: 24,
+    slots: {
+      default: (data: any) => {
+        const row = data
+        return JSON.parse(row.retval)
+      }
+    }
   },
   {
     field: 'exception',

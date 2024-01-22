@@ -119,7 +119,13 @@ const tableColumns = reactive<TableColumn[]>([
   {
     field: 'retval',
     label: '任务返回值',
-    show: true
+    show: true,
+    slots: {
+      default: (data: any) => {
+        const row = data.row
+        return JSON.parse(row.retval)
+      }
+    }
   },
   {
     field: 'exception',
