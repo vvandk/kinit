@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import Finance from './components/Finance.vue'
 import { ElTabs, ElTabPane } from 'element-plus'
 import User from './components/User.vue'
+import { ContentWrap } from '@/components/ContentWrap'
 
 defineOptions({
   name: 'DashboardAnalysis'
@@ -12,7 +13,7 @@ const activeName = ref('user')
 </script>
 
 <template>
-  <div class="p-5">
+  <ContentWrap>
     <ElTabs v-model="activeName">
       <ElTabPane label="财务分析" name="finance" :lazy="true">
         <Finance />
@@ -21,7 +22,7 @@ const activeName = ref('user')
         <User />
       </ElTabPane>
     </ElTabs>
-  </div>
+  </ContentWrap>
 </template>
 
 <style scoped></style>
