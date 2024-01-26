@@ -29,7 +29,6 @@ class ScheduledTask:
     def add_job(self, exec_strategy: str, job_params: dict) -> None:
         """
         添加定时任务
-
         :param exec_strategy: 执行策略
         :param job_params: 执行参数
         :return:
@@ -62,7 +61,6 @@ class ScheduledTask:
     def error_record(self, name: str, error_info: str) -> None:
         """
         添加任务失败记录，并且将任务状态改为 False
-
         :param name: 任务编号
         :param error_info: 报错信息
         :return:
@@ -92,7 +90,6 @@ class ScheduledTask:
     def run(self) -> None:
         """
         启动监听订阅消息（阻塞）
-
         :return:
         """
         self.start_mongo()
@@ -122,7 +119,6 @@ class ScheduledTask:
     def start_mongo(self) -> None:
         """
         启动 mongo
-
         :return:
         """
         self.mongo = get_mongo()
@@ -131,7 +127,6 @@ class ScheduledTask:
     def start_scheduler(self) -> None:
         """
         启动定时任务
-
         :return:
         """
         self.scheduler = Scheduler()
@@ -141,7 +136,6 @@ class ScheduledTask:
     def start_redis(self) -> None:
         """
         启动 redis
-
         :return:
         """
         self.rd = get_redis()
@@ -152,7 +146,6 @@ class ScheduledTask:
         # pycharm 执行停止，该函数无法正常被执行，怀疑是因为阻塞导致或 pycharm 的强制退出导致
         # 报错导致得退出，会被执行
         关闭程序
-
         :return:
         """
         self.mongo.close_database_connection()

@@ -34,7 +34,7 @@ class Scheduler:
     def start(self, listener: bool = True) -> None:
         """
         创建调度器
-
+        :param listener: 是否注册事件监听器
         :return:
         """
         self.scheduler = BackgroundScheduler()
@@ -46,9 +46,8 @@ class Scheduler:
 
     def __get_mongodb_job_store(self) -> MongoDBJobStore:
         """
-        获取 MongoDBJobStore
-
-        :return: MongoDBJobStore
+        获取 MongoDB Job Store
+        :return: MongoDB Job Store
         """
         self.db = get_database()
         return MongoDBJobStore(database=MONGO_DB_NAME, collection=self.COLLECTION, client=self.db.client)
@@ -63,7 +62,6 @@ class Scheduler:
     ) -> None | Job:
         """
         date触发器用于在指定的日期和时间触发一次任务。它适用于需要在特定时间点执行一次的任务，例如执行一次备份操作。
-
         :param job_class: 类路径
         :param trigger: 触发条件
         :param name: 任务名称
@@ -88,7 +86,6 @@ class Scheduler:
     ) -> None | Job:
         """
         通过 cron 表达式添加定时任务
-
         :param job_class: 类路径
         :param expression: cron 表达式，六位或七位，分别表示秒、分钟、小时、天、月、星期几、年
         :param start_date: 触发器的开始日期时间。可选参数，默认为 None。
@@ -116,7 +113,6 @@ class Scheduler:
     def add_date_job(self, job_class: str, expression: str, name: str = None, args: tuple = (), **kwargs) -> None | Job:
         """
         date触发器用于在指定的日期和时间触发一次任务。它适用于需要在特定时间点执行一次的任务，例如执行一次备份操作。
-
         :param job_class: 类路径
         :param expression: date
         :param name: 任务名称
@@ -140,7 +136,6 @@ class Scheduler:
     ) -> None | Job:
         """
         date触发器用于在指定的日期和时间触发一次任务。它适用于需要在特定时间点执行一次的任务，例如执行一次备份操作。
-
         :param job_class: 类路径
         :param expression：interval 表达式，分别为：秒、分、时、天、周，例如，设置 10 * * * * 表示每隔 10 秒执行一次任务。
         :param end_date: 表示任务的结束时间，可以设置为 datetime 对象或者字符串。
@@ -170,7 +165,6 @@ class Scheduler:
     def run_job(self, job_class: str, args: tuple = (), **kwargs) -> None:
         """
         立即执行一次任务，但不会执行监听器，只适合只需要执行任务，不需要记录的任务
-
         :param job_class: 类路径
         :param args: 类路径
         :return: 类实例
@@ -181,7 +175,6 @@ class Scheduler:
     def remove_job(self, name: str) -> None:
         """
         删除任务
-
         :param name: 任务名称
         :return:
         """
@@ -193,7 +186,6 @@ class Scheduler:
     def get_job(self, name: str) -> Job:
         """
         获取任务
-
         :param name: 任务名称
         :return:
         """
@@ -202,7 +194,6 @@ class Scheduler:
     def has_job(self, name: str) -> bool:
         """
         判断任务是否存在
-
         :param name: 任务名称
         :return:
         """
@@ -214,7 +205,6 @@ class Scheduler:
     def get_jobs(self) -> List[Job]:
         """
         获取所有任务
-
         :return:
         """
         return self.scheduler.get_jobs()
@@ -222,7 +212,6 @@ class Scheduler:
     def get_job_names(self) -> List[str]:
         """
         获取所有任务
-
         :return:
         """
         jobs = self.scheduler.get_jobs()
@@ -231,7 +220,6 @@ class Scheduler:
     def __import_module(self, expression: str):
         """
         反射模块
-
         :param expression: 类路径
         :return: 类实例
         """
@@ -253,7 +241,6 @@ class Scheduler:
     def __parse_cron_expression(expression: str) -> tuple:
         """
         解析 cron 表达式
-
         :param expression: cron 表达式，支持六位或七位，分别表示秒、分钟、小时、天、月、星期几、年
         :return: 解析后的秒、分钟、小时、天、月、星期几、年字段的元组
         """
@@ -272,7 +259,6 @@ class Scheduler:
     def __parse_interval_expression(expression: str) -> tuple:
         """
         解析 interval 表达式
-
         :param expression: interval 表达式，分别为：秒、分、时、天、周，例如，设置 10 * * * * 表示每隔 10 秒执行一次任务。
         :return:
         """
@@ -289,7 +275,6 @@ class Scheduler:
     def __parse_string_to_class(cls, expression: str) -> tuple:
         """
         使用正则表达式匹配类路径和参数
-
         :param expression: 表达式
         :return:
         """
@@ -313,7 +298,6 @@ class Scheduler:
     def __parse_arguments(args_str) -> list:
         """
         解析类路径参数字符串
-
         :param args_str: 类参数字符串
         :return:
         """
@@ -341,7 +325,6 @@ class Scheduler:
     def shutdown(self) -> None:
         """
         关闭调度器
-
         :return:
         """
         self.scheduler.shutdown()
