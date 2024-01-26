@@ -76,7 +76,7 @@ async def connect_redis(app: FastAPI, status: bool):
         except AuthenticationError as e:
             raise AuthenticationError(f"Redis 连接认证失败，用户名或密码错误: {e}")
         except TimeoutError as e:
-            raise AuthenticationError(f"Redis 连接超时，地址或者端口错误: {e}")
+            raise TimeoutError(f"Redis 连接超时，地址或者端口错误: {e}")
         except RedisError as e:
             raise RedisError(f"Redis 连接失败: {e}")
         try:
