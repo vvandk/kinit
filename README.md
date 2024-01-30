@@ -43,6 +43,16 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 [小诺开源技术 (xiaonuo.vip)](https://www.xiaonuo.vip/)：国内首个国密前后端分离快速开发平台
 
+# 微信群
+
+提供一个技术交流群，现在还没什么人哈哈哈哈哈，真心希望大家能够加入，积极讨论，因为本项目中还没有详细使用文档（一直在欠着，我也挺不好意思的），所以大家加入后，也可以很方便的一起讨论在使用中遇到各种问题，也可以提一些你想加入的功能，让我们更近一点，欢迎大家的加入。
+
+<div align="center">
+    <p align="center">
+        <img src="https://ktianc.oss-cn-beijing.aliyuncs.com/kinit/public/images/55b5657e654556825cf99483c35cbf4.jpg" height="500" alt="logo"/>
+    </p>
+</div>
+
 ## 在线体验
 
 PC端演示地址：https://kinit.ktianc.top
