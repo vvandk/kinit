@@ -490,7 +490,9 @@ pnpm run build:pro
       DEBUG = False # 生产环境应该改为 False
       ```
 
-3. 如果已有 Mysql 或者 Redis 或者 MongoDB 数据库，请修改如下内容，如果没有则不需要修改：
+3. （**如果没有安装数据库则不需要这一操作**）如果已有 Mysql 或者 Redis 或者 MongoDB 数据库，请执行以下操作：
+
+   请先在对应数据库中创建用户名以及数据库，并修改以下数据库连接改为已有的数据库连接
 
    1. 修改 API 端配置文件：
 
@@ -499,7 +501,7 @@ pnpm run build:pro
       ```python
       # Mysql 数据库配置项
       # 连接引擎官方文档：https://www.osgeo.cn/sqlalchemy/core/engines.html
-      # 数据库链接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
+      # 数据库连接配置说明：mysql+asyncmy://数据库用户名:数据库密码@数据库地址:数据库端口/数据库名称
       SQLALCHEMY_DATABASE_URL = "mysql+asyncmy://root:123456@177.8.0.7:3306/kinit"
       
       # Redis 数据库配置
@@ -515,9 +517,9 @@ pnpm run build:pro
       ```
       
    2. 修改定时任务配置文件
-   
+
       文件路径为：`kinit-task/application/config/production.py`
-   
+
       ```python
       # Redis 数据库配置
       # 与接口是同一个数据库
@@ -534,7 +536,7 @@ pnpm run build:pro
       ```
       
    3. 将已有的数据库在 `docker-compose.yml` 文件中注释
-   
+
 4. 配置阿里云 OSS 与 IP 解析接口地址（可选）
 
    文件路径：`kinit-api/application/config/production.py`
@@ -561,7 +563,7 @@ pnpm run build:pro
    IP_PARSE_ENABLE = False
    IP_PARSE_TOKEN = "IP_PARSE_TOKEN"
    ```
-   
+
 5. 前端项目打包：
 
    ```shell
