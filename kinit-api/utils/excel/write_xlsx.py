@@ -16,7 +16,7 @@ import xlsxwriter
 from typing import List
 from application.settings import STATIC_ROOT, STATIC_URL
 from utils.file.file_base import FileBase
-from utils.tools import generate_string
+from pathlib import Path
 
 
 class WriteXlsx:
@@ -38,13 +38,19 @@ class WriteXlsx:
         :param save_static: 保存方式 static 静态资源或者临时文件
         :return:
         """
-        if not file_path or (file_path and not os.path.abspath(file_path)):
+        if not file_path:
             if save_static:
-                self.file_path = FileBase.generate_static_file_path("write_xlsx", file_path)
+                self.file_path = FileBase.generate_static_file_path(path="write_xlsx", suffix="xlsx")
             else:
-                self.file_path = FileBase.generate_temp_file_path(f"{generate_string(8)}.xlsx")
+                self.file_path = FileBase.generate_temp_file_path(suffix="xlsx")
+        elif not os.path.isabs(file_path):
+            if save_static:
+                self.file_path = FileBase.generate_static_file_path(path="write_xlsx", filename=file_path)
+            else:
+                self.file_path = FileBase.generate_temp_file_path(filename=file_path)
         else:
             self.file_path = file_path
+        Path(self.file_path).parent.mkdir(parents=True, exist_ok=True)
         self.sheet_name = sheet_name
         self.wb = xlsxwriter.Workbook(self.file_path)
         self.sheet = self.wb.add_worksheet(sheet_name)
@@ -120,5 +126,4 @@ class WriteXlsx:
         else:
             print("write_xlsx 生成文件：", self.file_path)
             raise ValueError("生成文件为临时文件，无法访问！")
-
 
