@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 from aiopathlib import AsyncPath
 from fastapi import UploadFile
-from application.settings import TEMP_DIR
+from application.settings import TEMP_DIR, STATIC_ROOT
 from core.exception import CustomException
 from utils import status
 from utils.tools import generate_string
@@ -25,30 +25,61 @@ class FileBase:
     ALL_ACCEPT = [*IMAGE_ACCEPT, *VIDEO_ACCEPT, *AUDIO_ACCEPT]
 
     @classmethod
-    def generate_static_file_path(cls, path: str, filename: str) -> str:
+    def get_random_filename(cls, suffix: str) -> str:
         """
-        生成文件路径
-        :param path: static 指定目录类别
-        :param filename: 文件名称
+        生成随机文件名称，生成规则：当前时间戳 + 8位随机字符串拼接
+        :param suffix: 文件后缀
         :return:
         """
+        if not suffix.startswith("."):
+            suffix = "." + suffix
+        return f"{str(int(datetime.datetime.now().timestamp())) + str(generate_string(8))}{suffix}"
+
+    @classmethod
+    def get_today_timestamp(cls) -> str:
+        """
+        获取当天时间戳
+        :return:
+        """
+        return str(int((datetime.datetime.now().replace(hour=0, minute=0, second=0)).timestamp()))
+
+    @classmethod
+    def generate_static_file_path(cls, path: str, filename: str = None, suffix: str = None) -> str:
+        """
+        生成 static 静态文件路径，生成规则：自定义目录/当天日期时间戳/随机文件名称
+        1. filename 参数或者 suffix 参数必须填写一个
+        2. filename 参数和 suffix 参数都存在则优先取 suffix 参数为后缀
+        :param path: static 指定目录类别
+        :param filename: 文件名称
+        :param suffix: 文件后缀
+        :return:
+        """
+        if not filename and not suffix:
+            raise ValueError("filename 参数或者 suffix 参数必须填写一个")
+        elif not suffix and filename:
+            suffix = os.path.splitext(filename)[-1]
         path = path.replace("\\", "/")
         if path[0] == "/":
             path = path[1:]
         if path[-1] == "/":
             path = path[:-1]
-        today = str(int((datetime.datetime.now().replace(hour=0, minute=0, second=0)).timestamp()))
-        _filename = str(int(datetime.datetime.now().timestamp())) + str(generate_string(8))
-        return f"{path}/{today}/{_filename}{os.path.splitext(filename)[-1]}"
+        return f"{STATIC_ROOT}/{path}/{cls.get_today_timestamp()}/{cls.get_random_filename(suffix)}"
 
     @classmethod
-    def generate_temp_file_path(cls, filename: str) -> str:
+    def generate_temp_file_path(cls, filename: str = None, suffix: str = None) -> str:
         """
-        生成临时文件路径
+        生成临时文件路径，生成规则：
+        1. filename 参数或者 suffix 参数必须填写一个
+        2. filename 参数和 suffix 参数都存在则优先取 suffix 参数为后缀
         :param filename: 文件名称
+        :param suffix: 文件后缀
         :return:
         """
-        return f"{cls.generate_temp_dir_path()}/{filename}"
+        if not filename and not suffix:
+            raise ValueError("filename 参数或者 suffix 参数必须填写一个")
+        elif not suffix and filename:
+            suffix = os.path.splitext(filename)[-1]
+        return f"{cls.generate_temp_dir_path()}/{cls.get_random_filename(suffix)}"
 
     @classmethod
     def generate_temp_dir_path(cls) -> str:
@@ -58,10 +89,9 @@ class FileBase:
         """
         date = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d")
         file_dir = Path(TEMP_DIR) / date
-        path = file_dir / (generate_string(4) + str(int(datetime.datetime.now().timestamp())))
-        if not path.exists():
-            path.mkdir(parents=True, exist_ok=True)
-        return str(path).replace("\\", "/")
+        if not file_dir.exists():
+            file_dir.mkdir(parents=True, exist_ok=True)
+        return str(file_dir).replace("\\", "/")
 
     @classmethod
     async def async_generate_temp_file_path(cls, filename: str) -> str:
