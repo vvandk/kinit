@@ -72,9 +72,10 @@ class FileManage(FileBase):
         if not await save_path.parent.exists():
             await save_path.parent.mkdir(parents=True, exist_ok=True)
         await save_path.write_bytes(await self.file.read())
+        remote_path = path.replace(STATIC_ROOT, '').replace("\\", '/')
         return {
-            "local_path": f"{STATIC_ROOT}/{self.path}",
-            "remote_path": f"{STATIC_URL}/{self.path}"
+            "local_path": path,
+            "remote_path": f"{STATIC_URL}/{remote_path}"
         }
 
     @classmethod
