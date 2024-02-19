@@ -49,9 +49,10 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 <div align="center">
     <p align="center">
-        <img src="https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1707235200/1707297056nZRJ6yeg.jpg" height="500" alt="logo"/>
+        <img src="https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/1708272000/1708353174EhXbRf5M.jpg" height="500" alt="logo"/>
     </p>
 </div>
+
 
 
 ## 在线体验
