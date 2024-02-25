@@ -37,7 +37,6 @@ from datetime import datetime
 
 
 class UserDal(DalBase):
-
     import_headers = [
         {"label": "姓名", "field": "name", "required": True},
         {"label": "昵称", "field": "nickname", "required": False},
@@ -205,11 +204,15 @@ class UserDal(DalBase):
         :param params:
         :return:
         """
-        datas = await self.get_datas(**params.dict(), v_return_objs=True)
+        datas = await self.get_datas(
+            **params.dict(),
+            v_return_objs=True,
+            v_options=[joinedload(self.model.depts), joinedload(self.model.roles)]
+        )
         # 获取表头
         row = list(map(lambda i: i.get("label"), header))
         rows = []
-        options = await vadmin_system_crud.DictTypeDal(self.db).get_dicts_details(["sys_vadmin_gender"])
+        options = await self.get_export_headers_options()
         for user in datas:
             data = []
             for item in header:
@@ -221,16 +224,35 @@ class UserDal(DalBase):
                 elif field == "is_staff":
                     value = "是" if value else "否"
                 elif field == "gender":
-                    result = list(filter(lambda i: i["value"] == value, options["sys_vadmin_gender"]))
+                    result = list(filter(lambda i: i["value"] == value, options["gender_options"]))
                     value = result[0]["label"] if result else ""
+                elif field == "roles":
+                    value = ",".join([i.name for i in value])
+                elif field == "depts":
+                    value = ",".join([i.name for i in value])
                 data.append(value)
             rows.append(data)
         em = ExcelManage()
         em.create_excel("用户列表")
         em.write_list(rows, row)
-        file_url = em.save_excel()
+        remote_file_url = em.save_excel().get("remote_path")
         em.close()
-        return {"url": file_url, "filename": "用户列表.xlsx"}
+        return {"url": remote_file_url, "filename": "用户列表.xlsx"}
+
+    async def get_export_headers_options(self, include: list[str] = None) -> dict[str, list]:
+        """
+        获取导出所需选择项
+        :param include: 包括的选择项
+        :return:
+        """
+        options = {}
+        # 性别选择项
+        if include is None or 'gender' in include:
+            gender_objs = await vadmin_system_crud.DictTypeDal(self.db).get_dicts_details(["sys_vadmin_gender"])
+            sys_vadmin_gender = gender_objs.get("sys_vadmin_gender", [])
+            gender_options = [{"label": i["label"], "value": i["value"]} for i in sys_vadmin_gender]
+            options["gender_options"] = gender_options
+        return options
 
     async def get_import_headers_options(self) -> None:
         """
@@ -238,17 +260,17 @@ class UserDal(DalBase):
         :return:
         """
         # 角色选择项
-        roles = await RoleDal(self.db).get_datas(limit=0, v_return_objs=True, disabled=False, is_admin=False)
-        role_options = self.import_headers[4]
-        assert isinstance(role_options, dict)
-        role_options["options"] = [{"label": role.name, "value": role.id} for role in roles]
+        role_options = await RoleDal(self.db).get_datas(limit=0, v_return_objs=True, disabled=False, is_admin=False)
+        role_item = self.import_headers[4]
+        assert isinstance(role_item, dict)
+        role_item["options"] = [{"label": role.name, "value": role.id} for role in role_options]
 
         # 性别选择项
-        dict_types = await vadmin_system_crud.DictTypeDal(self.db).get_dicts_details(["sys_vadmin_gender"])
-        gender_options = self.import_headers[3]
-        assert isinstance(gender_options, dict)
-        sys_vadmin_gender = dict_types.get("sys_vadmin_gender")
-        gender_options["options"] = [{"label": item["label"], "value": item["value"]} for item in sys_vadmin_gender]
+        gender_options = await vadmin_system_crud.DictTypeDal(self.db).get_dicts_details(["sys_vadmin_gender"])
+        gender_item = self.import_headers[3]
+        assert isinstance(gender_item, dict)
+        sys_vadmin_gender = gender_options.get("sys_vadmin_gender")
+        gender_item["options"] = [{"label": item["label"], "value": item["value"]} for item in sys_vadmin_gender]
 
     async def download_import_template(self) -> dict:
         """

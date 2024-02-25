@@ -9,12 +9,13 @@
 import datetime
 import os
 import re
+from pathlib import Path
+
 from openpyxl.utils import get_column_letter
 from openpyxl import load_workbook, Workbook
-from application.settings import TEMP_DIR, TEMP_URL
-import hashlib
-import random
+from application.settings import STATIC_ROOT, STATIC_URL
 from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
+from utils.file.file_base import FileBase
 from .excel_schema import AlignmentModel, FontModel, PatternFillModel
 
 
@@ -150,26 +151,19 @@ class ExcelManage:
         self.__auto_width()
         self.__set_row_border()
 
-    def save_excel(self, filename: str = None):
+    def save_excel(self, path: str = "excel_manage"):
         """
-        保存 excel 文件到本地
-        默认保存到临时目录中
-        :param filename: 保存的文件名称
+        保存 excel 文件到本地 static 目录
+        :param path: static 指定目录类别
         :return:
         """
-        date = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d")
-        file_dir = os.path.join(TEMP_DIR, date)
-        if not os.path.exists(file_dir):
-            os.mkdir(file_dir)
-        if not filename:
-            name = hashlib.md5(str(random.random()).encode()).hexdigest() + ".xlsx"
-            filename = os.path.join(file_dir, name)
-        else:
-            name = filename
-            filename = os.path.join(file_dir, filename)
-        self.wb.save(filename)
-        # 返回访问路由
-        return f"{TEMP_URL}/{date}/{name}"
+        file_path = FileBase.generate_static_file_path(path=path, suffix="xlsx")
+        Path(file_path).parent.mkdir(parents=True, exist_ok=True)
+        self.wb.save(file_path)
+        return {
+            "local_path": file_path,
+            "remote_path": file_path.replace(STATIC_ROOT, STATIC_URL)
+        }
 
     def __set_row_style(
             self,
@@ -249,7 +243,3 @@ class ExcelManage:
         :return:
         """
         self.wb.close()
-
-
-if __name__ == '__main__':
-    print([chr(a) for a in range(ord('A'), ord('Z') + 1)])

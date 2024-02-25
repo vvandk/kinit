@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "3.6.5"
+VERSION = "3.7.0"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = False
@@ -67,13 +67,9 @@ ACCESS_TOKEN_CACHE_MINUTES = 30
 
 """
 挂载临时文件目录，并添加路由访问，此路由不会在接口文档中显示
-TEMP_ENABLE：是否启用临时文件目录访问
-TEMP_URL：路由访问
 TEMP_DIR：临时文件目录绝对路径
 官方文档：https://fastapi.tiangolo.com/tutorial/static-files/
 """
-TEMP_ENABLE = True
-TEMP_URL = "/temp"
 TEMP_DIR = os.path.join(BASE_DIR, "temp")
 
 """

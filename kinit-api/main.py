@@ -60,8 +60,6 @@ def create_app():
     # 挂在静态目录
     if settings.STATIC_ENABLE:
         app.mount(settings.STATIC_URL, app=StaticFiles(directory=settings.STATIC_ROOT))
-    if settings.TEMP_ENABLE:
-        app.mount(settings.TEMP_URL, app=StaticFiles(directory=settings.TEMP_DIR))
     # 引入应用中的路由
     for url in urls.urlpatterns:
         app.include_router(url["ApiRouter"], prefix=url["prefix"], tags=url["tags"])
