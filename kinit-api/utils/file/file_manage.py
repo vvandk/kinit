@@ -137,9 +137,3 @@ class FileManage(FileBase):
         if not os.path.exists(dst):
             raise CustomException("目标目录不存在！")
         await aioshutil.copytree(src, dst, dirs_exist_ok=dirs_exist_ok)
-
-
-if __name__ == '__main__':
-    _src = r"E:\ktianc\linfeng\project\leadership\temp\20231212\3nCx1702349951\template"
-    _dst = r"E:\ktianc\linfeng\project\leadership\static\template"
-    asyncio.run(FileManage.async_copy_dir(_src, _dst))

@@ -55,8 +55,8 @@ class FontModel(BaseModel):
 
 
 class PatternFillModel(BaseModel):
-    start_color: str = Field(None, description="起始颜色（RGB 值或颜色名称）")
-    end_color: str = Field(None, description="结束颜色（RGB 值或颜色名称）")
+    start_color: str = Field("FFFFFF", description="起始颜色（RGB 值或颜色名称）")
+    end_color: str = Field("FFFFFF", description="结束颜色（RGB 值或颜色名称）")
     fill_type: str = Field("solid", description="填充类型（'none'、'solid'、'darkDown' 等）")
 
     class Config:
