@@ -9,6 +9,7 @@ import { useDesign } from '@/hooks/web/useDesign'
 import { ref } from 'vue'
 import { ElScrollbar } from 'element-plus'
 import { computed } from 'vue'
+import { ElButton } from 'element-plus'
 
 const { getPrefixCls } = useDesign()
 
@@ -27,6 +28,11 @@ const toTelephoneLogin = () => {
 
 const toPasswordLogin = () => {
   isPasswordLogin.value = true
+}
+
+const icpNumber = computed(() => appStore.getIcpNumber)
+const toICO = () => {
+  window.open('https://beian.miit.gov.cn/#/Integrated/index')
 }
 </script>
 
@@ -88,6 +94,9 @@ const toPasswordLogin = () => {
               />
             </div>
           </Transition>
+          <div class="text-14px text-white font-normal absolute bottom-5 right-10">
+            <ElButton type="info" link @click="toICO">{{ icpNumber }}</ElButton>
+          </div>
         </div>
       </div>
     </ElScrollbar>
