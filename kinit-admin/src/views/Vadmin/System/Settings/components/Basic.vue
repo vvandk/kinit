@@ -149,7 +149,7 @@ const formSchema = reactive<FormSchema[]>([
               show-file-list={false}
               before-upload={beforeImageUpload}
               on-success={handleUploadSuccess}
-              accept="image/jpeg,image/gif,image/png"
+              accept="image/x-icon"
               name="file"
               headers={{ Authorization: token }}
             >
@@ -259,10 +259,10 @@ const save = async () => {
     try {
       const res = await putSystemSettingsApi(formData)
       if (res) {
-        appStore.setTitle(res.data.web_title || import.meta.env.VITE_APP_TITLE)
-        appStore.setLogoImage(res.data.web_logo || '/static/system/logo.png')
-        appStore.setFooterContent(res.data.web_copyright || 'Copyright ©2022-present K')
-        appStore.setIcpNumber(res.data.web_icp_number || '')
+        appStore.setTitle(formData.web_title || import.meta.env.VITE_APP_TITLE)
+        appStore.setLogoImage(formData.web_logo || '/media/system/logo.png')
+        appStore.setFooterContent(formData.web_copyright || 'Copyright ©2022-present K')
+        appStore.setIcpNumber(formData.web_icp_number || '')
         return ElMessage.success('更新成功')
       }
     } finally {
