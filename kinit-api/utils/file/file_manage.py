@@ -63,19 +63,21 @@ class FileManage(FileBase):
     async def async_save_local(self) -> dict:
         """
         保存文件到本地
-        :return:
+        :return: 示例：
+        {
+            'local_path': 'D:\\project\\kinit_dev\\kinit-api\\static\\system\\20240301\\1709303205HuYB3mrC.png',
+            'remote_path': '/media/system/20240301/1709303205HuYB3mrC.png'
+        }
         """
-        path = self.path
+        path = AsyncPath(self.path)
         if sys.platform == "win32":
-            path = self.path.replace("/", "\\")
-        save_path = AsyncPath(STATIC_ROOT) / path
-        if not await save_path.parent.exists():
-            await save_path.parent.mkdir(parents=True, exist_ok=True)
-        await save_path.write_bytes(await self.file.read())
-        remote_path = path.replace(STATIC_ROOT, '').replace("\\", '/')
+            path = AsyncPath(self.path.replace("/", "\\"))
+        if not await path.parent.exists():
+            await path.parent.mkdir(parents=True, exist_ok=True)
+        await path.write_bytes(await self.file.read())
         return {
-            "local_path": path,
-            "remote_path": f"{STATIC_URL}/{remote_path}"
+            "local_path": str(path),
+            "remote_path": STATIC_URL + str(path).replace(STATIC_ROOT, '').replace("\\", '/')
         }
 
     @classmethod
