@@ -8,8 +8,7 @@ class SuccessResponse(Response):
     """
     成功响应
     """
-    def __init__(self, data=None, msg="success", code=http.HTTP_SUCCESS, status=http_status.HTTP_200_OK
-                 , **kwargs):
+    def __init__(self, data=None, msg="success", code=http.HTTP_SUCCESS, status=http_status.HTTP_200_OK, **kwargs):
         self.data = {
             "code": code,
             "message": msg,
