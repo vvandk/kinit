@@ -32,3 +32,4 @@ class LoginParams(QueryParams):
         self.address = ("like", address)
         self.status = status
         self.platform = platform
+        self.v_order = "desc"
