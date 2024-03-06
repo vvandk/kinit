@@ -102,7 +102,8 @@ const save = async () => {
       const res = await postCurrentUserResetPassword(formData)
       if (res) {
         elForm?.resetFields()
-        ElMessage.success('保存成功')
+        authStore.logout()
+        ElMessage.warning('请重新登录')
       }
     } finally {
       loading.value = false
