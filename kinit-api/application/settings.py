@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 """
 系统版本
 """
-VERSION = "3.7.1"
+VERSION = "3.8.0"
 
 """安全警告: 不要在生产中打开调试运行!"""
 DEBUG = False
@@ -27,6 +27,10 @@ DEMO_WHITE_LIST_PATH = [
     "/vadmin/system/settings/tabs",
     "/vadmin/resource/images",
     "/vadmin/auth/user/export/query/list/to/excel"
+]
+"""演示功能黑名单（触发异常 status_code=403），黑名单优先级更高"""
+DEMO_BLACK_LIST_PATH = [
+    "/auth/api/login"
 ]
 
 """

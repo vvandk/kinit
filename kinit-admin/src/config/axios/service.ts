@@ -113,7 +113,7 @@ service.interceptors.response.use(
       case 401:
         // 强制要求重新登录，因账号已冻结，账号已过期，手机号码错误，刷新token无效等问题导致
         authStore.logout()
-        message = '认证已过期，请重新登录'
+        message = '认证已失效，请重新登录'
         break
       case 403:
         // 强制要求重新登录，因无系统权限，而进入到系统访问等问题导致

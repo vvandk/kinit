@@ -39,27 +39,27 @@ from .validation.auth import Auth
 from utils.wx.oauth import WXOAuth
 import jwt
 
-
 app = APIRouter()
 
 
 @app.post("/api/login", summary="API 手机号密码登录", description="Swagger API 文档登录认证")
 async def api_login_for_access_token(
-        request: Request,
-        data: OAuth2PasswordRequestForm = Depends(),
-        db: AsyncSession = Depends(db_getter)
+    request: Request,
+    data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(db_getter)
 ):
     user = await UserDal(db).get_data(telephone=data.username, v_return_none=True)
+    error_code = status.HTTP_401_UNAUTHORIZED
     if not user:
-        raise CustomException(status_code=401, code=401, msg="该手机号不存在")
+        raise CustomException(status_code=error_code, code=error_code, msg="该手机号不存在")
     result = VadminUser.verify_password(data.password, user.password)
     if not result:
-        raise CustomException(status_code=401, code=401, msg="手机号或密码错误")
+        raise CustomException(status_code=error_code, code=error_code, msg="手机号或密码错误")
     if not user.is_active:
-        raise CustomException(status_code=401, code=401, msg="此手机号已被冻结")
+        raise CustomException(status_code=error_code, code=error_code, msg="此手机号已被冻结")
     elif not user.is_staff:
-        raise CustomException(status_code=401, code=401, msg="此手机号无权限")
-    access_token = LoginManage.create_token({"sub": user.telephone})
+        raise CustomException(status_code=error_code, code=error_code, msg="此手机号无权限")
+    access_token = LoginManage.create_token({"sub": user.telephone, "password": user.password})
     record = LoginForm(platform='2', method='0', telephone=data.username, password=data.password)
     resp = {"access_token": access_token, "token_type": "bearer"}
     await VadminLoginRecord.create_login_record(db, record, True, request, resp)
@@ -68,10 +68,10 @@ async def api_login_for_access_token(
 
 @app.post("/login", summary="手机号密码登录", description="员工登录通道，限制最多输错次数，达到最大值后将is_active=False")
 async def login_for_access_token(
-        request: Request,
-        data: LoginForm,
-        manage: LoginManage = Depends(),
-        db: AsyncSession = Depends(db_getter)
+    request: Request,
+    data: LoginForm,
+    manage: LoginManage = Depends(),
+    db: AsyncSession = Depends(db_getter)
 ):
     try:
         if data.method == "0":
@@ -84,9 +84,14 @@ async def login_for_access_token(
         if not result.status:
             raise ValueError(result.msg)
 
-        access_token = LoginManage.create_token({"sub": result.user.telephone, "is_refresh": False})
+        access_token = LoginManage.create_token(
+            {"sub": result.user.telephone, "is_refresh": False, "password": result.user.password}
+        )
         expires = timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
-        refresh_token = LoginManage.create_token({"sub": result.user.telephone, "is_refresh": True}, expires=expires)
+        refresh_token = LoginManage.create_token(
+            payload={"sub": result.user.telephone, "is_refresh": True, "password": result.user.password},
+            expires=expires
+        )
         resp = {
             "access_token": access_token,
             "refresh_token": refresh_token,
@@ -103,10 +108,10 @@ async def login_for_access_token(
 
 @app.post("/wx/login", summary="微信服务端一键登录", description="员工登录通道")
 async def wx_login_for_access_token(
-        request: Request,
-        data: WXLoginForm,
-        db: AsyncSession = Depends(db_getter),
-        rd: Redis = Depends(redis_getter)
+    request: Request,
+    data: WXLoginForm,
+    db: AsyncSession = Depends(db_getter),
+    rd: Redis = Depends(redis_getter)
 ):
     try:
         if data.platform != "1" or data.method != "2":
@@ -129,9 +134,12 @@ async def wx_login_for_access_token(
     await UserDal(db).update_login_info(user, request.client.host)
 
     # 登录成功创建 token
-    access_token = LoginManage.create_token({"sub": user.telephone, "is_refresh": False})
+    access_token = LoginManage.create_token({"sub": user.telephone, "is_refresh": False, "password": user.password})
     expires = timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
-    refresh_token = LoginManage.create_token({"sub": user.telephone, "is_refresh": True}, expires=expires)
+    refresh_token = LoginManage.create_token(
+        payload={"sub": user.telephone, "is_refresh": True, "password": user.password},
+        expires=expires
+    )
     resp = {
         "access_token": access_token,
         "refresh_token": refresh_token,
@@ -155,16 +163,20 @@ async def token_refresh(refresh: str = Body(..., title="刷新Token")):
         payload = jwt.decode(refresh, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         telephone: str = payload.get("sub")
         is_refresh: bool = payload.get("is_refresh")
-        if telephone is None or not is_refresh:
+        password: str = payload.get("password")
+        if not telephone or not is_refresh or not password:
             return ErrorResponse("未认证，请您重新登录", code=error_code, status=error_code)
     except jwt.exceptions.InvalidSignatureError:
         return ErrorResponse("无效认证，请您重新登录", code=error_code, status=error_code)
     except jwt.exceptions.ExpiredSignatureError:
         return ErrorResponse("登录已超时，请您重新登录", code=error_code, status=error_code)
 
-    access_token = LoginManage.create_token({"sub": telephone, "is_refresh": False})
+    access_token = LoginManage.create_token({"sub": telephone, "is_refresh": False, "password": password})
     expires = timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
-    refresh_token = LoginManage.create_token({"sub": telephone, "is_refresh": True}, expires=expires)
+    refresh_token = LoginManage.create_token(
+        payload={"sub": telephone, "is_refresh": True, "password": password},
+        expires=expires
+    )
     resp = {
         "access_token": access_token,
         "refresh_token": refresh_token,

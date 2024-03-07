@@ -27,10 +27,10 @@ class OpenAuth(AuthValidation):
     """
 
     async def __call__(
-            self,
-            request: Request,
-            token: Annotated[str, Depends(settings.oauth2_scheme)],
-            db: AsyncSession = Depends(db_getter)
+        self,
+        request: Request,
+        token: Annotated[str, Depends(settings.oauth2_scheme)],
+        db: AsyncSession = Depends(db_getter)
     ):
         """
         每次调用依赖此类的接口会执行该方法
@@ -38,8 +38,8 @@ class OpenAuth(AuthValidation):
         if not settings.OAUTH_ENABLE:
             return Auth(db=db)
         try:
-            telephone = self.validate_token(request, token)
-            user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
+            telephone, password = self.validate_token(request, token)
+            user = await UserDal(db).get_data(telephone=telephone, password=password, v_return_none=True)
             return await self.validate_user(request, user, db, is_all=True)
         except CustomException:
             return Auth(db=db)
@@ -53,18 +53,18 @@ class AllUserAuth(AuthValidation):
     """
 
     async def __call__(
-            self,
-            request: Request,
-            token: str = Depends(settings.oauth2_scheme),
-            db: AsyncSession = Depends(db_getter)
+        self,
+        request: Request,
+        token: str = Depends(settings.oauth2_scheme),
+        db: AsyncSession = Depends(db_getter)
     ):
         """
         每次调用依赖此类的接口会执行该方法
         """
         if not settings.OAUTH_ENABLE:
             return Auth(db=db)
-        telephone = self.validate_token(request, token)
-        user = await UserDal(db).get_data(telephone=telephone, v_return_none=True)
+        telephone, password = self.validate_token(request, token)
+        user = await UserDal(db).get_data(telephone=telephone, password=password, v_return_none=True)
         return await self.validate_user(request, user, db, is_all=True)
 
 
@@ -83,23 +83,28 @@ class FullAdminAuth(AuthValidation):
             self.permissions = None
 
     async def __call__(
-            self,
-            request: Request,
-            token: str = Depends(settings.oauth2_scheme),
-            db: AsyncSession = Depends(db_getter)
+        self,
+        request: Request,
+        token: str = Depends(settings.oauth2_scheme),
+        db: AsyncSession = Depends(db_getter)
     ) -> Auth:
         """
         每次调用依赖此类的接口会执行该方法
         """
         if not settings.OAUTH_ENABLE:
             return Auth(db=db)
-        telephone = self.validate_token(request, token)
+        telephone, password = self.validate_token(request, token)
         options = [joinedload(VadminUser.roles).subqueryload(VadminRole.menus), joinedload(VadminUser.depts)]
-        user = await UserDal(db).get_data(telephone=telephone, v_return_none=True, v_options=options, is_staff=True)
+        user = await UserDal(db).get_data(
+            telephone=telephone,
+            password=password,
+            v_return_none=True,
+            v_options=options,
+            is_staff=True
+        )
         result = await self.validate_user(request, user, db, is_all=False)
         permissions = self.get_user_permissions(user)
         if permissions != {'*.*.*'} and self.permissions:
             if not (self.permissions & permissions):
                 raise CustomException(msg="无权限操作", code=status.HTTP_403_FORBIDDEN)
         return result
-

@@ -74,6 +74,12 @@ class UserSimpleOut(User):
     last_ip: str | None = None
 
 
+class UserPasswordOut(UserSimpleOut):
+    model_config = ConfigDict(from_attributes=True)
+
+    password: str
+
+
 class UserOut(UserSimpleOut):
     model_config = ConfigDict(from_attributes=True)
 

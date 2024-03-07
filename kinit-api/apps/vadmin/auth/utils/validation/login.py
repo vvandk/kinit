@@ -35,7 +35,7 @@ class WXLoginForm(BaseModel):
 
 class LoginResult(BaseModel):
     status: bool | None = False
-    user: schemas.UserOut | None = None
+    user: schemas.UserPasswordOut | None = None
     msg: str | None = None
 
     class Config:
@@ -87,6 +87,6 @@ class LoginValidation:
                 await count.delete()
             self.result.msg = "OK"
             self.result.status = True
-            self.result.user = schemas.UserSimpleOut.model_validate(user)
+            self.result.user = schemas.UserPasswordOut.model_validate(user)
             await crud.UserDal(db).update_login_info(user, request.client.host)
         return self.result

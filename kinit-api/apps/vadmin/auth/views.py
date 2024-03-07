@@ -246,7 +246,7 @@ async def put_menus(
 
 
 @app.get("/menus/{data_id}", summary="获取菜单信息")
-async def put_menus(
+async def get_menus(
         data_id: int,
         auth: Auth = Depends(FullAdminAuth(permissions=["auth.menu.view", "auth.menu.update"]))
 ):
