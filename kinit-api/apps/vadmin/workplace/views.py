@@ -124,6 +124,14 @@ async def get_team():
 async def get_shortcuts():
     data = [
         {
+            "name": "Gitee 项目仓库",
+            "link": "https://gitee.com/ktianc/kinit"
+        },
+        {
+            "name": "GitHub 项目仓库",
+            "link": "https://github.com/vvandk/kinit"
+        },
+        {
             "name": "前端文档",
             "link": "https://element-plus-admin-doc.cn/"
         },
@@ -136,8 +144,8 @@ async def get_shortcuts():
             "link": "http://kinit.ktianc.top/api/redoc"
         },
         {
-            "name": "Windi CSS 文档",
-            "link": "https://cn.windicss.org/guide/"
+            "name": "UnoCSS 中文文档",
+            "link": "https://unocss.nodejs.cn/guide/"
         },
         {
             "name": "Iconify 文档",

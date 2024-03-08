@@ -58,7 +58,7 @@ class AliyunOSS(FileBase):
         # 验证图片类型
         await self.validate_file(file, max_size, self.IMAGE_ACCEPT)
         # 生成文件路径
-        path = self.generate_static_file_path(path, file.filename)
+        path = self.generate_relative_path(path, file.filename)
         file_data = await file.read()
         return await self.__upload_file_to_oss(path, file_data)
 
@@ -74,7 +74,7 @@ class AliyunOSS(FileBase):
         # 验证图片类型
         await self.validate_file(file, max_size, self.VIDEO_ACCEPT)
         # 生成文件路径
-        path = self.generate_static_file_path(path, file.filename)
+        path = self.generate_relative_path(path, file.filename)
         file_data = await file.read()
         return await self.__upload_file_to_oss(path, file_data)
 
@@ -86,7 +86,7 @@ class AliyunOSS(FileBase):
         :param file: 文件对象
         :return: 上传后的文件oss链接
         """
-        path = self.generate_static_file_path(path, file.filename)
+        path = self.generate_relative_path(path, file.filename)
         file_data = await file.read()
         return await self.__upload_file_to_oss(path, file_data)
 
