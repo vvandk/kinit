@@ -44,15 +44,14 @@ class FileBase:
         return str(int((datetime.datetime.now().replace(hour=0, minute=0, second=0)).timestamp()))
 
     @classmethod
-    def generate_static_file_path(cls, path: str, filename: str = None, suffix: str = None) -> str:
+    def generate_relative_path(cls, path: str, filename: str = None, suffix: str = None) -> str:
         """
-        生成 static 静态文件路径，生成规则：自定义目录/当天日期时间戳/随机文件名称
+        生成相对路径，生成规则：自定义目录/当天日期时间戳/随机文件名称
         1. filename 参数或者 suffix 参数必须填写一个
         2. filename 参数和 suffix 参数都存在则优先取 suffix 参数为后缀
         :param path: static 指定目录类别
         :param filename: 文件名称，只用户获取后缀，不做真实文件名称，避免文件重复问题
         :param suffix: 文件后缀
-        :return:
         """
         if not filename and not suffix:
             raise ValueError("filename 参数或者 suffix 参数必须填写一个")
@@ -64,7 +63,20 @@ class FileBase:
         if path[-1] == "/":
             path = path[:-1]
         today = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d")
-        return f"{STATIC_ROOT}/{path}/{today}/{cls.get_random_filename(suffix)}"
+        return f"{path}/{today}/{cls.get_random_filename(suffix)}"
+
+    @classmethod
+    def generate_static_file_path(cls, path: str, filename: str = None, suffix: str = None) -> str:
+        """
+        生成 static 静态文件路径，生成规则：自定义目录/当天日期时间戳/随机文件名称
+        1. filename 参数或者 suffix 参数必须填写一个
+        2. filename 参数和 suffix 参数都存在则优先取 suffix 参数为后缀
+        :param path: static 指定目录类别
+        :param filename: 文件名称，只用户获取后缀，不做真实文件名称，避免文件重复问题
+        :param suffix: 文件后缀
+        :return:
+        """
+        return f"{STATIC_ROOT}/{cls.generate_relative_path(path, filename, suffix)}"
 
     @classmethod
     def generate_temp_file_path(cls, filename: str = None, suffix: str = None) -> str:
