@@ -94,7 +94,11 @@ class FullAdminAuth(AuthValidation):
         if not settings.OAUTH_ENABLE:
             return Auth(db=db)
         telephone, password = self.validate_token(request, token)
-        options = [joinedload(VadminUser.roles).subqueryload(VadminRole.menus), joinedload(VadminUser.depts)]
+        options = [
+            joinedload(VadminUser.roles).subqueryload(VadminRole.menus),
+            joinedload(VadminUser.roles).subqueryload(VadminRole.depts),
+            joinedload(VadminUser.depts)
+        ]
         user = await UserDal(db).get_data(
             telephone=telephone,
             password=password,
