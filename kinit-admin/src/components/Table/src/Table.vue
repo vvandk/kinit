@@ -80,7 +80,7 @@ export default defineComponent({
     border: propTypes.bool.def(true),
     size: {
       type: String as PropType<ComponentSize>,
-      validator: (v: ComponentSize) => ['medium', 'small', 'mini'].includes(v)
+      validator: (v: ComponentSize) => ['default', 'small', 'large'].includes(v)
     },
     fit: propTypes.bool.def(true),
     showHeader: propTypes.bool.def(true),
@@ -349,6 +349,7 @@ export default defineComponent({
       const bindValue: Recordable = { ...attrs, ...unref(getProps) }
       delete bindValue.columns
       delete bindValue.data
+      delete bindValue.align
       return bindValue
     })
 

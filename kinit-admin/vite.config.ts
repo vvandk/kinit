@@ -7,6 +7,7 @@ import progress from 'vite-plugin-progress'
 import EslintPlugin from 'vite-plugin-eslint'
 import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import PurgeIcons from 'vite-plugin-purge-icons'
+import ServerUrlCopy from 'vite-plugin-url-copy'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
@@ -38,6 +39,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         }
       }),
       VueJsx(),
+      ServerUrlCopy(),
       progress(),
       env.VITE_USE_ALL_ELEMENT_PLUS_STYLE === 'false'
         ? createStyleImportPlugin({
