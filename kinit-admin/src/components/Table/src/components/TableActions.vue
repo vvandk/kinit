@@ -24,12 +24,7 @@ import { propTypes } from '@/utils/propTypes'
 import { moveElementToIndex } from '@/utils/index'
 import { BaseButton } from '@/components/Button'
 
-const appStore = useAppStore()
-const sizeMap = computed(() => appStore.sizeMap)
-
 const { setStorage, getStorage, removeStorage } = useStorage()
-
-const { t } = useI18n()
 
 export default defineComponent({
   name: 'TableActions',
@@ -47,6 +42,10 @@ export default defineComponent({
   },
   emits: ['refresh', 'changSize'],
   setup(props, { emit }) {
+    const appStore = useAppStore()
+    const sizeMap = computed(() => appStore.sizeMap)
+    const { t } = useI18n()
+
     const refresh = () => {
       emit('refresh')
     }

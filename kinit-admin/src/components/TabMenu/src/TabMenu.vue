@@ -88,6 +88,9 @@ export default defineComponent({
         } else {
           showTitle.value = !collapse
         }
+      },
+      {
+        immediate: true
       }
     )
 
@@ -202,11 +205,12 @@ export default defineComponent({
         </div>
         <Menu
           class={[
-            '!absolute top-0 z-1000',
+            '!absolute top-0 z-3000',
             {
               '!left-[var(--tab-menu-min-width)]': unref(collapse),
               '!left-[var(--tab-menu-max-width)]': !unref(collapse),
-              '!w-[var(--left-menu-max-width)]': unref(showMenu) || unref(fixedMenu),
+              '!w-[var(--left-menu-max-width)] border-r-1 border-r-solid border-[var(--el-border-color)]':
+                unref(showMenu) || unref(fixedMenu),
               '!w-0': !unref(showMenu) && !unref(fixedMenu)
             }
           ]}
