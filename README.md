@@ -334,13 +334,13 @@ Redis (推荐使用最新稳定版)
    [dev]
    # 开发环境
    version_locations = %(here)s/alembic/versions_dev
-   sqlalchemy.url = sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
+   sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
    
    
    [pro]
    # 生产环境
    version_locations = %(here)s/alembic/versions_pro
-   sqlalchemy.url = sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
+   sqlalchemy.url = mysql+pymysql://root:123456@127.0.0.1/kinit
    ```
 
 5. 创建数据库
