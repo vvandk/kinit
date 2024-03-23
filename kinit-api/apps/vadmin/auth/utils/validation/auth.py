@@ -42,7 +42,7 @@ class AuthValidation:
     # status_code = 403 时，表示强制要求重新登录，因无系统权限，而进入到系统访问等问题导致
 
     @classmethod
-    def validate_token(cls, request: Request, token: str | None) -> str:
+    def validate_token(cls, request: Request, token: str | None) -> tuple[str, bool]:
         """
         验证用户 token
         """

@@ -30,23 +30,42 @@
         <!-- <button @click="handleLogin" class="login-btn cu-btn block bg-blue lg round">登录</button> -->
         <u-button type="primary" text="登录" shape="circle" @click="handleLogin"></u-button>
       </view>
+			
+			<view class="xieyi flex justify-start">
+				<zb-tooltip :visible.sync="tooltipVisible" content="请阅读并同意" placement="top" ref="tooltip" >
+					<view>
+						<!-- <text class="text-grey1">等内容</text> -->
+						<u-checkbox-group v-model="isAgrement" shape="circle" @change="checkboxChange">
+							<u-checkbox></u-checkbox>
+						</u-checkbox-group>
+					</view>
+				</zb-tooltip>
+			  <view>
+			  	<text class="text-grey1">允许我们在必要场景下，合理使用您的个人信息，且阅读并同意</text>
+			  	<text class="text-blue" @click="handleUserAgrement">《用户协议》、</text>
+			  	<text class="text-blue" @click="handlePrivacy">《隐私协议》、</text>
+			  	<text class="text-grey1">等内容</text>
+			  </view>
+			</view>
     </view>
 
-    <view class="xieyi text-center">
-      <text class="text-grey1">登录即代表同意</text>
-      <text class="text-blue" @click="handleUserAgrement">《用户协议》</text>
-      <text class="text-blue" @click="handlePrivacy">《隐私协议》</text>
-    </view>
-
-    <view class="footer text-center">
+    <!-- <view class="footer text-center">
       <u-button
+			  v-if="isAgrement"
         type="primary"
         text="微信一键登录"
         shape="circle"
         open-type="getPhoneNumber"
         @getphonenumber="wxLogin"
       ></u-button>
-    </view>
+			<u-button
+			  v-else
+			  type="primary"
+			  text="微信一键登录"
+			  shape="circle"
+				@click="wxLogin"
+			></u-button>
+    </view> -->
   </view>
 </template>
 
@@ -60,7 +79,9 @@ export default {
       loginForm: {
         telephone: '15020221010',
         password: 'kinit2022'
-      }
+      },
+			isAgrement: false,
+			tooltipVisible: false
     }
   },
   computed: {
@@ -96,14 +117,18 @@ export default {
     },
     // 登录方法
     async handleLogin() {
-      if (this.loginForm.telephone === '') {
-        this.$modal.msgError('请输入您的手机号')
-      } else if (this.loginForm.password === '') {
-        this.$modal.msgError('请输入您的密码')
-      } else {
-        this.$modal.loading('正在登录中...')
-        this.pwdLogin()
-      }
+			if (this.isAgrement) {
+				if (this.loginForm.telephone === '') {
+				  this.$modal.msgError('请输入您的手机号')
+				} else if (this.loginForm.password === '') {
+				  this.$modal.msgError('请输入您的密码')
+				} else {
+				  this.$modal.loading('正在登录中...')
+				  this.pwdLogin()
+				}
+			} else {
+				this.tooltipVisible = true
+			}
     },
     // 密码登录
     async pwdLogin() {
@@ -122,10 +147,23 @@ export default {
     },
     // 微信一键登录
     wxLogin(detail) {
-      this.onGetPhoneNumber(detail).then((res) => {
-        this.loginSuccess()
-      })
-    }
+			if (this.isAgrement) {
+				this.onGetPhoneNumber(detail).then((res) => {
+				  this.loginSuccess()
+				})
+			} else {
+				this.tooltipVisible = true
+			}
+    },
+		// 用户协议事件监听
+		checkboxChange() {
+			this.isAgrement = !this.isAgrement
+			this.tooltipClose()
+		},
+		// 关闭提示
+		tooltipClose() {
+			this.tooltipVisible = false
+		}
   }
 }
 </script>
@@ -156,7 +194,7 @@ page {
   }
 
   .login-form-content {
-    text-align: center;
+    // text-align: center;
     margin: 20px auto;
     margin-top: 15%;
     width: 80%;

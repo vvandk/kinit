@@ -1,1 +1,0 @@
-<view class="{{['u-grid-item','data-v-99a45d26',classes]}}" style="{{$root.s0}}" hover-class="u-grid-item--hover-class" hover-stay-time="{{200}}" data-event-opts="{{[['tap',[['clickHandler',['$event']]]]]}}" bindtap="__e"><slot></slot></view>

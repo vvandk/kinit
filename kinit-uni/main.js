@@ -26,6 +26,11 @@ uni.$u.setConfig({
       size: 33,
       labelSize: 30
     },
+		checkbox: {
+		  size: 33,
+		  labelSize: 30,
+			iconSize: 20
+		},
     button: {
       loadingSize: 28
     },
