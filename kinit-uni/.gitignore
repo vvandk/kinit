@@ -11,4 +11,7 @@
 
 package-lock.json
 yarn.lock
+kinit-uni.code-workspace
+
+/unpackage/*
 
