@@ -170,12 +170,12 @@ async def get_setting_base_config(db: AsyncSession = Depends(db_getter)):
 
 
 @app.get("/settings/privacy", summary="获取隐私协议")
-async def get_settings_privacy(auth: Auth = Depends(FullAdminAuth())):
+async def get_settings_privacy(auth: Auth = Depends(OpenAuth())):
     return SuccessResponse((await crud.SettingsDal(auth.db).get_data(config_key="web_privacy")).config_value)
 
 
 @app.get("/settings/agreement", summary="获取用户协议")
-async def get_settings_agreement(auth: Auth = Depends(FullAdminAuth())):
+async def get_settings_agreement(auth: Auth = Depends(OpenAuth())):
     return SuccessResponse((await crud.SettingsDal(auth.db).get_data(config_key="web_agreement")).config_value)
 
 

@@ -71,6 +71,37 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     }
   },
   {
+    path: '/docs',
+    name: 'Docs',
+    meta: {
+      hidden: true,
+      title: '在线文档',
+      noTagsView: true
+    },
+    children: [
+      {
+        path: 'privacy',
+        name: 'Privacy',
+        component: () => import('@/views/Vadmin/Docs/Privacy.vue'),
+        meta: {
+          hidden: true,
+          title: '隐私政策',
+          noTagsView: true
+        }
+      },
+      {
+        path: 'agreement',
+        name: 'Agreement',
+        component: () => import('@/views/Vadmin/Docs/Agreement.vue'),
+        meta: {
+          hidden: true,
+          title: '用户协议',
+          noTagsView: true
+        }
+      }
+    ]
+  },
+  {
     path: '/404',
     component: () => import('@/views/Error/404.vue'),
     name: 'NoFind',
@@ -115,7 +146,17 @@ const router = createRouter({
 })
 
 export const resetRouter = (): void => {
-  const resetWhiteNameList = ['Login', 'NoFind', 'Root', 'ResetPassword', 'Redirect', 'Home']
+  const resetWhiteNameList = [
+    'Login',
+    'NoFind',
+    'Root',
+    'ResetPassword',
+    'Redirect',
+    'Home',
+    'Docs',
+    'Privacy',
+    'Agreement'
+  ]
   router.getRoutes().forEach((route) => {
     const { name } = route
     if (name && !resetWhiteNameList.includes(name as string)) {
