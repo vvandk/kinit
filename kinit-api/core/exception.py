@@ -65,9 +65,9 @@ def register_exception(app: FastAPI):
         # 打印栈信息，方便追踪排查异常
         logger.exception(exc)
         return JSONResponse(
-            status_code=200,
+            status_code=exc.status_code,
             content={
-                "code": status.HTTP_400_BAD_REQUEST,
+                "code": exc.status_code,
                 "message": exc.detail,
             }
         )
