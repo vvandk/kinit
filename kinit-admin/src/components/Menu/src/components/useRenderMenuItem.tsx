@@ -19,7 +19,7 @@ export const useRenderMenuItem = () =>
 
           if (
             oneShowingChild &&
-            (!onlyOneChild?.children || onlyOneChild?.noShowingChildren) &&
+            (!(onlyOneChild?.children?.length !== 0) || onlyOneChild?.noShowingChildren) &&
             !meta?.alwaysShow
           ) {
             return (
