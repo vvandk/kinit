@@ -47,11 +47,16 @@ Kinit 是一套全部开源的快速开发平台，毫无保留给个人及企�
 
 提供一个技术交流群，现在还没什么人哈哈哈哈哈，真心希望大家能够加入，积极讨论，因为本项目中还没有详细使用文档（一直在欠着，我也挺不好意思的），所以大家加入后，也可以很方便的一起讨论在使用中遇到各种问题，也可以提一些你想加入的功能，让我们更近一点，欢迎大家的加入。
 
+
+
+2024-4-25 目前群聊已经达到 200 人，只能通过邀请进群，不能再直接扫描群二维码进群，需要进群的可以先加我，备注进群，我就拉你进群。
+
 <div align="center">
     <p align="center">
-        <img src="https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/20240421/1713709992esRQ4WmN.jpg" height="500" alt="logo"/>
+        <img src="https://ktianc.oss-cn-beijing.aliyuncs.com/resource/images/20240425/1714006642AjB2ixnH.jpg" height="500" alt="logo"/>
     </p>
 </div>
+
 
 
 
