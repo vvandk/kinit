@@ -147,7 +147,7 @@ git commit -m "clear cached"
 ```
 
 ## 新的数据迁移
-执行数据库迁移命令（终端执行）
+
 - 新建模型：
   - 在你的app目录下新建一个models目录，__init__.py导入你需要迁移的models
   ```python
@@ -182,7 +182,7 @@ git commit -m "clear cached"
   ...
   from apps.xxx.your_app.models import *
   ```
-- 执行脚本：
+- 执行数据库迁移命令（终端执行执行脚本）：
   ```shell
   # 执行命令（生产环境）：
   python main.py migrate
