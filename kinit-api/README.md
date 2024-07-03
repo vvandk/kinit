@@ -18,45 +18,45 @@ Typer 官方文档：https://typer.tiangolo.com/
 
 SQLAlchemy 2.0 （官方）: https://docs.sqlalchemy.org/en/20/intro.html#installation
 
-SQLAlchemy 1.4 迁移到 2.0 （官方）：https://docs.sqlalchemy.org/en/20/changelog/whatsnew_20.html#whatsnew-20-orm-declarative-typing
+SQLAlchemy 1.4 迁移到 2.0
+（官方）：https://docs.sqlalchemy.org/en/20/changelog/whatsnew_20.html#whatsnew-20-orm-declarative-typing
 
 PEP 484 语法（官方）：https://peps.python.org/pep-0484/
-
 
 ## 项目结构
 
 使用的是仿照 Django 项目结构：
 
 - alembic：数据库迁移配置目录
-  - versions_dev：开发环境数据库迁移文件目录
-  - versions_pro：生产环境数据库迁移文件目录
-  - env.py：映射类配置文件
+    - versions_dev：开发环境数据库迁移文件目录
+    - versions_pro：生产环境数据库迁移文件目录
+    - env.py：映射类配置文件
 - application：主项目配置目录，也存放了主路由文件
-  - config：基础环境配置文件
-    - development.py：开发环境
-    - production.py：生产环境
-  - settings.py：主项目配置文件
-  - urls.py：主路由文件
+    - config：基础环境配置文件
+        - development.py：开发环境
+        - production.py：生产环境
+    - settings.py：主项目配置文件
+    - urls.py：主路由文件
 - apps：项目的app存放目录
-  - vadmin：基础服务
-    - auth：用户 - 角色 - 菜单接口服务
-      - models：ORM 模型目录
-      - params：查询参数依赖项目录
-      - schemas：pydantic 模型，用于数据库序列化操作目录
-      - utils：登录认证功能接口服务
-      - curd.py：数据库操作
-      - views.py：视图函数
+    - vadmin：基础服务
+        - auth：用户 - 角色 - 菜单接口服务
+            - models：ORM 模型目录
+            - params：查询参数依赖项目录
+            - schemas：pydantic 模型，用于数据库序列化操作目录
+            - utils：登录认证功能接口服务
+            - curd.py：数据库操作
+            - views.py：视图函数
 - core：核心文件目录
-  - crud.py：关系型数据库操作核心封装
-  - database.py：关系型数据库核心配置
-  - data_types.py：自定义数据类型
-  - exception.py：异常处理
-  - logger：日志处理核心配置
-  - middleware.py：中间件核心配置
-  - dependencies.py：常用依赖项
-  - event.py：全局事件
-  - mongo_manage.py：mongodb 数据库操作核心封装
-  - validator.py：pydantic 模型重用验证器
+    - crud.py：关系型数据库操作核心封装
+    - database.py：关系型数据库核心配置
+    - data_types.py：自定义数据类型
+    - exception.py：异常处理
+    - logger：日志处理核心配置
+    - middleware.py：中间件核心配置
+    - dependencies.py：常用依赖项
+    - event.py：全局事件
+    - mongo_manage.py：mongodb 数据库操作核心封装
+    - validator.py：pydantic 模型重用验证器
 - db：ORM模型基类
 - logs：日志目录
 - static：静态资源存放目录
@@ -133,6 +133,7 @@ http://127.0.0.1:9000/docs
 ```
 
 Git更新ignore文件直接修改gitignore是不会生效的，需要先去掉已经托管的文件，修改完成之后再重新添加并提交。
+
 ```
 第一步：
 git rm -r --cached .
@@ -146,21 +147,92 @@ git add .
 git commit -m "clear cached"
 ```
 
+## 新的数据迁移
+
 执行数据库迁移命令（终端执行）
 
-```shell
-# 执行命令（生产环境）：
-python main.py migrate
-
-# 执行命令（开发环境）：
-python main.py migrate --env dev
-
-# 开发环境的原命令
-alembic --name dev revision --autogenerate -m 2.0
-alembic --name dev upgrade head
-```
+- 新建模型：
+    - 在你的app目录下新建一个models目录，__init__.py导入你需要迁移的models
+  ```python
+  # app/.../your_app/models/__init__.py
+  from .your_model import YourModel,YourModel2
+  
+  ```
+  ```python
+  # app/.../your_app/models/your_model.py
+  from db.db_base import BaseModel
+  
+  class YourModel(BaseModel):
+    # 定义你的model
+    ...
+  
+  class YourModel2(BaseModel):
+    # 定义你的model
+    ...
+  ```
+- 根据模型配置你的alembic：
+  ```
+  # alembic.ini
+  [dev]
+  ...
+  sqlalchemy.url = mysql+pymysql://your_username:password@ip:port/kinit
+  ...
+  ```
+  ```python
+  # alembic/env.py
+  # 导入项目中的基本映射类，与 需要迁移的 ORM 模型
+  from apps.vadmin.auth.models import *
+  ...
+  from apps.xxx.your_app.models import *
+  ```
+- 执行脚本：
+  ```shell
+  # 执行命令（生产环境）：
+  python main.py migrate
+  
+  # 执行命令（开发环境）：
+  python main.py migrate --env dev
+  
+  # 开发环境的原命令
+  alembic --name dev revision --autogenerate -m 2.0
+  alembic --name dev upgrade head
+  ```
 
 生成迁移文件后，会在alembic迁移目录中的version目录中多个迁移文件
+
+## 新的CRUD
+
+- 新的模型文件已经建好（上一步迁移时必须）
+- 在 scripts/crud_generate/main.py 添加执行命令
+
+```python
+# scripts/crud_generate/main.py
+if __name__ == '__main__':
+    from apps.xxx.your_app.models import YourModel
+
+    crud = CrudGenerate(YourModel, "中文名", "en_name")
+    # 只打印代码，不执行创建写入
+    crud.generate_codes()
+    # 创建并写入代码
+    crud.main()
+```
+
+- 生成后会自动创建crud, params,schema, views
+
+## 新的路由配置
+
+```python
+# application/urls.py
+
+from apps.xxx.your_app.views import app as your_app
+
+urlpatterns = [
+    ...,
+    {"ApiRouter": your_app, "prefix": "/your_router", "tags": ["your_tag"]},
+]
+```
+
+完成后在 http://127.0.0.1:9000/docs 验证生成的接口
 
 ## 查询数据
 
@@ -170,36 +242,36 @@ alembic --name dev upgrade head
 # 日期查询
 # 值的类型：str
 # 值得格式：%Y-%m-%d：2023-05-14
-字段名称=("date", 值)
+字段名称 = ("date", 值)
 
 # 模糊查询
 # 值的类型: str
-字段名称=("like", 值)
+字段名称 = ("like", 值)
 
 # in 查询
 # 值的类型：list
-字段名称=("in", 值)
+字段名称 = ("in", 值)
 
 # 时间区间查询
 # 值的类型：tuple 或者 list
-字段名称=("between", 值)
+字段名称 = ("between", 值)
 
 # 月份查询
 # 值的类型：str
 # 值的格式：%Y-%m：2023-05
-字段名称=("month", 值)
+字段名称 = ("month", 值)
 
 # 不等于查询
-字段名称=("!=", 值)
+字段名称 = ("!=", 值)
 
 # 大于查询
-字段名称=(">", 值)
+字段名称 = (">", 值)
 
 # 等于 None
-字段名称=("None")
+字段名称 = ("None")
 
 # 不等于 None
-字段名称=("not None")
+字段名称 = ("not None")
 ```
 
 代码部分：
@@ -253,15 +325,15 @@ def __dict_filter(self, **kwargs) -> list[BinaryExpression]:
 查询所有用户id为1或2或 4或6，并且email不为空，并且名称包括李：
 
 ```python
-users = UserDal(db).get_datas(limit=0, id=("in", [1,2,4,6]), email=("not None", ), name=("like", "李"))
+users = UserDal(db).get_datas(limit=0, id=("in", [1, 2, 4, 6]), email=("not None",), name=("like", "李"))
 
 # limit=0：表示返回所有结果数据
 # 这里的 get_datas 默认返回的是 pydantic 模型数据
 # 如果需要返回用户对象列表，使用如下语句：
 users = UserDal(db).get_datas(
     limit=0,
-    id=("in", [1,2,4,6]),
-    email=("not None", ),
+    id=("in", [1, 2, 4, 6]),
+    email=("not None",),
     name=("like", "李"),
     v_return_objs=True
 )
@@ -272,7 +344,7 @@ users = UserDal(db).get_datas(
 查询第一页，每页两条数据，并返回总数，同样可以通过 `get_datas` 实现原始查询方式：
 
 ```python
-v_where = [VadminUser.id.in_([1,2,4,6]), VadminUser.email.isnot(None), VadminUser.name.like(f"%李%")]
+v_where = [VadminUser.id.in_([1, 2, 4, 6]), VadminUser.email.isnot(None), VadminUser.name.like(f"%李%")]
 users, count = UserDal(db).get_datas(limit=2, v_where=v_where, v_return_count=True)
 
 # 这里的 get_datas 默认返回的是 pydantic 模型数据
@@ -281,7 +353,7 @@ users, count = UserDal(db).get_datas(
     limit=2,
     v_where=v_where,
     v_return_count=True
-    v_return_objs=True
+v_return_objs = True
 )
 ```
 
