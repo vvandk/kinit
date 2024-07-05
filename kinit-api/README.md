@@ -149,7 +149,7 @@ git commit -m "clear cached"
 ## 新的数据迁移
 
 - 新建模型：
-  - 在你的app目录下新建一个models目录，__init__.py导入你需要迁移的models
+  - 在你的app目录下新建一个models目录，`__init__.py`导入你需要迁移的models
   ```python
   # app/.../your_app/models/__init__.py
   from .your_model import YourModel,YourModel2
