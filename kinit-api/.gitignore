@@ -10,11 +10,6 @@ logs/*
 !logs/.gitkeep
 temp/*
 !temp/.gitkeep
-static/*
-!static/redoc_ui
-!static/swagger_ui
-!static/system/favicon.ico
-!static/system/logo.png
 !alembic/versions/.gitkeep
 
 # dotenv
