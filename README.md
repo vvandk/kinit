@@ -256,10 +256,14 @@ git clone https://gitee.com/ktianc/kinit.git
 ### 准备工作
 
 ```
-Python == 3.10 (其他版本均未测试)
-nodejs >= 14.0 (推荐使用最新稳定版)
-Mysql >= 8.0
-MongoDB (推荐使用最新稳定版)
+后端依赖版本：
+Python == 3.10.x (其他版本均未测试)
+前端依赖版本：
+nodejs >= 18.0 < 19
+pnpm >= 8.1.0 < 9
+数据库版本：
+Mysql >= 8.0 (8 以上未测试，以下版本未测试，postgresql 未测试，更换可能会涉及调整)
+MongoDB >= 7.0.12 < 8 (7 以上或以下版本均未测试)
 Redis (推荐使用最新稳定版)
 ```
 
