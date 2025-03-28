@@ -62,7 +62,7 @@ async def api_login_for_access_token(
     access_token = LoginManage.create_token({"sub": user.telephone, "password": user.password})
     record = LoginForm(platform='2', method='0', telephone=data.username, password=data.password)
     resp = {"access_token": access_token, "token_type": "bearer"}
-    await VadminLoginRecord.create_login_record(db, record, True, request, resp)
+    # await VadminLoginRecord.create_login_record(db, record, True, request, resp)
     return resp
 
 

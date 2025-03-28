@@ -10,7 +10,7 @@ FastApi 更新文档：https://github.com/tiangolo/fastapi/releases
 FastApi Github：https://github.com/tiangolo/fastapi
 Typer 官方文档：https://typer.tiangolo.com/
 """
-
+import pytest
 from fastapi import FastAPI
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
@@ -123,6 +123,15 @@ def init_app(path: str):
     print(f"开始创建并初始化 {path} APP")
     app = CreateApp(path)
     app.run()
+
+
+@shell_app.command()
+def tests():
+    """
+    单元测试
+    """
+    print(f"开始单元测试")
+    pytest.main(['-vs', './tests/vadmin'])
 
 
 if __name__ == '__main__':
